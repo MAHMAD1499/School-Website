@@ -12,6 +12,18 @@
 
 <body>
 
+  <!-- Preloader -->
+  <div id="preloader" aria-hidden="true">
+    <div class="preloader-logo">
+      <img src="assets/images/logo.svg" alt="KSM Logo">
+      <div class="preloader-logo-text">
+        <span class="logo-title">Kindergarten Saadia's</span>
+        <span class="logo-subtitle">Montessori School</span>
+      </div>
+    </div>
+    <div class="preloader-bar"><div class="preloader-bar-inner"></div></div>
+  </div>
+
   <!-- Top Bar -->
   <div class="top-bar">
     <div class="container">
@@ -63,6 +75,7 @@
         <div class="logo-text">
           <span class="logo-title">Kindergarten Saadia's</span>
           <span class="logo-subtitle">Montessori School</span>
+          <span class="logo-tagline"><span class="ticker-run">"Free The Child's Potential and You Will Transform Him Into The World."</span></span>
         </div>
       </a>
 
@@ -88,6 +101,11 @@
   <!-- Hero Section -->
   <section class="hero" id="hero">
     <div class="hero-slider" id="heroSlider">
+
+      <!-- Floating Decorative Shapes -->
+      <div class="hero-float hero-float-1" aria-hidden="true"></div>
+      <div class="hero-float hero-float-2" aria-hidden="true"></div>
+      <div class="hero-float hero-float-3" aria-hidden="true"></div>
 
       <!-- Slide 1 -->
       <div class="hero-slide active">
@@ -159,8 +177,7 @@
       <div
         style="position: absolute; top: -20px; left: -20px; font-size: 8rem; opacity: 0.15; font-family: Georgia, serif; line-height: 1; pointer-events: none; color: var(--accent-warm);">
         “</div>
-      <span style="position: relative; z-index: 2; font-style: italic; display: block; letter-spacing: 0.5px;">"Free The
-        Child's Potential and You Will Transform Him Into The World."</span>
+      <span class="ticker-run slogan-ticker-run" style="position: relative; z-index: 2; font-style: italic; display: inline-block; white-space: nowrap; letter-spacing: 0.5px;">"Free The Child's Potential and You Will Transform Him Into The World."</span>
     </div>
 
     <div class="about-grid">
@@ -664,6 +681,7 @@
           <div class="logo-text">
             <span class="logo-title">Kindergarten Saadia's</span>
             <span class="logo-subtitle">Montessori School</span>
+            <span class="logo-tagline footer-tagline"><span class="ticker-run">"Free The Child's Potential and You Will Transform Him Into The World."</span></span>
           </div>
         </div>
         <p class="footer-desc">Free The Child's Potential and you will Transform him into the world.</p>
@@ -766,6 +784,11 @@
       </div>
     </div>
   </footer>
+
+  <!-- Back to Top Button -->
+  <button id="backToTop" aria-label="Back to top">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"></polyline></svg>
+  </button>
 
   <script src="assets/js/app.js"></script>
 </body>

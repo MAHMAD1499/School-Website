@@ -321,6 +321,25 @@ header .container {
   white-space: nowrap;
 }
 
+.logo-tagline {
+  font-family: var(--font-heading);
+  font-size: 0.74rem;
+  font-style: italic;
+  font-weight: 600;
+  color: var(--accent-warm);
+  letter-spacing: 0.4px;
+  opacity: 1;
+  line-height: 1.5;
+  overflow: hidden;
+  max-width: 215px;
+  position: relative;
+}
+
+.footer-tagline {
+  color: var(--accent-warm);
+  opacity: 0.92;
+}
+
 .nav-menu {
   display: flex;
   align-items: center;
@@ -1393,4 +1412,539 @@ footer h4 {
   .inquiry-card {
     padding: 1.5rem;
   }
+}
+
+/* ============================================================
+   ENHANCEMENTS: Animations, Dynamic Effects & Micro-interactions
+   ============================================================ */
+
+/* ---- Preloader ---- */
+#preloader {
+  position: fixed;
+  inset: 0;
+  background: var(--primary-deep);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.8rem;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+#preloader.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.preloader-logo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  animation: preloaderPulse 1.6s ease-in-out infinite;
+}
+
+.preloader-logo img {
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.preloader-logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+
+.preloader-logo-text .logo-title {
+  color: white;
+  font-size: 1.25rem;
+}
+
+.preloader-logo-text .logo-subtitle {
+  color: var(--accent-warm);
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.preloader-bar {
+  width: 220px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.preloader-bar-inner {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent-warm), #fff6d6);
+  border-radius: var(--radius-full);
+  animation: preloaderFill 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes preloaderPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+@keyframes preloaderFill {
+  to { width: 100%; }
+}
+
+/* ---- Back to Top Button ---- */
+#backToTop {
+  position: fixed;
+  bottom: 2.5rem;
+  right: 2rem;
+  z-index: 500;
+  width: 50px;
+  height: 50px;
+  background: var(--primary-deep);
+  color: white;
+  border-radius: var(--radius-full);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 24px rgba(30, 58, 138, 0.4);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all var(--transition-normal);
+  pointer-events: none;
+}
+
+#backToTop.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+#backToTop:hover {
+  background: var(--accent-warm);
+  color: var(--primary-deep);
+  border-color: var(--accent-warm);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 28px rgba(245, 158, 11, 0.45);
+}
+
+/* ---- Scroll Reveal System ---- */
+[data-reveal] {
+  opacity: 0;
+  transition: opacity 0.75s ease, transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-reveal="up"] { transform: translateY(44px); }
+[data-reveal="left"] { transform: translateX(-44px); }
+[data-reveal="right"] { transform: translateX(44px); }
+[data-reveal="scale"] { transform: scale(0.9); }
+[data-reveal="fade"] { transform: none; }
+
+[data-reveal].revealed {
+  opacity: 1;
+  transform: none;
+}
+
+[data-reveal-delay="1"] { transition-delay: 0.1s; }
+[data-reveal-delay="2"] { transition-delay: 0.2s; }
+[data-reveal-delay="3"] { transition-delay: 0.3s; }
+[data-reveal-delay="4"] { transition-delay: 0.4s; }
+[data-reveal-delay="5"] { transition-delay: 0.5s; }
+[data-reveal-delay="6"] { transition-delay: 0.6s; }
+
+/* ---- Hero Floating Decorative Shapes ---- */
+.hero-float {
+  position: absolute;
+  border-radius: var(--radius-full);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hero-float-1 {
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.18), transparent 70%);
+  top: -80px;
+  right: 8%;
+  animation: heroFloat 7s ease-in-out infinite;
+}
+
+.hero-float-2 {
+  width: 140px;
+  height: 140px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.12), transparent 70%);
+  bottom: 18%;
+  right: 22%;
+  animation: heroFloat 5s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+.hero-float-3 {
+  width: 90px;
+  height: 90px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.22), transparent 70%);
+  top: 25%;
+  right: 4%;
+  animation: heroFloat 9s ease-in-out infinite;
+  animation-delay: 4s;
+}
+
+@keyframes heroFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-18px) rotate(6deg); }
+  66% { transform: translateY(-8px) rotate(-4deg); }
+}
+
+/* ---- Hero Ken Burns Zoom ---- */
+.hero-slide.active .hero-bg {
+  animation: kenBurns 9s ease-out forwards;
+}
+
+@keyframes kenBurns {
+  from { transform: scale(1.08); }
+  to { transform: scale(1.0); }
+}
+
+/* ---- Hero Text Entrance per Slide ---- */
+.hero-slide .hero-content h1,
+.hero-slide .hero-content p,
+.hero-slide .hero-ctas {
+  opacity: 0;
+}
+
+.hero-slide.active .hero-content h1 {
+  animation: slideInHero 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+}
+
+.hero-slide.active .hero-content p {
+  animation: slideInHero 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.28s forwards;
+}
+
+.hero-slide.active .hero-ctas {
+  animation: slideInHero 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.46s forwards;
+}
+
+@keyframes slideInHero {
+  from { opacity: 0; transform: translateX(-36px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* ---- Frosted Glass Header on Scroll ---- */
+header.scrolled {
+  background: rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 2px 24px rgba(30, 58, 138, 0.1) !important;
+}
+
+/* ---- Pulse ring on Apply Now CTA ---- */
+#headerCTA {
+  position: relative;
+}
+
+#headerCTA::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--accent-warm);
+  opacity: 0;
+  animation: ctaPulseRing 2.8s ease-out infinite;
+}
+
+@keyframes ctaPulseRing {
+  0% { opacity: 0.7; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.5); }
+}
+
+/* ---- Slogan Banner Breathing Glow ---- */
+.slogan-banner {
+  animation: sloganBreath 4.5s ease-in-out infinite;
+}
+
+@keyframes sloganBreath {
+  0%, 100% { box-shadow: var(--shadow-premium); }
+  50% {
+    box-shadow: 0 20px 50px rgba(245, 158, 11, 0.22),
+                0 10px 20px rgba(30, 58, 138, 0.1);
+  }
+}
+
+/* ---- Enhanced Program Cards ---- */
+.program-card {
+  position: relative;
+}
+
+.program-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-lg);
+  border: 2px solid transparent;
+  transition: border-color var(--transition-normal);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.program-card:hover::before {
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.program-card:hover {
+  transform: translateY(-12px);
+  box-shadow: 0 24px 48px rgba(30, 58, 138, 0.14);
+}
+
+/* ---- About Feature Items micro-interaction ---- */
+.about-feat-item {
+  transition: transform var(--transition-normal);
+}
+
+.about-feat-item:hover {
+  transform: translateX(6px);
+}
+
+.about-feat-icon {
+  transition: all var(--transition-normal);
+}
+
+.about-feat-item:hover .about-feat-icon {
+  background-color: var(--primary-deep);
+  color: white;
+  transform: scale(1.15) rotate(-8deg);
+}
+
+/* ---- Stats glass pill enhancement ---- */
+.stat-item {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
+  border-radius: var(--radius-md);
+  padding: 2.2rem 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-item::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(245,158,11,0.06) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+}
+
+.stat-item:hover {
+  background: rgba(255, 255, 255, 0.11);
+  transform: translateY(-8px);
+  border-color: rgba(245, 158, 11, 0.5);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.2);
+}
+
+.stat-item:hover::after { opacity: 1; }
+
+/* ---- Admissions Step Items ---- */
+.step-item {
+  transition: transform var(--transition-normal);
+}
+
+.step-item:hover {
+  transform: translateX(8px);
+}
+
+.step-num {
+  border: 2px solid var(--primary-light);
+  transition: all var(--transition-normal);
+  font-size: 1.05rem;
+  box-shadow: 0 4px 12px rgba(30, 58, 138, 0.15);
+}
+
+.step-item:hover .step-num {
+  background-color: var(--primary-deep);
+  color: white;
+  transform: scale(1.1);
+  box-shadow: 0 6px 18px rgba(30, 58, 138, 0.3);
+}
+
+/* ---- Form step slide animation ---- */
+@keyframes formStepIn {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.form-step.active {
+  animation: formStepIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* ---- Form control enhanced focus ---- */
+.form-control {
+  transition: border-color var(--transition-fast),
+              box-shadow var(--transition-fast),
+              background-color var(--transition-fast),
+              transform var(--transition-fast);
+}
+
+.form-control:focus {
+  transform: translateY(-1px);
+}
+
+/* ---- Gallery Items smooth filter ---- */
+.gallery-item {
+  transition: opacity 0.4s ease,
+              transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow var(--transition-normal);
+}
+
+.gallery-item.filter-hidden {
+  opacity: 0 !important;
+  transform: scale(0.82) !important;
+  pointer-events: none;
+}
+
+.gallery-item svg,
+.gallery-item img {
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  width: 100%;
+  height: 100%;
+}
+
+.gallery-item:hover svg,
+.gallery-item:hover img {
+  transform: scale(1.08);
+}
+
+.gallery-item:hover {
+  box-shadow: 0 16px 40px rgba(30, 58, 138, 0.2);
+}
+
+/* ---- Gallery overlay enhanced ---- */
+.gallery-overlay h4,
+.gallery-overlay p {
+  transform: translateY(8px);
+  transition: transform var(--transition-normal);
+}
+
+.gallery-item:hover .gallery-overlay h4,
+.gallery-item:hover .gallery-overlay p {
+  transform: translateY(0);
+}
+
+/* ---- Filter button active state ---- */
+.filter-btn {
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.filter-btn:active {
+  transform: scale(0.95);
+}
+
+/* ---- Footer links arrow slide ---- */
+.footer-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  position: relative;
+  padding-left: 0;
+  transition: all var(--transition-fast);
+}
+
+.footer-links a::before {
+  content: '→';
+  font-size: 0.85rem;
+  color: var(--accent-warm);
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all var(--transition-fast);
+  margin-right: 0;
+}
+
+.footer-links a:hover::before {
+  opacity: 1;
+  transform: translateX(0);
+  margin-right: 6px;
+}
+
+/* ---- Newsletter button success state ---- */
+.newsletter-form button {
+  transition: all var(--transition-normal);
+}
+
+/* ---- Scroll progress bar (top of page) ---- */
+#scrollProgress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--primary-deep), var(--accent-warm));
+  z-index: 9998;
+  transition: width 0.1s linear;
+  border-radius: 0 2px 2px 0;
+}
+
+/* ---- Mobile nav enhanced ---- */
+@media (max-width: 1100px) {
+  .nav-menu {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background-color: rgba(255, 255, 255, 0.97) !important;
+  }
+
+  .nav-link {
+    font-size: 1.2rem;
+    padding: 0.75rem 2rem;
+    width: 100%;
+    text-align: center;
+    border-radius: var(--radius-sm);
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+  }
+
+  .nav-link:hover {
+    background-color: var(--primary-bg);
+  }
+
+  #backToTop {
+    bottom: 1.5rem;
+    right: 1.2rem;
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* ============================================================
+   NEWS TICKER / MARQUEE — Scroll like a headline
+   ============================================================ */
+
+/* The scrolling text span */
+.ticker-run {
+  display: inline-block;
+  white-space: nowrap;
+  will-change: transform;
+  animation: tickerRoll 12s linear infinite;
+}
+
+/* Slogan banner variant — slower so the longer text is readable */
+.slogan-ticker-run {
+  animation-name: tickerRoll;
+  animation-duration: 20s;
+}
+
+/* Start off-screen right (100vw), end off-screen left (-110% of own width) */
+@keyframes tickerRoll {
+  0%   { transform: translateX(100vw); }
+  100% { transform: translateX(-110%); }
+}
+
+/* Slogan banner needs overflow:hidden and left-align so ticker works */
+.slogan-banner {
+  overflow: hidden !important;
+  text-align: left !important;
 }
