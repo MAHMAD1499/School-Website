@@ -77,14 +77,6 @@
         </div>
       </div>
 
-      <!-- My Profile Card -->
-      <div class="card mt-3">
-        <div class="card-header">
-          <h2 class="card-title">👤 My Profile</h2>
-        </div>
-        <div id="studentProfile" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.75rem;"></div>
-      </div>
-
     </div>
     <div class="portal-footer">© 2026 Kindergarten Saadia's Montessori School. All rights reserved.</div>
   </div>
@@ -108,20 +100,7 @@
     document.getElementById('studentClass').textContent = '🏫 ' + student.class;
     document.getElementById('studentRoll').textContent = '🎫 Roll No: ' + student.rollNo;
 
-    // Profile
-    const profileFields = [
-      ['Name', student.name],
-      ['Email', student.email],
-      ['Class', student.class],
-      ['Roll Number', student.rollNo],
-      ['Parent/Guardian', student.parentName],
-    ];
-    document.getElementById('studentProfile').innerHTML = profileFields.map(([label, val]) => `
-      <div style="background:var(--primary-bg);padding:0.75rem;border-radius:var(--radius-sm);">
-        <p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.2rem;">${label}</p>
-        <p style="font-weight:600;font-size:0.9rem;">${val}</p>
-      </div>
-    `).join('');
+
 
     // News
     const news = DB.get('news').slice(0, 3);

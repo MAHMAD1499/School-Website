@@ -161,6 +161,14 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; }
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  transition: margin-left var(--transition);
+}
+
+body.sidebar-closed .portal-sidebar {
+  transform: translateX(-100%);
+}
+body.sidebar-closed .portal-main {
+  margin-left: 0;
 }
 
 /* ===== TOPBAR ===== */
@@ -210,7 +218,7 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; }
 }
 
 .menu-toggle {
-  display: none;
+  display: flex;
   background: none;
   border: none;
   cursor: pointer;
@@ -852,7 +860,6 @@ tbody tr:hover { background: var(--primary-bg); }
   .portal-sidebar.open { transform: translateX(0); }
   .sidebar-overlay.open { display: block; }
   .portal-main { margin-left: 0; }
-  .menu-toggle { display: flex; }
   .gallery-grid { columns: 2; }
   .contact-grid { grid-template-columns: 1fr; }
   .form-grid { grid-template-columns: 1fr; }
