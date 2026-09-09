@@ -73,11 +73,10 @@
   </div>
 
   <!-- Header -->
-  <!-- Header -->
   <header id="header">
     <div class="header-container">
-      <!-- Logo Group -->
-      <a href="#" class="logo" aria-label="Saadia's Montessori Home">
+      <!-- Logo -->
+      <a href="index.html" class="logo" aria-label="KSM Home">
         <img src="assets/images/logo.svg" alt="KSM Haripur Logo" />
         <div class="logo-text">
           <span class="logo-title">Kindergarten Saadia's</span>
@@ -85,27 +84,31 @@
         </div>
       </a>
 
-      <!-- Navigation Links -->
+      <!-- Desktop Navigation Links -->
       <nav class="nav-menu" id="navMenu">
-        <a href="#hero" class="nav-link active">Home</a>
-        <a href="#programs" class="nav-link">Programs</a>
-        <a href="#admissions" class="nav-link">Admissions</a>
-        <a href="#gallery" class="nav-link">Gallery & Events</a>
+        <a href="index.html" class="nav-link active">Home</a>
+        <a href="index.html#programs" class="nav-link">Programs</a>
+        <a href="index.html#admissions" class="nav-link">Admissions</a>
+        <a href="index.html#gallery" class="nav-link">Gallery & Events</a>
         <a href="about.html" class="nav-link">About Us</a>
         <a href="contact.html" class="nav-link">Contact</a>
+
+        <!-- Mobile CTA Buttons (Inside nav-menu ONLY) -->
+        <div class="mobile-menu-buttons">
+          <a href="portal/index.html" class="btn btn-accent">Portal</a>
+          <a href="index.html#admissions" class="btn btn-primary">Apply Now</a>
+        </div>
       </nav>
 
-      <!-- Right Action Buttons -->
+      <!-- Desktop Header Buttons (Outside nav-menu) -->
       <div class="header-buttons">
         <a href="portal/index.html" class="btn btn-accent" id="portalBtn">Portal</a>
-        <a href="#admissions" class="btn btn-primary" id="headerCTA">Apply Now</a>
+        <a href="index.html#admissions" class="btn btn-primary" id="headerCTA">Apply Now</a>
       </div>
 
       <!-- Mobile Toggle Button -->
       <button class="nav-toggle" id="navToggle" aria-label="Toggle Navigation">
-        <span></span>
-        <span></span>
-        <span></span>
+        <span></span><span></span><span></span>
       </button>
     </div>
   </header>

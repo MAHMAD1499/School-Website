@@ -4,49 +4,66 @@ document.addEventListener('DOMContentLoaded', () => {
   const preloader = document.getElementById('preloader');
 
   if (preloader) {
-    // Hide preloader when the page has fully loaded
     window.addEventListener('load', () => {
       setTimeout(() => {
         preloader.style.opacity = '0';
         preloader.style.visibility = 'hidden';
         document.body.classList.remove('preloader-active');
-      }, 500); // 500ms delay to ensure the animation is seen
+      }, 500);
     });
 
-    // Show preloader when clicking on links that navigate away
     const allLinks = document.querySelectorAll('a');
     allLinks.forEach(link => {
       link.addEventListener('click', function (e) {
         const target = this.getAttribute('href');
-
-        // Only trigger preloader for external or actual page transitions, ignore # anchors or empty links
         if (target && target !== '#' && !target.startsWith('#') && !target.startsWith('javascript')) {
-          // Check if it's not opening in a new tab
           if (this.target !== '_blank') {
             e.preventDefault();
             document.body.classList.add('preloader-active');
             preloader.style.opacity = '1';
             preloader.style.visibility = 'visible';
 
-            // Navigate after animation delay
             setTimeout(() => {
               window.location.href = target;
-            }, 800); // Wait 800ms for preloader to show
+            }, 800);
           }
         }
       });
     });
   }
 
-  // 1. Sticky Header
+  // 1. Inverted Scroll Hide/Show Header Logic
   const header = document.getElementById('header');
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 50) {
+  let lastScrollY = window.scrollY;
+
+  if (header) {
+    window.addEventListener('scroll', () => {
+      const currentScrollY = window.scrollY;
+
+      // Reset to default at top of page
+      if (currentScrollY <= 50) {
+        header.classList.remove('header-hidden');
+        header.classList.remove('scrolled');
+        lastScrollY = currentScrollY;
+        return;
+      }
+
+      // Add drop shadow once scrolled past top bar
       header.classList.add('scrolled');
-    } else {
-      header.classList.remove('scrolled');
-    }
-  });
+
+      // Check scroll direction (5px threshold prevents jittering)
+      if (Math.abs(currentScrollY - lastScrollY) > 5) {
+        if (currentScrollY > lastScrollY) {
+          // Scrolling DOWN -> Re-appear (Show Header)
+          header.classList.remove('header-hidden');
+        } else {
+          // Scrolling UP -> Hide Header
+          header.classList.add('header-hidden');
+        }
+        lastScrollY = currentScrollY;
+      }
+    });
+  }
 
   // 2. Mobile Navigation Menu Toggle
   const navToggle = document.getElementById('navToggle');
@@ -57,7 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
       navMenu.classList.toggle('active');
       navToggle.classList.toggle('active');
 
-      // Animate hamburger lines
       const spans = navToggle.querySelectorAll('span');
       if (navToggle.classList.contains('active')) {
         spans[0].style.transform = 'rotate(45deg) translate(6px, 6px)';
@@ -70,7 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Close menu when clicking navigation links
     navMenu.querySelectorAll('.nav-link').forEach(link => {
       link.addEventListener('click', () => {
         navMenu.classList.remove('active');
@@ -83,15 +98,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Active Link on Scroll
-  const sections = document.querySelectorAll('section');
+  // 3. Fixed Active Link Highlighting on Scroll
+  const sections = document.querySelectorAll('section[id]');
   const navLinks = document.querySelectorAll('.nav-link');
 
   window.addEventListener('scroll', () => {
     let current = '';
     sections.forEach(section => {
       const sectionTop = section.offsetTop;
-      const sectionHeight = section.clientHeight;
       if (window.scrollY >= (sectionTop - 150)) {
         current = section.getAttribute('id');
       }
@@ -99,13 +113,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     navLinks.forEach(link => {
       link.classList.remove('active');
-      if (link.getAttribute('href').includes(current)) {
+      const href = link.getAttribute('href');
+      if (current && href && href.includes(`#${current}`)) {
         link.classList.add('active');
       }
     });
   });
 
-  // 3. Hero Slider / Slideshow
+  // 4. Hero Slider / Slideshow
   const slides = document.querySelectorAll('.hero-slide');
   const dotsContainer = document.getElementById('sliderDots');
   const prevBtn = document.getElementById('sliderPrev');
@@ -113,8 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentSlide = 0;
   let slideInterval;
 
-  if (slides.length > 0) {
-    // Generate Dots
+  if (slides.length > 0 && dotsContainer) {
     slides.forEach((_, idx) => {
       const dot = document.createElement('div');
       dot.classList.add('slider-dot');
@@ -129,10 +143,10 @@ document.addEventListener('DOMContentLoaded', () => {
       slides.forEach((slide, idx) => {
         if (idx === currentSlide) {
           slide.classList.add('active');
-          dots[idx].classList.add('active');
+          if (dots[idx]) dots[idx].classList.add('active');
         } else {
           slide.classList.remove('active');
-          dots[idx].classList.remove('active');
+          if (dots[idx]) dots[idx].classList.remove('active');
         }
       });
     }
@@ -168,14 +182,14 @@ document.addEventListener('DOMContentLoaded', () => {
     startInterval();
   }
 
-  // 4. Stats Counter Animation using Intersection Observer
+  // 5. Stats Counter Animation
   const statsCounters = document.querySelectorAll('.stat-counter');
 
   if (statsCounters.length > 0) {
     const startCounterAnimation = (element) => {
       const target = +element.getAttribute('data-target');
-      const duration = 2000; // Animation duration in ms
-      const increment = target / (duration / 16); // ~60fps
+      const duration = 2000;
+      const increment = target / (duration / 16);
       let count = 0;
 
       const updateCount = () => {
@@ -195,15 +209,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (entry.isIntersecting) {
           startCounterAnimation(entry.target);
         } else {
-          entry.target.innerText = '0'; // Reset when out of view to re-trigger
+          entry.target.innerText = '0';
         }
       });
     }, { threshold: 0.5 });
 
     statsCounters.forEach(counter => statsObserver.observe(counter));
   }
-
-
 
   // 6. News, Events & Gallery Filtering
   const filterButtons = document.querySelectorAll('.filter-btn');
@@ -212,7 +224,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (filterButtons.length > 0 && galleryItems.length > 0) {
     filterButtons.forEach(btn => {
       btn.addEventListener('click', () => {
-        // Toggle Active state on buttons
         filterButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
@@ -238,9 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-
-
-  // 8. Newsletter Form Submit
+  // 7. Newsletter Form Submit
   const newsletterForm = document.getElementById('newsletterForm');
   if (newsletterForm) {
     newsletterForm.addEventListener('submit', (e) => {
@@ -251,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 9. Scroll Animations
+  // 8. Scroll Animations
   const scrollElements = document.querySelectorAll('.section-title, .section-subtitle, .about-image-wrapper, .about-info, .program-card, .stat-item, .admissions-info, .inquiry-card, .gallery-item, .mission-card, .animate-on-scroll');
 
   scrollElements.forEach((el) => {
@@ -267,33 +276,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (entry.isIntersecting) {
         entry.target.classList.add('show-anim');
       } else {
-        entry.target.classList.remove('show-anim'); // Remove class when scrolled out to trigger again
+        entry.target.classList.remove('show-anim');
       }
     });
   }, { threshold: 0.12 });
 
   scrollElements.forEach(el => scrollObserver.observe(el));
   slideElements.forEach(el => scrollObserver.observe(el));
-});
-
-// Auto-hide header on scroll down, reveal on scroll up
-let lastScrollY = window.scrollY;
-const headerElement = document.getElementById('header');
-
-window.addEventListener('scroll', () => {
-  const currentScrollY = window.scrollY;
-
-  // Don't hide header if mobile menu is actively open
-  const navMenu = document.getElementById('navMenu');
-  if (navMenu && navMenu.classList.contains('active')) return;
-
-  if (currentScrollY > lastScrollY && currentScrollY > 100) {
-    // Scrolling down & past top threshold -> Hide header
-    headerElement.classList.add('nav-hidden');
-  } else {
-    // Scrolling up -> Show header
-    headerElement.classList.remove('nav-hidden');
-  }
-
-  lastScrollY = currentScrollY;
 });

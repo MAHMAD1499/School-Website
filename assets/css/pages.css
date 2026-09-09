@@ -603,3 +603,62 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* ===== SUBPAGES MOBILE RESPONSIVE FIXES ===== */
+
+@media (max-width: 768px) {
+
+    /* Hero Banner */
+    .page-hero {
+        padding: 3rem 1rem;
+    }
+
+    .page-hero h1 {
+        font-size: 2rem;
+    }
+
+    .page-hero p {
+        font-size: 0.95rem;
+    }
+
+    /* About Page Layout */
+    .about-page-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .values-grid,
+    .team-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Contact Page Layout */
+    .contact-page-wrapper {
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .contact-cards-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .contact-main-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .contact-form-card {
+        padding: 1.5rem;
+    }
+
+    .contact-form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .faq-grid {
+        grid-template-columns: 1fr;
+    }
+}

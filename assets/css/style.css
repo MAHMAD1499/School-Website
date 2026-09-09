@@ -1,3 +1,10 @@
+html,
+body {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
 /* Import Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap');
 
@@ -263,37 +270,76 @@ textarea {
   transform: scale(1.1);
 }
 
-/* HEADER & NAVBAR */
 header {
   background-color: var(--bg-card);
-  box-shadow: var(--shadow-sm);
   position: sticky;
   top: 0;
   z-index: 1000;
-  transition: transform 0.3s ease-in-out, box-shadow var(--transition-normal);
-  /* Smooth slide animation */
   width: 100%;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+  transform: translateY(0);
+  /* Visible state */
 }
 
-/* Class added via JavaScript to hide header on scroll down */
-header.nav-hidden {
+header.header-hidden {
   transform: translateY(-100%);
+  /* Hidden state */
 }
 
 header.scrolled {
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
+/* Header Container Alignment */
 .header-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: nowrap;
-  width: 100%;
   max-width: 1300px;
   margin: 0 auto;
   padding: 10px 20px;
-  box-sizing: border-box;
+  height: 80px;
+  /* Locks header height */
+}
+
+/* Logo Wrapper */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+/* FIX: Restrict the Logo Image Dimensions */
+.logo img {
+  width: 55px;
+  /* Locks logo width on desktop */
+  height: 55px;
+  /* Locks logo height on desktop */
+  object-fit: contain;
+}
+
+/* Logo Text Branding */
+.logo-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.logo-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--primary-deep);
+  line-height: 1.2;
+}
+
+.logo-subtitle {
+  font-size: 0.75rem;
+  color: var(--accent-warm);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
 }
 
 .header-buttons {
@@ -303,100 +349,93 @@ header.scrolled {
   flex-shrink: 0;
 }
 
-.logo-container {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  /* Creates clean space between logo image and text */
-  flex-shrink: 0;
-  /* Prevents logo from shrinking when viewport resizes */
+/* Hide mobile buttons on desktop */
+.mobile-menu-buttons {
+  display: none;
 }
 
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 0rem;
-  text-decoration: none;
-}
-
-.logo svg,
-.logo img {
-  width: 90px;
-  height: 90px;
-  object-fit: contain;
-  transition: var(--transition-normal);
-}
-
-.logo-text {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.25;
-}
-
-.logo-title {
-  font-family: var(--font-heading);
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--primary-deep);
-  white-space: nowrap;
-}
-
-.logo-subtitle {
-  font-family: var(--font-heading);
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--accent-warm);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-nav,
 .nav-menu {
   display: flex;
   align-items: center;
   gap: 20px;
-  /* Adjust spacing between menu items */
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
+/* ===== MOBILE MEDIA QUERY (max-width: 1100px) ===== */
+@media (max-width: 1100px) {
+  .header-buttons {
+    display: none;
+    /* Hide desktop buttons on mobile */
+  }
+
+  .mobile-menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    margin-top: 1rem;
+  }
+
+  .mobile-menu-buttons .btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .nav-menu {
+    position: fixed;
+    top: 65px;
+    left: -100%;
+    width: 100%;
+    height: calc(100vh - 65px);
+    background-color: var(--bg-card);
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1.5rem;
+    gap: 1.25rem;
+    transition: left 0.35s ease;
+    z-index: 999;
+  }
+
+  .nav-menu.active {
+    left: 0;
+  }
+}
+
+/* Base Navigation Link Styling */
 .nav-link {
-  white-space: nowrap;
-  /* Prevents "Contact Us" or "Gallery & Events" from wrapping poorly */
-  font-family: var(--font-heading);
-  font-weight: 600;
-  font-size: 1rem;
-  color: var(--text-dark);
   position: relative;
-  padding: 0.5rem 0;
-  display: inline-block;
-  transition: transform var(--transition-normal), color var(--transition-normal), text-shadow var(--transition-normal);
-}
-
-.nav-link:hover,
-.nav-link.active {
   color: var(--primary-deep);
-  transform: translateY(-2px);
-  text-shadow: 0 4px 8px rgba(30, 58, 138, 0.15);
+  font-weight: 600;
+  text-decoration: none;
+  padding: 0.5rem 0;
+  transition: color 0.3s ease;
+  border-bottom: none !important;
+  /* Removes permanent underline border */
 }
 
+/* Animated Underline Bar */
 .nav-link::after {
   content: '';
   position: absolute;
-  bottom: -2px;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 0;
+  left: 0;
   width: 0;
-  height: 2px;
+  height: 3px;
   background-color: var(--accent-warm);
-  transition: width var(--transition-normal);
+  border-radius: 999px;
+  transition: width 0.3s ease;
 }
 
+/* Expand underline ONLY on hover or when active */
 .nav-link:hover::after,
 .nav-link.active::after {
   width: 100%;
+}
+
+.nav-link:hover {
+  color: var(--primary-light);
 }
 
 .nav-actions {
@@ -1391,6 +1430,28 @@ footer h4 {
 }
 
 @media (max-width: 768px) {
+
+  /* Fix Social Feed Header Layout on Mobile */
+  .social-feed-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.75rem !important;
+  }
+
+  .social-feed-brand {
+    font-size: 0.85rem !important;
+    word-break: break-word !important;
+    /* Prevents long handle overflow */
+  }
+
+  .social-feed-header .btn {
+    width: 100% !important;
+    text-align: center !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+    padding: 0.5rem 1rem !important;
+  }
+
   .hero {
     height: 480px;
   }
@@ -2190,4 +2251,237 @@ body.preloader-active {
   width: 100%;
   height: 100%;
   border: 0;
+}
+
+/* ===== GLOBAL MOBILE RESPONSIVE FIXES ===== */
+
+/* Prevent horizontal overflow on mobile */
+html,
+body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Header & Logo Mobile Adjustment */
+@media (max-width: 1100px) {
+
+  /* 1. Header Layout Adjustments */
+  .header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Hide inline header buttons on tablet/mobile */
+  .header-buttons {
+    display: none;
+  }
+
+  /* Reduce logo scale for small viewports */
+  .logo img {
+    width: 45px;
+    height: 45px;
+  }
+
+  .logo-title {
+    font-size: 0.95rem;
+    white-space: normal;
+  }
+
+  .logo-subtitle {
+    font-size: 0.65rem;
+  }
+
+  /* Enable Hamburger Toggle Button */
+  .nav-toggle {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 28px;
+    height: 20px;
+    cursor: pointer;
+    z-index: 1001;
+  }
+
+  .nav-toggle span {
+    display: block;
+    height: 3px;
+    width: 100%;
+    background-color: var(--primary-deep);
+    border-radius: 999px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  /* Animated Hamburger Icon Transform to X */
+  .nav-toggle.active span:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+  }
+
+  .nav-toggle.active span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .nav-toggle.active span:nth-child(3) {
+    transform: translateY(-9px) rotate(-45deg);
+  }
+
+  /* 2. Fullscreen Slide-in Mobile Drawer */
+  .nav-menu {
+    position: fixed;
+    top: 65px;
+    left: -100%;
+    width: 100%;
+    height: calc(100vh - 65px);
+    background-color: var(--bg-card);
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 2.5rem 1.5rem;
+    gap: 1.5rem;
+    box-shadow: var(--shadow-lg);
+    transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 999;
+    overflow-y: auto;
+    box-sizing: border-box;
+  }
+
+  .nav-menu.active {
+    left: 0;
+  }
+
+  .nav-link {
+    font-size: 1.1rem;
+    width: 100%;
+    text-align: center;
+    padding: 0.75rem 0;
+  }
+}
+
+/* Hero Section scaling */
+.hero {
+  height: 450px;
+}
+
+.hero h1 {
+  font-size: 2rem;
+  line-height: 1.2;
+}
+
+.hero p {
+  font-size: 0.95rem;
+}
+
+.hero-ctas {
+  flex-direction: column;
+  width: 100%;
+}
+
+.hero-ctas .btn {
+  width: 100%;
+  text-align: center;
+}
+
+/* ===== COMPREHENSIVE MOBILE RESPONSIVE FIXES ===== */
+@media (max-width: 768px) {
+
+  /* 1. Fix SVG Vector & Image Scaling inside Cards & Gallery */
+  svg,
+  img {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  .gallery-item svg,
+  .program-img-wrapper svg,
+  .about-img {
+    width: 100% !important;
+    height: 180px !important;
+    object-fit: cover;
+  }
+
+  /* 2. Gallery Filter Tabs Horizontal Scroll */
+  .gallery-filters {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    justify-content: flex-start !important;
+    padding-bottom: 0.5rem;
+    gap: 0.5rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .filter-btn {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+    padding: 0.5rem 1rem !important;
+    font-size: 0.85rem !important;
+  }
+
+  .gallery-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem !important;
+  }
+
+  /* 3. Fix 'Thrive Together' (Mission Cards Grid) Stacking */
+  .mission-cards-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+
+  .mission-card {
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  .mission-card-img {
+    height: 120px !important;
+  }
+
+  /* 4. Fix Events Calendar & Social Feed Side-by-Side Column Overlap */
+  .calendar-social-grid {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+
+  .events-calendar,
+  .social-feed-column {
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  .event-item {
+    flex-direction: row !important;
+    gap: 1rem !important;
+    align-items: flex-start !important;
+  }
+
+  .event-info h4 {
+    font-size: 0.95rem !important;
+  }
+
+  .event-info p {
+    font-size: 0.82rem !important;
+  }
+
+  .social-photo-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+
+  /* 5. Section Paddings for Small Screens */
+  .section {
+    padding: 2.5rem 1rem !important;
+  }
+
+  .section-title {
+    font-size: 1.6rem !important;
+  }
+
+  .section-subtitle {
+    font-size: 0.9rem !important;
+  }
 }
