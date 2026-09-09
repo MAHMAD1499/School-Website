@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Events — KSM Student Portal">
+  <title>Events — Student Portal</title>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+<div class="portal-wrapper">
+  <div class="portal-main">
+    <div class="portal-topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menuToggle">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <span class="topbar-title">Events</span>
+      </div>
+      <div class="topbar-right">
+        <span id="studentNameLabel" style="font-size:0.82rem;color:var(--text-medium);"></span>
+        <div class="topbar-avatar" style="background:var(--accent-warm);color:var(--primary-deep);" id="studentAvatar">S</div>
+        <button class="btn btn-sm btn-outline" onclick="Auth.logoutStudent();window.location.href='login.html'">Logout</button>
+      </div>
+    </div>
+
+    <div class="portal-content fade-up">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1 class="page-title">📅 School Events</h1>
+          <p class="page-subtitle">Upcoming activities, celebrations, and important dates</p>
+        </div>
+      </div>
+
+      <!-- Filter tabs -->
+      <div style="display:flex;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+        <button class="btn btn-primary btn-sm filter-tab" data-cat="">All Events</button>
+        <button class="btn btn-outline btn-sm filter-tab" data-cat="Sports">Sports</button>
+        <button class="btn btn-outline btn-sm filter-tab" data-cat="Academic">Academic</button>
+        <button class="btn btn-outline btn-sm filter-tab" data-cat="Meeting">Meeting</button>
+        <button class="btn btn-outline btn-sm filter-tab" data-cat="Cultural">Cultural</button>
+      </div>
+
+      <div id="eventsList" style="display:flex;flex-direction:column;gap:1rem;"></div>
+    </div>
+    <div class="portal-footer">© 2026 Kindergarten Saadia's Montessori School. All rights reserved.</div>
+  </div>
+</div>
+
+<!-- Event Detail Modal -->
+<div class="modal-overlay" id="eventModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="eventModalTitle"></h2>
+      <button class="modal-close" data-modal-close><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0.75rem;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+        <div style="background:var(--primary-bg);padding:0.75rem;border-radius:var(--radius-sm);"><p style="font-size:0.8rem;color:var(--text-medium);">Date</p><p style="font-weight:600;" id="eventModalDate"></p></div>
+        <div style="background:var(--primary-bg);padding:0.75rem;border-radius:var(--radius-sm);"><p style="font-size:0.8rem;color:var(--text-medium);">Time</p><p style="font-weight:600;" id="eventModalTime"></p></div>
+        <div style="background:var(--primary-bg);padding:0.75rem;border-radius:var(--radius-sm);"><p style="font-size:0.8rem;color:var(--text-medium);">Location</p><p style="font-weight:600;" id="eventModalLocation"></p></div>
+        <div style="background:var(--primary-bg);padding:0.75rem;border-radius:var(--radius-sm);"><p style="font-size:0.8rem;color:var(--text-medium);">Category</p><p style="font-weight:600;" id="eventModalCategory"></p></div>
+      </div>
+      <p id="eventModalDesc" style="font-size:0.92rem;color:var(--text-medium);line-height:1.7;"></p>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/portal.js"></script>
+<script src="../assets/sidebar.js"></script>
+<script>
+  let activeCategory = '';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const student = Auth.getStudent();
+    if (!student) { window.location.href = 'login.html'; return; }
+    document.getElementById('studentNameLabel').textContent = student.name;
+    document.getElementById('studentAvatar').textContent = student.name.charAt(0).toUpperCase();
+    buildSidebar('student');
+    renderEvents();
+
+    document.querySelectorAll('.filter-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-tab').forEach(b => { b.classList.remove('btn-primary'); b.classList.add('btn-outline'); });
+        btn.classList.add('btn-primary'); btn.classList.remove('btn-outline');
+        activeCategory = btn.dataset.cat;
+        renderEvents();
+      });
+    });
+  });
+
+  function renderEvents() {
+    let events = DB.get('events');
+    if (activeCategory) events = events.filter(e => e.category === activeCategory);
+
+    const list = document.getElementById('eventsList');
+    if (events.length === 0) {
+      list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📅</div><div class="empty-state-title">No events found</div><p class="empty-state-text">No events in this category yet.</p></div>`;
+      return;
+    }
+
+    const catColors = { Sports:'badge-green', Academic:'badge-blue', Meeting:'badge-purple', Cultural:'badge-gold' };
+
+    list.innerHTML = events.map(e => `
+      <div class="event-card">
+        <div class="event-date-box">
+          <span class="event-day">${getDay(e.date)}</span>
+          <span class="event-month">${getMonthName(e.date)}</span>
+        </div>
+        <div class="event-info">
+          <div class="event-title">${e.title}</div>
+          <div class="event-meta">📍 ${e.location || 'TBA'} &nbsp;•&nbsp; 🕐 ${e.time || 'TBA'}</div>
+          <div class="event-desc">${e.description ? e.description.substring(0,100)+'...' : ''}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem;">
+          <span class="badge ${catColors[e.category] || 'badge-blue'}">${e.category || 'Event'}</span>
+          <button class="btn btn-sm btn-outline" onclick="openEvent('${e.id}')">Details</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function openEvent(id) {
+    const event = DB.get('events').find(e => e.id === id);
+    if (!event) return;
+    document.getElementById('eventModalTitle').textContent = event.title;
+    document.getElementById('eventModalDate').textContent = formatDate(event.date);
+    document.getElementById('eventModalTime').textContent = event.time || 'TBA';
+    document.getElementById('eventModalLocation').textContent = event.location || 'TBA';
+    document.getElementById('eventModalCategory').textContent = event.category || 'General';
+    document.getElementById('eventModalDesc').textContent = event.description || '';
+    openModal('eventModal');
+  }
+</script>
+</body>
+</html>

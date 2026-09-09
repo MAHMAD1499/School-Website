@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Admin Login — KSM School Portal">
+  <title>Admin Login — KSM Portal</title>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="auth-logo-img" style="width:60px;height:60px;background:linear-gradient(135deg,var(--primary-deep),var(--primary-light));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto 0.75rem;">🔐</div>
+      <div class="auth-logo-title">KSM Admin Panel</div>
+      <div class="auth-logo-sub">Kindergarten Saadia's Montessori School</div>
+    </div>
+
+    <h1 class="auth-title">Administrator Login</h1>
+    <p class="auth-subtitle">Sign in to manage school portal content</p>
+
+    <div class="demo-creds">
+      <strong>Demo Credentials:</strong><br>
+      Username: <strong>admin</strong> &nbsp;|&nbsp; Password: <strong>admin123</strong>
+    </div>
+
+    <form id="loginForm" onsubmit="doLogin(event)">
+      <div class="form-group">
+        <label class="form-label" for="username">Username</label>
+        <input type="text" id="username" class="form-control" placeholder="Enter username" autocomplete="username" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <div style="position:relative;">
+          <input type="password" id="password" class="form-control" placeholder="Enter password" autocomplete="current-password" required>
+          <button type="button" onclick="togglePwd()" style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-medium);font-size:0.85rem;">Show</button>
+        </div>
+      </div>
+
+      <div id="loginError" class="hidden" style="background:#FEE2E2;color:#991B1B;padding:0.75rem;border-radius:var(--radius-sm);font-size:0.85rem;margin-bottom:1rem;text-align:center;">
+        Invalid username or password. Please try again.
+      </div>
+
+      <button type="submit" class="btn btn-primary w-full" style="margin-top:0.5rem;">🔓 Login to Admin Panel</button>
+    </form>
+
+    <div style="text-align:center;margin-top:1.5rem;">
+      <a href="../index.html" style="font-size:0.85rem;color:var(--text-medium);">← Back to Portal</a>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/portal.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    seedData();
+    if (Auth.isAdminLoggedIn()) {
+      window.location.href = 'dashboard.html';
+    }
+  });
+
+  function doLogin(e) {
+    e.preventDefault();
+    const user = document.getElementById('username').value.trim();
+    const pass = document.getElementById('password').value;
+    if (Auth.loginAdmin(user, pass)) {
+      showToast('Login successful! Redirecting...', 'success');
+      setTimeout(() => window.location.href = 'dashboard.html', 800);
+    } else {
+      document.getElementById('loginError').classList.remove('hidden');
+    }
+  }
+
+  function togglePwd() {
+    const p = document.getElementById('password');
+    p.type = p.type === 'password' ? 'text' : 'password';
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Admin Dashboard — KSM School Portal">
+  <title>Admin Dashboard — KSM Portal</title>
+  <link rel="stylesheet" href="../assets/portal.css">
+  <style>
+    .quick-action { display:flex;align-items:center;gap:0.75rem;padding:0.9rem 1rem;background:var(--primary-bg);border-radius:var(--radius-sm);text-decoration:none;color:var(--text-dark);transition:var(--transition);font-weight:500;font-size:0.9rem;border:1px solid rgba(59,130,246,0.15); }
+    .quick-action:hover { background:var(--primary-deep);color:white;transform:translateX(4px); }
+    .quick-action:hover .qa-icon { background:rgba(255,255,255,0.2); }
+    .qa-icon { width:36px;height:36px;background:var(--primary-deep);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;transition:var(--transition); }
+  </style>
+</head>
+<body>
+<div class="portal-wrapper">
+  <div class="portal-main">
+    <div class="portal-topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menuToggle">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <span class="topbar-title">Admin Dashboard</span>
+      </div>
+      <div class="topbar-right">
+        <span style="font-size:0.82rem;color:var(--text-medium);">Logged in as <strong>Admin</strong></span>
+        <div class="topbar-avatar" style="background:var(--accent-warm);color:var(--primary-deep);">A</div>
+        <button class="btn btn-sm btn-danger" onclick="doLogout()">Logout</button>
+      </div>
+    </div>
+
+    <div class="portal-content fade-up">
+      <!-- Welcome -->
+      <div style="background:linear-gradient(135deg,var(--primary-deep),#1a4fad);border-radius:var(--radius-lg);padding:1.75rem 2rem;color:white;margin-bottom:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+        <div>
+          <h1 style="color:white;font-size:1.5rem;margin-bottom:0.3rem;">Welcome, Administrator 👋</h1>
+          <p style="color:rgba(255,255,255,0.75);font-size:0.9rem;">Manage all school portal content from this dashboard.</p>
+        </div>
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+          <a href="../index.html" class="btn btn-outline" style="border-color:rgba(255,255,255,0.5);color:white;font-size:0.85rem;">View Portal</a>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid" id="adminStats"></div>
+
+      <!-- Quick Actions + Recent Activity -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:0.5rem;" class="admin-cols">
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">⚡ Quick Actions</h2></div>
+          <div style="display:flex;flex-direction:column;gap:0.5rem;">
+            <a href="teachers.html" class="quick-action"><div class="qa-icon">👨‍🏫</div>Manage Teachers</a>
+            <a href="gallery.html" class="quick-action"><div class="qa-icon">🖼️</div>Manage Gallery</a>
+            <a href="news.html" class="quick-action"><div class="qa-icon">📰</div>Manage News</a>
+            <a href="events.html" class="quick-action"><div class="qa-icon">📅</div>Manage Events</a>
+            <a href="admissions.html" class="quick-action"><div class="qa-icon">📝</div>View Admissions</a>
+            <a href="contacts.html" class="quick-action"><div class="qa-icon">✉️</div>Contact Messages</a>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">📋 Recent Admissions</h2></div>
+          <div id="recentAdmissions"></div>
+        </div>
+      </div>
+
+    </div>
+    <div class="portal-footer">© 2026 KSM Admin Panel. All rights reserved.</div>
+  </div>
+</div>
+
+<script src="../assets/portal.js"></script>
+<script src="../assets/sidebar.js"></script>
+<script>
+  buildSidebar('admin');
+
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!Auth.isAdminLoggedIn()) { window.location.href = 'login.html'; return; }
+
+    // Stats
+    const teachers = DB.get('teachers');
+    const gallery = DB.get('gallery');
+    const news = DB.get('news');
+    const events = DB.get('events');
+    const admissions = DB.get('admissions');
+    const contacts = DB.get('contacts');
+
+    document.getElementById('adminStats').innerHTML = `
+      <div class="stat-card"><div class="stat-icon blue"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="stat-info"><div class="stat-number">${teachers.length}</div><div class="stat-label">Teachers</div></div></div>
+      <div class="stat-card"><div class="stat-icon green"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div><div class="stat-info"><div class="stat-number">${gallery.length}</div><div class="stat-label">Gallery Photos</div></div></div>
+      <div class="stat-card"><div class="stat-icon gold"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div><div class="stat-info"><div class="stat-number">${news.length}</div><div class="stat-label">News Posts</div></div></div>
+      <div class="stat-card"><div class="stat-icon purple"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div class="stat-info"><div class="stat-number">${events.length}</div><div class="stat-label">Events</div></div></div>
+      <div class="stat-card"><div class="stat-icon teal"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="stat-info"><div class="stat-number">${admissions.length}</div><div class="stat-label">Applications</div></div></div>
+      <div class="stat-card"><div class="stat-icon red"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div class="stat-info"><div class="stat-number">${contacts.length}</div><div class="stat-label">Messages</div></div></div>
+    `;
+
+    // Recent admissions
+    const recent = admissions.slice(-5).reverse();
+    const admEl = document.getElementById('recentAdmissions');
+    if (recent.length === 0) {
+      admEl.innerHTML = '<div class="empty-state" style="padding:2rem;"><div class="empty-state-icon">📝</div><p>No admissions yet.</p></div>';
+    } else {
+      admEl.innerHTML = recent.map(a => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:0.65rem 0;border-bottom:1px solid var(--border-color);">
+          <div>
+            <p style="font-weight:600;font-size:0.88rem;">${a.studentName}</p>
+            <p style="font-size:0.75rem;color:var(--text-medium);">${a.program}</p>
+          </div>
+          <span class="badge badge-gold">${a.status}</span>
+        </div>
+      `).join('');
+    }
+  });
+
+  function doLogout() {
+    Auth.logoutAdmin();
+    window.location.href = 'login.html';
+  }
+</script>
+<style>
+  @media(max-width:700px){ .admin-cols{grid-template-columns:1fr!important;} }
+</style>
+</body>
+</html>

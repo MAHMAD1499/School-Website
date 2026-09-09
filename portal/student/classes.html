@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="My Classes — KSM Student Portal">
+  <title>My Classes — Student Portal</title>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+<div class="portal-wrapper">
+  <div class="portal-main">
+    <div class="portal-topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menuToggle">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <span class="topbar-title">My Classes</span>
+      </div>
+      <div class="topbar-right">
+        <span id="studentNameLabel" style="font-size:0.82rem;color:var(--text-medium);"></span>
+        <div class="topbar-avatar" style="background:var(--accent-warm);color:var(--primary-deep);" id="studentAvatar">S</div>
+        <button class="btn btn-sm btn-outline" onclick="Auth.logoutStudent();window.location.href='login.html'">Logout</button>
+      </div>
+    </div>
+
+    <div class="portal-content fade-up">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1 class="page-title">📚 My Classes</h1>
+          <p class="page-subtitle" id="classSubtitle">Explore your program and subject schedule</p>
+        </div>
+      </div>
+
+      <!-- Student class badge -->
+      <div id="myClassBanner" class="card mb-3" style="background:linear-gradient(135deg,var(--primary-deep),var(--primary-light));color:white;border:none;">
+        <div style="display:flex;align-items:center;gap:1rem;">
+          <div style="font-size:2.5rem;">🏫</div>
+          <div>
+            <p style="font-size:0.75rem;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:1px;margin-bottom:0.25rem;">My Enrolled Program</p>
+            <h2 id="myClassName" style="color:white;font-size:1.4rem;margin-bottom:0.25rem;">Loading...</h2>
+            <p id="myRollNo" style="color:rgba(255,255,255,0.8);font-size:0.88rem;"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Programs -->
+      <h2 style="font-size:1.1rem;margin-bottom:1rem;">📋 All School Programs</h2>
+      <div class="grid-3 mb-3">
+        <div class="class-card">
+          <div class="class-card-header" data-emoji="🌸">
+            <h3 class="class-card-title">Early Childhood Program</h3>
+            <p class="class-card-age">Ages 2.5 – 6 Years</p>
+          </div>
+          <div class="class-card-body">
+            <p style="font-size:0.85rem;color:var(--text-medium);margin-bottom:1rem;">Foundation stage focusing on sensorial exploration, practical life skills, and language development.</p>
+            <div>
+              <span class="subject-tag">Practical Life</span>
+              <span class="subject-tag">Sensorial</span>
+              <span class="subject-tag">Language</span>
+              <span class="subject-tag">Mathematics</span>
+              <span class="subject-tag">Cultural Studies</span>
+              <span class="subject-tag">Art & Music</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="class-card">
+          <div class="class-card-header" data-emoji="🌻" style="background:linear-gradient(135deg,var(--accent-hover),var(--accent-warm));">
+            <h3 class="class-card-title">Kindergarten Program</h3>
+            <p class="class-card-age">Ages 5 – 7 Years</p>
+          </div>
+          <div class="class-card-body">
+            <p style="font-size:0.85rem;color:var(--text-medium);margin-bottom:1rem;">Bridging early childhood to formal learning with reading, writing, and numeracy.</p>
+            <div>
+              <span class="subject-tag">Reading & Writing</span>
+              <span class="subject-tag">Mathematics</span>
+              <span class="subject-tag">Science</span>
+              <span class="subject-tag">Geography</span>
+              <span class="subject-tag">Urdu</span>
+              <span class="subject-tag">Physical Ed</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="class-card">
+          <div class="class-card-header" data-emoji="🌿" style="background:linear-gradient(135deg,#10B981,#059669);">
+            <h3 class="class-card-title">Junior Level Program</h3>
+            <p class="class-card-age">Ages 6 – 9 Years</p>
+          </div>
+          <div class="class-card-body">
+            <p style="font-size:0.85rem;color:var(--text-medium);margin-bottom:1rem;">Advanced Montessori learning with deeper academic subjects and critical thinking.</p>
+            <div>
+              <span class="subject-tag">English Literature</span>
+              <span class="subject-tag">Advanced Math</span>
+              <span class="subject-tag">Life Science</span>
+              <span class="subject-tag">Islamic Studies</span>
+              <span class="subject-tag">Computer Basics</span>
+              <span class="subject-tag">Creative Writing</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Daily Schedule -->
+      <h2 style="font-size:1.1rem;margin-bottom:1rem;">🕐 Daily Schedule</h2>
+      <div class="card">
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr><th>Time</th><th>Activity</th><th>Details</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>8:00 – 8:30 AM</td><td>Arrival & Circle Time</td><td>Morning greetings and group discussion</td></tr>
+              <tr><td>8:30 – 10:00 AM</td><td>Work Cycle (Montessori)</td><td>Self-directed Montessori material work</td></tr>
+              <tr><td>10:00 – 10:30 AM</td><td>Snack & Outdoor Play</td><td>Healthy snack and outdoor recess</td></tr>
+              <tr><td>10:30 – 12:00 PM</td><td>Language & Literacy</td><td>Reading, writing, and phonics activities</td></tr>
+              <tr><td>12:00 – 12:30 PM</td><td>Lunch Break</td><td>Lunch and relaxation</td></tr>
+              <tr><td>12:30 – 1:30 PM</td><td>Mathematics</td><td>Montessori math materials and exercises</td></tr>
+              <tr><td>1:30 – 2:00 PM</td><td>Art / Physical Ed / Music</td><td>Rotational enrichment activities</td></tr>
+              <tr><td>2:00 – 2:30 PM</td><td>Dismissal</td><td>End of school day</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="portal-footer">© 2026 Kindergarten Saadia's Montessori School. All rights reserved.</div>
+  </div>
+</div>
+
+<script src="../assets/portal.js"></script>
+<script src="../assets/sidebar.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const student = Auth.getStudent();
+    if (!student) { window.location.href = 'login.html'; return; }
+    document.getElementById('studentNameLabel').textContent = student.name;
+    document.getElementById('studentAvatar').textContent = student.name.charAt(0).toUpperCase();
+    document.getElementById('myClassName').textContent = student.class;
+    document.getElementById('myRollNo').textContent = 'Roll Number: ' + student.rollNo;
+    document.getElementById('classSubtitle').textContent = 'Viewing classes for ' + student.name;
+    buildSidebar('student');
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Teachers — Admin Panel</title>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+<div class="portal-wrapper">
+  <div class="portal-main">
+    <div class="portal-topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menuToggle"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <span class="topbar-title">Manage Teachers</span>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-sm btn-danger" onclick="Auth.logoutAdmin();window.location.href='login.html'">Logout</button>
+      </div>
+    </div>
+
+    <div class="portal-content fade-up">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1 class="page-title">👨‍🏫 Manage Teachers & Staff</h1>
+          <p class="page-subtitle">Add, edit, or remove teachers and staff members</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('teacherModal'); clearForm()">+ Add Teacher</button>
+      </div>
+
+      <div class="card">
+        <div class="table-container">
+          <table id="teachersTable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Subject</th>
+                <th>Bio</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="teachersTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="portal-footer">© 2026 KSM Admin Panel.</div>
+  </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="modal-overlay" id="teacherModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="teacherModalTitle">Add Teacher</h2>
+      <button class="modal-close" data-modal-close><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <input type="hidden" id="editId">
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Full Name *</label>
+        <input type="text" id="tName" class="form-control" placeholder="Ms. Jane Doe" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Role *</label>
+        <select id="tRole" class="form-control" required>
+          <option value="">Select role</option>
+          <option>Principal & Head Teacher</option>
+          <option>Senior Teacher</option>
+          <option>Teacher</option>
+          <option>Teaching Assistant</option>
+          <option>Support Staff</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Subject / Specialty *</label>
+        <input type="text" id="tSubject" class="form-control" placeholder="e.g. Mathematics">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Emoji / Avatar</label>
+        <input type="text" id="tEmoji" class="form-control" placeholder="e.g. 👩‍🏫" maxlength="4">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Bio / Description</label>
+      <textarea id="tBio" class="form-control" rows="3" placeholder="Short bio..."></textarea>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:1rem;">
+      <button class="btn btn-outline" data-modal-close>Cancel</button>
+      <button class="btn btn-primary" onclick="saveTeacher()">💾 Save Teacher</button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/portal.js"></script>
+<script src="../assets/sidebar.js"></script>
+<script>
+  buildSidebar('admin');
+
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!Auth.isAdminLoggedIn()) { window.location.href = 'login.html'; return; }
+    renderTable();
+  });
+
+  function renderTable() {
+    const teachers = DB.get('teachers');
+    const tbody = document.getElementById('teachersTbody');
+    if (teachers.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-medium);padding:2rem;">No teachers added yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = teachers.map(t => `
+      <tr>
+        <td><strong>${t.emoji || '👤'} ${t.name}</strong></td>
+        <td><span class="badge badge-blue">${t.role}</span></td>
+        <td>${t.subject}</td>
+        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${t.bio || '—'}</td>
+        <td>
+          <div style="display:flex;gap:0.5rem;">
+            <button class="btn btn-sm btn-outline" onclick="editTeacher('${t.id}')">✏️ Edit</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteTeacher('${t.id}')">🗑️</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function clearForm() {
+    document.getElementById('editId').value = '';
+    document.getElementById('tName').value = '';
+    document.getElementById('tRole').value = '';
+    document.getElementById('tSubject').value = '';
+    document.getElementById('tEmoji').value = '';
+    document.getElementById('tBio').value = '';
+    document.getElementById('teacherModalTitle').textContent = 'Add Teacher';
+  }
+
+  function editTeacher(id) {
+    const t = DB.get('teachers').find(t => t.id === id);
+    if (!t) return;
+    document.getElementById('editId').value = t.id;
+    document.getElementById('tName').value = t.name;
+    document.getElementById('tRole').value = t.role;
+    document.getElementById('tSubject').value = t.subject;
+    document.getElementById('tEmoji').value = t.emoji || '';
+    document.getElementById('tBio').value = t.bio || '';
+    document.getElementById('teacherModalTitle').textContent = 'Edit Teacher';
+    openModal('teacherModal');
+  }
+
+  function saveTeacher() {
+    const name = document.getElementById('tName').value.trim();
+    const role = document.getElementById('tRole').value;
+    const subject = document.getElementById('tSubject').value.trim();
+    if (!name || !role || !subject) { showToast('Please fill in Name, Role, and Subject.', 'error'); return; }
+
+    const data = { name, role, subject, emoji: document.getElementById('tEmoji').value || '👤', bio: document.getElementById('tBio').value.trim() };
+    const editId = document.getElementById('editId').value;
+
+    if (editId) {
+      DB.update('teachers', editId, data);
+      showToast('Teacher updated successfully!', 'success');
+    } else {
+      DB.push('teachers', data);
+      showToast('Teacher added successfully!', 'success');
+    }
+    closeModal('teacherModal');
+    renderTable();
+  }
+
+  function deleteTeacher(id) {
+    confirmDelete('Delete this teacher? This cannot be undone.', () => {
+      DB.delete('teachers', id);
+      showToast('Teacher deleted.', 'info');
+      renderTable();
+    });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Meet our dedicated teachers and staff at Kindergarten Saadia's Montessori School.">
+  <title>Teachers & Staff — KSM Portal</title>
+  <link rel="stylesheet" href="assets/portal.css">
+</head>
+<body>
+<div class="portal-wrapper">
+  <div class="portal-main">
+    <div class="portal-topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <span class="topbar-title">Teachers & Staff</span>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-avatar">K</div>
+      </div>
+    </div>
+
+    <div class="portal-content fade-up">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1 class="page-title">👨‍🏫 Teachers & Staff</h1>
+          <p class="page-subtitle">Meet the dedicated team shaping young minds at KSM</p>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div class="search-bar">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search teachers by name or subject...">
+        <select id="filterRole" class="form-control" style="max-width:180px;border-radius:var(--radius-full);">
+          <option value="">All Roles</option>
+          <option value="Principal">Principal</option>
+          <option value="Senior Teacher">Senior Teacher</option>
+          <option value="Teacher">Teacher</option>
+          <option value="Teaching Assistant">Teaching Assistant</option>
+        </select>
+      </div>
+
+      <div id="teachersGrid" class="grid-3"></div>
+    </div>
+
+    <div class="portal-footer">© 2026 Kindergarten Saadia's Montessori School. All rights reserved.</div>
+  </div>
+</div>
+
+<script src="assets/portal.js"></script>
+<script src="assets/sidebar.js"></script>
+<script>
+  buildSidebar('portal');
+
+  function renderTeachers() {
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const role = document.getElementById('filterRole').value;
+    let teachers = DB.get('teachers');
+
+    if (search) teachers = teachers.filter(t => t.name.toLowerCase().includes(search) || t.subject.toLowerCase().includes(search));
+    if (role) teachers = teachers.filter(t => t.role.includes(role));
+
+    const grid = document.getElementById('teachersGrid');
+    if (teachers.length === 0) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">👤</div><div class="empty-state-title">No teachers found</div><p class="empty-state-text">Try adjusting your search.</p></div>`;
+      return;
+    }
+
+    grid.innerHTML = teachers.map(t => `
+      <div class="teacher-card fade-up">
+        <div class="teacher-card-img">${t.emoji || '👤'}</div>
+        <div class="teacher-card-body">
+          <h3 class="teacher-card-name">${t.name}</h3>
+          <p class="teacher-card-role">${t.role}</p>
+          <span class="badge badge-blue teacher-card-subject">${t.subject}</span>
+          <p style="font-size:0.82rem;color:var(--text-medium);margin-top:0.75rem;">${t.bio || ''}</p>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    renderTeachers();
+    document.getElementById('searchInput').addEventListener('input', renderTeachers);
+    document.getElementById('filterRole').addEventListener('change', renderTeachers);
+  });
+</script>
+</body>
+</html>

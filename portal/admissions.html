@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Apply online for admission at Kindergarten Saadia's Montessori School. Simple 4-step application process.">
+  <title>Online Admissions — KSM Portal</title>
+  <link rel="stylesheet" href="assets/portal.css">
+  <style>
+    .form-section-title { font-size: 1rem; font-weight: 700; color: var(--primary-deep); margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--primary-bg); }
+    .success-screen { text-align: center; padding: 3rem 1rem; }
+    .success-icon { font-size: 4rem; margin-bottom: 1rem; }
+    .success-title { font-size: 1.5rem; color: var(--success); margin-bottom: 0.75rem; }
+    .success-text { color: var(--text-medium); margin-bottom: 1.5rem; }
+    .success-ref { background: var(--primary-bg); padding: 1rem; border-radius: var(--radius-sm); font-size: 0.9rem; margin-bottom: 1.5rem; }
+  </style>
+</head>
+<body>
+<div class="portal-wrapper">
+  <div class="portal-main">
+    <div class="portal-topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menuToggle" aria-label="Toggle Menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <span class="topbar-title">Online Admissions</span>
+      </div>
+      <div class="topbar-right"><div class="topbar-avatar">K</div></div>
+    </div>
+
+    <div class="portal-content fade-up">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1 class="page-title">📝 Online Admission Form</h1>
+          <p class="page-subtitle">Complete the 4-step application to apply for admission</p>
+        </div>
+      </div>
+
+      <!-- Progress Steps -->
+      <div class="steps-bar" id="stepsBar">
+        <div class="step-item active" id="step-indicator-1">
+          <div class="step-dot">1</div>
+          <div class="step-label">Student Info</div>
+        </div>
+        <div class="step-item" id="step-indicator-2">
+          <div class="step-dot">2</div>
+          <div class="step-label">Parent Info</div>
+        </div>
+        <div class="step-item" id="step-indicator-3">
+          <div class="step-dot">3</div>
+          <div class="step-label">Program</div>
+        </div>
+        <div class="step-item" id="step-indicator-4">
+          <div class="step-dot">4</div>
+          <div class="step-label">Review</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <!-- Step 1: Student Info -->
+        <div class="step-panel active" id="step-1">
+          <div class="form-section-title">👦 Student Information</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="studentFirstName">First Name *</label>
+              <input type="text" id="studentFirstName" class="form-control" placeholder="Enter first name" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="studentLastName">Last Name *</label>
+              <input type="text" id="studentLastName" class="form-control" placeholder="Enter last name" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="studentDOB">Date of Birth *</label>
+              <input type="date" id="studentDOB" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="studentGender">Gender *</label>
+              <select id="studentGender" class="form-control" required>
+                <option value="">Select gender</option>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Prefer not to say</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="studentNationality">Nationality</label>
+              <input type="text" id="studentNationality" class="form-control" placeholder="e.g. Pakistani" value="Pakistani">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="studentReligion">Religion</label>
+              <input type="text" id="studentReligion" class="form-control" placeholder="e.g. Islam">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="studentAddress">Home Address *</label>
+            <textarea id="studentAddress" class="form-control" rows="2" placeholder="Enter full home address" required></textarea>
+          </div>
+          <div style="text-align:right;margin-top:1rem;">
+            <button class="btn btn-primary" onclick="nextStep(1)">Next: Parent Info →</button>
+          </div>
+        </div>
+
+        <!-- Step 2: Parent Info -->
+        <div class="step-panel" id="step-2">
+          <div class="form-section-title">👨‍👩‍👧 Parent / Guardian Information</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="parentName">Parent/Guardian Name *</label>
+              <input type="text" id="parentName" class="form-control" placeholder="Full name" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="parentRelation">Relation to Student *</label>
+              <select id="parentRelation" class="form-control" required>
+                <option value="">Select relation</option>
+                <option>Father</option>
+                <option>Mother</option>
+                <option>Guardian</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="parentPhone">Phone Number *</label>
+              <input type="tel" id="parentPhone" class="form-control" placeholder="+92 300 0000000" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="parentEmail">Email Address *</label>
+              <input type="email" id="parentEmail" class="form-control" placeholder="parent@email.com" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="parentOccupation">Occupation</label>
+              <input type="text" id="parentOccupation" class="form-control" placeholder="Enter occupation">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="parentCNIC">CNIC Number</label>
+              <input type="text" id="parentCNIC" class="form-control" placeholder="35201-1234567-1">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="emergencyContact">Emergency Contact Number</label>
+            <input type="tel" id="emergencyContact" class="form-control" placeholder="+92 300 0000000">
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:1rem;">
+            <button class="btn btn-outline" onclick="prevStep(2)">← Back</button>
+            <button class="btn btn-primary" onclick="nextStep(2)">Next: Program →</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Program Selection -->
+        <div class="step-panel" id="step-3">
+          <div class="form-section-title">📚 Program Selection</div>
+          <div class="form-group">
+            <label class="form-label" for="programSelect">Select Program *</label>
+            <select id="programSelect" class="form-control" required>
+              <option value="">Choose a program</option>
+              <option value="Early Childhood">Early Childhood (Ages 2.5–6)</option>
+              <option value="Kindergarten">Kindergarten (Ages 5–7)</option>
+              <option value="Junior Level">Junior Level (Ages 6–9)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="academicYear">Preferred Academic Year *</label>
+            <select id="academicYear" class="form-control" required>
+              <option value="">Select year</option>
+              <option value="2026-27">2026 – 2027</option>
+              <option value="2027-28">2027 – 2028</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="previousSchool">Previous School (if any)</label>
+            <input type="text" id="previousSchool" class="form-control" placeholder="Name of previous school">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="medicalConditions">Medical Conditions / Allergies</label>
+            <textarea id="medicalConditions" class="form-control" rows="2" placeholder="List any medical conditions or allergies..."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="additionalInfo">Additional Information</label>
+            <textarea id="additionalInfo" class="form-control" rows="2" placeholder="Anything else you'd like us to know..."></textarea>
+          </div>
+          <div class="form-group">
+            <label style="display:flex;align-items:flex-start;gap:0.5rem;cursor:pointer;font-size:0.85rem;">
+              <input type="checkbox" id="termsCheck" style="margin-top:2px;accent-color:var(--primary-deep);">
+              <span>I confirm that all information provided is accurate and I agree to the school's <strong>Terms & Conditions</strong> and <strong>Privacy Policy</strong>.</span>
+            </label>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:1rem;">
+            <button class="btn btn-outline" onclick="prevStep(3)">← Back</button>
+            <button class="btn btn-primary" onclick="nextStep(3)">Review Application →</button>
+          </div>
+        </div>
+
+        <!-- Step 4: Review -->
+        <div class="step-panel" id="step-4">
+          <div class="form-section-title">✅ Review Your Application</div>
+          <div id="reviewContent" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;"></div>
+          <div class="info-banner">
+            ℹ️ Please review all details carefully before submitting. You will receive a confirmation after submission.
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:1rem;">
+            <button class="btn btn-outline" onclick="prevStep(4)">← Edit</button>
+            <button class="btn btn-accent" onclick="submitApplication()">🎓 Submit Application</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Success Screen (hidden initially) -->
+      <div class="success-screen hidden" id="successScreen">
+        <div class="success-icon">🎉</div>
+        <h2 class="success-title">Application Submitted!</h2>
+        <p class="success-text">Thank you for applying to Kindergarten Saadia's Montessori School. We have received your application and will contact you within 3–5 business days.</p>
+        <div class="success-ref">
+          <strong>Reference Number:</strong> <span id="refNumber"></span><br>
+          <strong>Date Submitted:</strong> <span id="submittedDate"></span>
+        </div>
+        <a href="index.html" class="btn btn-primary">← Back to Portal</a>
+      </div>
+    </div>
+    <div class="portal-footer">© 2026 Kindergarten Saadia's Montessori School. All rights reserved.</div>
+  </div>
+</div>
+
+<script src="assets/portal.js"></script>
+<script src="assets/sidebar.js"></script>
+<script>
+  buildSidebar('portal');
+  let currentStep = 1;
+
+  function updateStepUI() {
+    for (let i = 1; i <= 4; i++) {
+      const panel = document.getElementById('step-' + i);
+      const indicator = document.getElementById('step-indicator-' + i);
+      if (panel) panel.classList.toggle('active', i === currentStep);
+      if (indicator) {
+        indicator.classList.remove('active', 'done');
+        if (i < currentStep) indicator.classList.add('done');
+        else if (i === currentStep) indicator.classList.add('active');
+        // Replace dot number with checkmark for done
+        const dot = indicator.querySelector('.step-dot');
+        if (dot) dot.textContent = i < currentStep ? '✓' : i;
+      }
+    }
+  }
+
+  function validate(step) {
+    if (step === 1) {
+      const fields = ['studentFirstName', 'studentLastName', 'studentDOB', 'studentGender', 'studentAddress'];
+      for (const f of fields) {
+        if (!document.getElementById(f).value.trim()) {
+          showToast('Please fill in all required fields.', 'error');
+          document.getElementById(f).focus();
+          return false;
+        }
+      }
+    }
+    if (step === 2) {
+      const fields = ['parentName', 'parentRelation', 'parentPhone', 'parentEmail'];
+      for (const f of fields) {
+        if (!document.getElementById(f).value.trim()) {
+          showToast('Please fill in all required fields.', 'error');
+          document.getElementById(f).focus();
+          return false;
+        }
+      }
+    }
+    if (step === 3) {
+      if (!document.getElementById('programSelect').value) { showToast('Please select a program.', 'error'); return false; }
+      if (!document.getElementById('academicYear').value) { showToast('Please select an academic year.', 'error'); return false; }
+      if (!document.getElementById('termsCheck').checked) { showToast('Please agree to the Terms & Conditions.', 'warning'); return false; }
+    }
+    return true;
+  }
+
+  function nextStep(from) {
+    if (!validate(from)) return;
+    if (from === 3) buildReview();
+    currentStep = from + 1;
+    updateStepUI();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function prevStep(from) {
+    currentStep = from - 1;
+    updateStepUI();
+  }
+
+  function buildReview() {
+    const items = [
+      { label: 'Student Name', val: `${document.getElementById('studentFirstName').value} ${document.getElementById('studentLastName').value}` },
+      { label: 'Date of Birth', val: document.getElementById('studentDOB').value },
+      { label: 'Gender', val: document.getElementById('studentGender').value },
+      { label: 'Nationality', val: document.getElementById('studentNationality').value },
+      { label: 'Parent Name', val: document.getElementById('parentName').value },
+      { label: 'Relation', val: document.getElementById('parentRelation').value },
+      { label: 'Phone', val: document.getElementById('parentPhone').value },
+      { label: 'Email', val: document.getElementById('parentEmail').value },
+      { label: 'Program', val: document.getElementById('programSelect').value },
+      { label: 'Academic Year', val: document.getElementById('academicYear').value },
+    ];
+
+    document.getElementById('reviewContent').innerHTML = items.map(item => `
+      <div style="background:var(--primary-bg);padding:0.75rem;border-radius:var(--radius-sm);">
+        <p style="font-size:0.75rem;color:var(--text-medium);margin-bottom:0.2rem;">${item.label}</p>
+        <p style="font-weight:600;font-size:0.9rem;">${item.val || '—'}</p>
+      </div>
+    `).join('');
+  }
+
+  function submitApplication() {
+    const app = {
+      studentName: `${document.getElementById('studentFirstName').value} ${document.getElementById('studentLastName').value}`,
+      dob: document.getElementById('studentDOB').value,
+      gender: document.getElementById('studentGender').value,
+      nationality: document.getElementById('studentNationality').value,
+      address: document.getElementById('studentAddress').value,
+      parentName: document.getElementById('parentName').value,
+      relation: document.getElementById('parentRelation').value,
+      phone: document.getElementById('parentPhone').value,
+      email: document.getElementById('parentEmail').value,
+      occupation: document.getElementById('parentOccupation').value,
+      program: document.getElementById('programSelect').value,
+      academicYear: document.getElementById('academicYear').value,
+      previousSchool: document.getElementById('previousSchool').value,
+      medical: document.getElementById('medicalConditions').value,
+      additionalInfo: document.getElementById('additionalInfo').value,
+      status: 'Pending',
+      submittedAt: new Date().toISOString(),
+    };
+    const saved = DB.push('admissions', app);
+    const ref = 'KSM-' + saved.id.toString().slice(-6).toUpperCase();
+
+    // Show success
+    document.querySelector('.card').classList.add('hidden');
+    document.getElementById('stepsBar').classList.add('hidden');
+    document.querySelector('.page-header').classList.add('hidden');
+    document.getElementById('successScreen').classList.remove('hidden');
+    document.getElementById('refNumber').textContent = ref;
+    document.getElementById('submittedDate').textContent = formatDate(new Date().toISOString());
+    showToast('Application submitted successfully!', 'success', 5000);
+  }
+</script>
+</body>
+</html>
