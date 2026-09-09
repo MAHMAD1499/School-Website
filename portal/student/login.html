@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,76 +8,84 @@
   <title>Student Login — KSM Portal</title>
   <link rel="stylesheet" href="../assets/portal.css">
 </head>
+
 <body>
-<div class="auth-page">
-  <div class="auth-card">
-    <div class="auth-logo">
-      <div style="width:60px;height:60px;background:linear-gradient(135deg,var(--accent-warm),var(--accent-hover));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto 0.75rem;">👨‍👩‍👧</div>
-      <div class="auth-logo-title">Student & Parent Portal</div>
-      <div class="auth-logo-sub">Kindergarten Saadia's Montessori School</div>
-    </div>
-
-    <h1 class="auth-title">Sign In</h1>
-    <p class="auth-subtitle">Access your personalized school dashboard</p>
-
-    <div class="demo-creds">
-      <strong>Demo Account:</strong><br>
-      Email: <strong>ali@student.ksm</strong> &nbsp;|&nbsp; Password: <strong>student123</strong>
-    </div>
-
-    <form id="loginForm" onsubmit="doLogin(event)">
-      <div class="form-group">
-        <label class="form-label" for="email">Email Address</label>
-        <input type="email" id="email" class="form-control" placeholder="your@email.com" autocomplete="email" required>
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div
+          style="width:60px;height:60px;background:linear-gradient(135deg,var(--accent-warm),var(--accent-hover));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto 0.75rem;">
+          👨‍👩‍👧</div>
+        <div class="auth-logo-title">Student & Parent Portal</div>
+        <div class="auth-logo-sub">Kindergarten Saadia's Montessori School</div>
       </div>
-      <div class="form-group">
-        <label class="form-label" for="password">Password</label>
-        <div style="position:relative;">
-          <input type="password" id="password" class="form-control" placeholder="Enter password" autocomplete="current-password" required>
-          <button type="button" onclick="togglePwd()" style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-medium);font-size:0.85rem;">Show</button>
+
+      <h1 class="auth-title">Sign In</h1>
+      <p class="auth-subtitle">Access Your Personalized School Dashboard</p>
+
+      <div class="demo-creds">
+        <strong>Demo Account:</strong><br>
+        Email: <strong>ali@student.ksm</strong> &nbsp;|&nbsp; Password: <strong>student123</strong>
+      </div>
+
+      <form id="loginForm" onsubmit="doLogin(event)">
+        <div class="form-group">
+          <label class="form-label" for="email">Email Address</label>
+          <input type="email" id="email" class="form-control" placeholder="your@email.com" autocomplete="email"
+            required>
         </div>
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <div style="position:relative;">
+            <input type="password" id="password" class="form-control" placeholder="Enter password"
+              autocomplete="current-password" required>
+            <button type="button" onclick="togglePwd()"
+              style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-medium);font-size:0.85rem;">Show</button>
+          </div>
+        </div>
+
+        <div id="loginError" class="hidden"
+          style="background:#FEE2E2;color:#991B1B;padding:0.75rem;border-radius:var(--radius-sm);font-size:0.85rem;margin-bottom:1rem;text-align:center;">
+          Invalid email or password. Please try again.
+        </div>
+
+        <button type="submit" class="btn btn-accent w-full" style="margin-top:0.5rem;">🎓 Login to Portal</button>
+      </form>
+
+      <div style="text-align:center;margin-top:1.5rem;display:flex;flex-direction:column;gap:0.5rem;">
+        <a href="../index.html" style="font-size:0.85rem;color:var(--text-medium);">← Back to Portal</a>
+        <a href="../admin/login.html" style="font-size:0.82rem;color:var(--text-light);">Admin Login →</a>
       </div>
-
-      <div id="loginError" class="hidden" style="background:#FEE2E2;color:#991B1B;padding:0.75rem;border-radius:var(--radius-sm);font-size:0.85rem;margin-bottom:1rem;text-align:center;">
-        Invalid email or password. Please try again.
-      </div>
-
-      <button type="submit" class="btn btn-accent w-full" style="margin-top:0.5rem;">🎓 Login to Portal</button>
-    </form>
-
-    <div style="text-align:center;margin-top:1.5rem;display:flex;flex-direction:column;gap:0.5rem;">
-      <a href="../index.html" style="font-size:0.85rem;color:var(--text-medium);">← Back to Portal</a>
-      <a href="../admin/login.html" style="font-size:0.82rem;color:var(--text-light);">Admin Login →</a>
     </div>
   </div>
-</div>
 
-<script src="../assets/portal.js"></script>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    seedData();
-    if (Auth.isStudentLoggedIn()) {
-      window.location.href = 'dashboard.html';
+  <script src="../assets/portal.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      seedData();
+      if (Auth.isStudentLoggedIn()) {
+        window.location.href = 'dashboard.html';
+      }
+    });
+
+    function doLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const pass = document.getElementById('password').value;
+      const student = Auth.loginStudent(email, pass);
+      if (student) {
+        showToast('Welcome back, ' + student.name + '!', 'success');
+        setTimeout(() => window.location.href = 'dashboard.html', 700);
+      } else {
+        document.getElementById('loginError').classList.remove('hidden');
+      }
     }
-  });
 
-  function doLogin(e) {
-    e.preventDefault();
-    const email = document.getElementById('email').value.trim();
-    const pass = document.getElementById('password').value;
-    const student = Auth.loginStudent(email, pass);
-    if (student) {
-      showToast('Welcome back, ' + student.name + '!', 'success');
-      setTimeout(() => window.location.href = 'dashboard.html', 700);
-    } else {
-      document.getElementById('loginError').classList.remove('hidden');
+    function togglePwd() {
+      const p = document.getElementById('password');
+      p.type = p.type === 'password' ? 'text' : 'password';
     }
-  }
-
-  function togglePwd() {
-    const p = document.getElementById('password');
-    p.type = p.type === 'password' ? 'text' : 'password';
-  }
-</script>
+  </script>
 </body>
+
 </html>

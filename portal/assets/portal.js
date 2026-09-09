@@ -85,8 +85,8 @@ function seedData() {
 
   // Students (demo accounts)
   DB.set('students', [
-    { id: '1', name: 'Ali Hassan', email: 'ali@student.ksm', password: 'student123', class: 'Kindergarten A', rollNo: 'KA-001', parentName: 'Mr. Hassan Ali' },
-    { id: '2', name: 'Zara Ahmed', email: 'zara@student.ksm', password: 'student123', class: 'Early Childhood B', rollNo: 'ECB-002', parentName: 'Mrs. Sana Ahmed' },
+    { id: '1', name: 'Ali Hassan', email: 'ali@student.ksm', phone: '+92 300 1234567', address: '123 Main St, Karachi', password: 'student123', class: 'Kindergarten A', rollNo: 'KA-001', parentName: 'Mr. Hassan Ali' },
+    { id: '2', name: 'Zara Ahmed', email: 'zara@student.ksm', phone: '+92 321 7654321', address: '456 Elm St, Lahore', password: 'student123', class: 'Early Childhood B', rollNo: 'ECB-002', parentName: 'Mrs. Sana Ahmed' },
   ]);
 
   DB.set('seeded', true);
@@ -173,8 +173,12 @@ function initSidebar() {
 
   if (toggle && sidebar) {
     toggle.addEventListener('click', () => {
-      sidebar.classList.toggle('open');
-      if (overlay) overlay.classList.toggle('open');
+      if (window.innerWidth <= 900) {
+        sidebar.classList.toggle('open');
+        if (overlay) overlay.classList.toggle('open');
+      } else {
+        document.body.classList.toggle('sidebar-closed');
+      }
     });
   }
   if (overlay) {
