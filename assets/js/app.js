@@ -1,5 +1,43 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+  // 0. Preloader Logic
+  const preloader = document.getElementById('preloader');
+
+  if (preloader) {
+    // Hide preloader when the page has fully loaded
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        preloader.style.opacity = '0';
+        preloader.style.visibility = 'hidden';
+        document.body.classList.remove('preloader-active');
+      }, 500); // 500ms delay to ensure the animation is seen
+    });
+
+    // Show preloader when clicking on links that navigate away
+    const allLinks = document.querySelectorAll('a');
+    allLinks.forEach(link => {
+      link.addEventListener('click', function (e) {
+        const target = this.getAttribute('href');
+
+        // Only trigger preloader for external or actual page transitions, ignore # anchors or empty links
+        if (target && target !== '#' && !target.startsWith('#') && !target.startsWith('javascript')) {
+          // Check if it's not opening in a new tab
+          if (this.target !== '_blank') {
+            e.preventDefault();
+            document.body.classList.add('preloader-active');
+            preloader.style.opacity = '1';
+            preloader.style.visibility = 'visible';
+
+            // Navigate after animation delay
+            setTimeout(() => {
+              window.location.href = target;
+            }, 800); // Wait 800ms for preloader to show
+          }
+        }
+      });
+    });
+  }
+
   // 1. Sticky Header
   const header = document.getElementById('header');
   window.addEventListener('scroll', () => {
@@ -13,12 +51,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // 2. Mobile Navigation Menu Toggle
   const navToggle = document.getElementById('navToggle');
   const navMenu = document.getElementById('navMenu');
-  
+
   if (navToggle && navMenu) {
     navToggle.addEventListener('click', () => {
       navMenu.classList.toggle('active');
       navToggle.classList.toggle('active');
-      
+
       // Animate hamburger lines
       const spans = navToggle.querySelectorAll('span');
       if (navToggle.classList.contains('active')) {
@@ -132,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 4. Stats Counter Animation using Intersection Observer
   const statsCounters = document.querySelectorAll('.stat-counter');
-  
+
   if (statsCounters.length > 0) {
     const startCounterAnimation = (element) => {
       const target = +element.getAttribute('data-target');
@@ -152,11 +190,12 @@ document.addEventListener('DOMContentLoaded', () => {
       updateCount();
     };
 
-    const statsObserver = new IntersectionObserver((entries, observer) => {
+    const statsObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           startCounterAnimation(entry.target);
-          observer.unobserve(entry.target); // Trigger only once
+        } else {
+          entry.target.innerText = '0'; // Reset when out of view to re-trigger
         }
       });
     }, { threshold: 0.5 });
@@ -211,4 +250,50 @@ document.addEventListener('DOMContentLoaded', () => {
       emailInput.value = '';
     });
   }
+
+  // 9. Scroll Animations
+  const scrollElements = document.querySelectorAll('.section-title, .section-subtitle, .about-image-wrapper, .about-info, .program-card, .stat-item, .admissions-info, .inquiry-card, .gallery-item, .mission-card, .animate-on-scroll');
+
+  scrollElements.forEach((el) => {
+    if (!el.classList.contains('slide-in-left') && !el.classList.contains('slide-in-right')) {
+      el.classList.add('animate-on-scroll');
+    }
+  });
+
+  const slideElements = document.querySelectorAll('.slide-in-left, .slide-in-right');
+
+  const scrollObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('show-anim');
+      } else {
+        entry.target.classList.remove('show-anim'); // Remove class when scrolled out to trigger again
+      }
+    });
+  }, { threshold: 0.12 });
+
+  scrollElements.forEach(el => scrollObserver.observe(el));
+  slideElements.forEach(el => scrollObserver.observe(el));
+});
+
+// Auto-hide header on scroll down, reveal on scroll up
+let lastScrollY = window.scrollY;
+const headerElement = document.getElementById('header');
+
+window.addEventListener('scroll', () => {
+  const currentScrollY = window.scrollY;
+
+  // Don't hide header if mobile menu is actively open
+  const navMenu = document.getElementById('navMenu');
+  if (navMenu && navMenu.classList.contains('active')) return;
+
+  if (currentScrollY > lastScrollY && currentScrollY > 100) {
+    // Scrolling down & past top threshold -> Hide header
+    headerElement.classList.add('nav-hidden');
+  } else {
+    // Scrolling up -> Show header
+    headerElement.classList.remove('nav-hidden');
+  }
+
+  lastScrollY = currentScrollY;
 });
