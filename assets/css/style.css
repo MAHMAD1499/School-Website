@@ -1080,6 +1080,42 @@ header.scrolled {
   opacity: 0.9;
 }
 
+/* Hide extra items initially */
+.gallery-item.gallery-hidden {
+  display: none !important;
+}
+
+/* Expand Button Wrapper */
+.gallery-cta-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+}
+
+/* Professional CTA Button */
+.gallery-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.8rem 2.2rem;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(30, 58, 138, 0.08);
+}
+
+.gallery-cta-btn svg {
+  transition: transform 0.3s ease;
+}
+
+.gallery-cta-btn:hover svg {
+  transform: translateY(3px);
+}
+
+.gallery-cta-btn.expanded svg {
+  transform: rotate(180deg);
+}
+
 /* TESTIMONIALS */
 .testimonials {
   position: relative;
@@ -2484,4 +2520,69 @@ body {
   .section-subtitle {
     font-size: 0.9rem !important;
   }
+}
+
+/* ===== LIGHTBOX MODAL STYLES ===== */
+.lightbox-modal {
+  display: none;
+  position: fixed;
+  z-index: 10000;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 23, 42, 0.9);
+  backdrop-filter: blur(5px);
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.lightbox-content {
+  max-width: 85%;
+  max-height: 75vh;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-premium);
+  object-fit: contain;
+  animation: fadeIn 0.3s ease;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 25px;
+  right: 35px;
+  color: #ffffff;
+  font-size: 45px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.lightbox-close:hover {
+  color: var(--accent-warm);
+}
+
+.lightbox-nav {
+  margin-top: 20px;
+  display: flex;
+  gap: 20px;
+}
+
+.lightbox-nav button {
+  background: var(--accent-warm);
+  color: var(--primary-deep);
+  border: none;
+  padding: 10px 24px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.lightbox-nav button:hover {
+  background: var(--accent-hover);
+  color: white;
+  transform: translateY(-2px);
 }

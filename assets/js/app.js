@@ -1,5 +1,39 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // Toggle Extra Gallery Items
+  const toggleGalleryBtn = document.getElementById('toggleGalleryBtn');
+  const hiddenGalleryItems = document.querySelectorAll('.gallery-item.gallery-hidden');
 
+  if (toggleGalleryBtn) {
+    let isExpanded = false;
+
+    toggleGalleryBtn.addEventListener('click', () => {
+      isExpanded = !isExpanded;
+
+      hiddenGalleryItems.forEach(item => {
+        if (isExpanded) {
+          item.classList.remove('gallery-hidden');
+          item.style.opacity = '0';
+          item.style.transform = 'scale(0.95)';
+          setTimeout(() => {
+            item.style.opacity = '1';
+            item.style.transform = 'scale(1)';
+          }, 50);
+        } else {
+          item.classList.add('gallery-hidden');
+        }
+      });
+
+      // Update button text and icon orientation
+      const btnText = toggleGalleryBtn.querySelector('span');
+      if (isExpanded) {
+        btnText.textContent = 'Show Less';
+        toggleGalleryBtn.classList.add('expanded');
+      } else {
+        btnText.textContent = 'View Full Gallery';
+        toggleGalleryBtn.classList.remove('expanded');
+      }
+    });
+  }
   // 0. Preloader Logic
   const preloader = document.getElementById('preloader');
 
@@ -284,3 +318,73 @@ document.addEventListener('DOMContentLoaded', () => {
   scrollElements.forEach(el => scrollObserver.observe(el));
   slideElements.forEach(el => scrollObserver.observe(el));
 });
+
+// 9. Lightbox Popup Logic for Event Photo Sets
+let currentEventMedia = [];
+let currentMediaIndex = 0;
+
+function openEventLightbox(element) {
+  const dataEl = element.querySelector('.event-photos-data');
+  if (!dataEl) return;
+
+  const mediaString = dataEl.getAttribute('data-photos');
+  if (!mediaString) return;
+
+  currentEventMedia = mediaString.split(',');
+  currentMediaIndex = 0;
+
+  const lightboxModal = document.getElementById('eventLightbox');
+  if (lightboxModal) {
+    lightboxModal.style.display = 'flex';
+    displayCurrentMedia();
+  }
+}
+
+function closeEventLightbox() {
+  const lightboxModal = document.getElementById('eventLightbox');
+  const videoPlayer = document.getElementById('lightboxVideo');
+
+  if (videoPlayer) {
+    videoPlayer.pause();
+    videoPlayer.src = '';
+  }
+
+  if (lightboxModal) {
+    lightboxModal.style.display = 'none';
+  }
+}
+
+function displayCurrentMedia() {
+  const imgPlayer = document.getElementById('lightboxImg');
+  const videoPlayer = document.getElementById('lightboxVideo');
+  const currentFile = currentEventMedia[currentMediaIndex].trim();
+
+  // Check if file extension is a video format
+  const isVideo = currentFile.endsWith('.mp4') || currentFile.endsWith('.webm') || currentFile.endsWith('.ogg');
+
+  if (isVideo) {
+    imgPlayer.style.display = 'none';
+    videoPlayer.style.display = 'block';
+    videoPlayer.src = currentFile;
+    videoPlayer.play();
+  } else {
+    videoPlayer.pause();
+    videoPlayer.style.display = 'none';
+    imgPlayer.style.display = 'block';
+    imgPlayer.src = currentFile;
+  }
+}
+
+function changeLightboxImg(direction) {
+  if (currentEventMedia.length <= 1) return;
+
+  currentMediaIndex += direction;
+  if (currentMediaIndex < 0) {
+    currentMediaIndex = currentEventMedia.length - 1;
+  }
+  if (currentMediaIndex >= currentEventMedia.length) {
+    currentMediaIndex = 0;
+  }
+
+  displayCurrentMedia();
+}
