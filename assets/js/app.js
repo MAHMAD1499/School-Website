@@ -1,4 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
+
+  // Instant Navigation & Mobile Menu Close
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      const navMenu = document.getElementById('navMenu');
+      const navToggle = document.getElementById('navToggle');
+
+      // Instantly close mobile drawer if open
+      if (navMenu && navMenu.classList.contains('active')) {
+        navMenu.classList.remove('active');
+        if (navToggle) navToggle.classList.remove('active');
+      }
+    });
+  });
+
   // Toggle Extra Gallery Items
   const toggleGalleryBtn = document.getElementById('toggleGalleryBtn');
   const hiddenGalleryItems = document.querySelectorAll('.gallery-item.gallery-hidden');
@@ -34,7 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-  // 0. Preloader Logic
+
+  // 0. Targeted Preloader Logic
   const preloader = document.getElementById('preloader');
 
   if (preloader) {
@@ -43,14 +59,16 @@ document.addEventListener('DOMContentLoaded', () => {
         preloader.style.opacity = '0';
         preloader.style.visibility = 'hidden';
         document.body.classList.remove('preloader-active');
-      }, 500);
+      }, 400);
     });
 
     const allLinks = document.querySelectorAll('a');
     allLinks.forEach(link => {
       link.addEventListener('click', function (e) {
         const target = this.getAttribute('href');
-        if (target && target !== '#' && !target.startsWith('#') && !target.startsWith('javascript')) {
+
+        // Only trigger preloader for full page navigations (About Us, Contact, Portal, Apply Now)
+        if (target && target !== '#' && !target.startsWith('#') && !target.includes('index.html#') && !target.startsWith('javascript')) {
           if (this.target !== '_blank') {
             e.preventDefault();
             document.body.classList.add('preloader-active');
@@ -59,8 +77,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             setTimeout(() => {
               window.location.href = target;
-            }, 800);
+            }, 400);
           }
+        } else {
+          // Instantly keep preloader hidden for same-page section jumps (#programs, #admissions, etc.)
+          preloader.style.opacity = '0';
+          preloader.style.visibility = 'hidden';
         }
       });
     });
@@ -388,3 +410,46 @@ function changeLightboxImg(direction) {
 
   displayCurrentMedia();
 }
+
+function loadPortalEventsToWebsite() {
+  const eventContainer = document.getElementById('websiteEventList');
+  if (!eventContainer) return;
+
+  // Retrieve events managed by Admin
+  const storedData = localStorage.getItem('ksm_events');
+  const events = storedData ? JSON.parse(storedData) : [];
+
+  if (events.length === 0) {
+    eventContainer.innerHTML = `
+      <div style="text-align:center; padding:2rem; color:var(--text-medium);">
+        <p>No upcoming events scheduled at this time.</p>
+      </div>`;
+    return;
+  }
+
+  // Sort events chronologically
+  events.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  // Render on homepage
+  eventContainer.innerHTML = events.map(e => {
+    const d = new Date(e.date);
+    const month = d.toLocaleString('en-US', { month: 'short' }).toUpperCase();
+    const day = String(d.getDate()).padStart(2, '0');
+
+    return `
+      <div class="event-item">
+        <div class="event-date-badge">
+          <span class="event-month">${month}</span>
+          <span class="event-day">${day}</span>
+        </div>
+        <div class="event-info">
+          <h4>${e.title}</h4>
+          <p>${e.description || 'Join us at KSM for this upcoming event.'}</p>
+          <span class="event-tag">${e.category || 'Event'}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+document.addEventListener('DOMContentLoaded', loadPortalEventsToWebsite);

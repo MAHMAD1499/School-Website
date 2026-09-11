@@ -1,7 +1,9 @@
-/* Shared Subpage Hero Section */
+/* ==========================================================================
+   1. SHARED SUBPAGE HERO & BREADCRUMBS
+   ========================================================================== */
 .page-hero {
-    background: linear-gradient(135deg, var(--primary-deep) 0%, #1e40af 60%, #2563eb 100%);
-    padding: 5rem 0;
+    background: linear-gradient(135deg, var(--primary-deep) 0%, #1e40af 60%, var(--primary-light) 100%);
+    padding: 5rem 1rem;
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -47,7 +49,9 @@
     color: rgba(255, 255, 255, 0.7);
 }
 
-/* ===== ABOUT US PAGE STYLES ===== */
+/* ==========================================================================
+   2. ABOUT US PAGE STYLES
+   ========================================================================== */
 .about-page-grid {
     display: grid;
     grid-template-columns: 260px 1fr;
@@ -128,7 +132,7 @@
     width: 60px;
     height: 3px;
     background: var(--accent-warm);
-    border-radius: 999px;
+    border-radius: var(--radius-full);
 }
 
 .content-section>p {
@@ -138,6 +142,7 @@
     font-size: 1rem;
 }
 
+/* Values Grid */
 .values-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -182,6 +187,7 @@
     line-height: 1.6;
 }
 
+/* Timeline */
 .timeline {
     position: relative;
     padding-left: 2rem;
@@ -196,7 +202,7 @@
     bottom: 0;
     width: 2px;
     background: linear-gradient(to bottom, var(--primary-deep), var(--accent-warm));
-    border-radius: 999px;
+    border-radius: var(--radius-full);
 }
 
 .timeline-item {
@@ -238,6 +244,7 @@
     line-height: 1.6;
 }
 
+/* Team Grid */
 .team-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -290,7 +297,9 @@
     line-height: 1.55;
 }
 
-/* ===== CONTACT PAGE STYLES ===== */
+/* ==========================================================================
+   3. CONTACT PAGE STYLES
+   ========================================================================== */
 .contact-page-wrapper {
     max-width: 1200px;
     margin: 4rem auto;
@@ -417,6 +426,7 @@
     gap: 2rem;
 }
 
+/* Office Hours Card */
 .office-hours-card {
     background: var(--bg-card);
     border-radius: var(--radius-lg);
@@ -465,12 +475,13 @@
     background: #FEE2E2;
     color: #DC2626;
     padding: 0.15rem 0.6rem;
-    border-radius: 999px;
+    border-radius: var(--radius-full);
     font-size: 0.75rem;
     font-weight: 700;
     font-family: var(--font-heading);
 }
 
+/* Contact Map Card */
 .contact-map-card {
     background: var(--bg-card);
     border-radius: var(--radius-lg);
@@ -489,7 +500,7 @@
 
 .map-embed {
     height: 220px;
-    background: #E5E7EB;
+    background: var(--border-color);
     position: relative;
 }
 
@@ -504,6 +515,7 @@
     color: var(--text-medium);
 }
 
+/* FAQ Section */
 .faq-section {
     margin-top: 4rem;
 }
@@ -520,7 +532,7 @@
     width: 60px;
     height: 3px;
     background: var(--accent-warm);
-    border-radius: 999px;
+    border-radius: var(--radius-full);
     margin: 0.75rem auto 0;
 }
 
@@ -555,9 +567,17 @@
     line-height: 1.6;
 }
 
-/* ===== RESPONSIVE MEDIA QUERIES ===== */
+/* ==========================================================================
+   4. CONSOLIDATED RESPONSIVE MEDIA QUERIES
+   ========================================================================== */
+
+/* Tablet & iPad Viewports */
 @media (max-width: 1024px) {
-    .about-page-grid {
+
+    .about-page-grid,
+    .contact-main-grid,
+    .values-grid,
+    .faq-grid {
         grid-template-columns: 1fr;
     }
 
@@ -565,100 +585,39 @@
         position: static;
     }
 
-    .values-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .team-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .contact-main-grid {
-        grid-template-columns: 1fr;
-    }
-
+    .team-grid,
     .contact-cards-row {
         grid-template-columns: 1fr 1fr;
     }
-
-    .faq-grid {
-        grid-template-columns: 1fr;
-    }
 }
 
-@media (max-width: 600px) {
-    .team-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .page-hero h1 {
-        font-size: 2rem;
-    }
-
-    .contact-cards-row {
-        grid-template-columns: 1fr;
-    }
-
-    .contact-form-row {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* ===== SUBPAGES MOBILE RESPONSIVE FIXES ===== */
-
+/* Mobile Devices */
 @media (max-width: 768px) {
-
-    /* Hero Banner */
     .page-hero {
-        padding: 3rem 1rem;
+        padding: 3.5rem 1rem;
     }
 
     .page-hero h1 {
-        font-size: 2rem;
+        font-size: 2.2rem;
     }
 
     .page-hero p {
         font-size: 0.95rem;
     }
 
-    /* About Page Layout */
-    .about-page-grid {
-        grid-template-columns: 1fr;
-        gap: 2rem;
-        margin: 2rem auto;
-        padding: 0 1rem;
-    }
-
-    .values-grid,
-    .team-grid {
-        grid-template-columns: 1fr;
-    }
-
-    /* Contact Page Layout */
+    .about-page-grid,
     .contact-page-wrapper {
         margin: 2rem auto;
         padding: 0 1rem;
     }
 
-    .contact-cards-row {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .contact-main-grid {
-        grid-template-columns: 1fr;
-        gap: 2rem;
-    }
-
-    .contact-form-card {
-        padding: 1.5rem;
-    }
-
+    .team-grid,
+    .contact-cards-row,
     .contact-form-row {
         grid-template-columns: 1fr;
     }
 
-    .faq-grid {
-        grid-template-columns: 1fr;
+    .contact-form-card {
+        padding: 1.5rem;
     }
 }

@@ -264,3 +264,60 @@ document.addEventListener('DOMContentLoaded', () => {
   initSidebar();
   initModals();
 });
+
+// Seed default events into local database if empty
+function seedEvents() {
+  if (!localStorage.getItem('ksm_events')) {
+    const defaultEvents = [
+      {
+        id: 'evt_1',
+        title: 'Back-to-School Family Night',
+        date: '2026-09-15',
+        time: '5:00 PM',
+        location: 'KSM Campus',
+        category: 'Meeting',
+        description: 'Meet the guides, tour classrooms & enjoy refreshments with the KSM community.'
+      },
+      {
+        id: 'evt_2',
+        title: 'PTA Monthly Meeting',
+        date: '2026-09-22',
+        time: '4:00 PM',
+        location: 'Conference Room',
+        category: 'Meeting',
+        description: 'Join the Parent-Teacher Association for our monthly planning session and Q&A.'
+      },
+      {
+        id: 'evt_3',
+        title: 'Junior Science Expo',
+        date: '2026-10-05',
+        time: '10:00 AM',
+        location: 'Main Hall',
+        category: 'Academic',
+        description: 'Students present hands-on experiments to parents and invited guests.'
+      },
+      {
+        id: 'evt_4',
+        title: 'Montessori Values Day',
+        date: '2026-10-18',
+        time: '9:00 AM',
+        location: 'School Grounds',
+        category: 'Other',
+        description: 'A special day celebrating kindness, empathy, and global citizenship.'
+      },
+      {
+        id: 'evt_5',
+        title: 'Annual Cultural Gala',
+        date: '2026-11-02',
+        time: '11:00 AM',
+        location: 'Main Auditorium',
+        category: 'Cultural',
+        description: 'Music, performances, art exhibitions and traditional food from around the world.'
+      }
+    ];
+    localStorage.setItem('ksm_events', JSON.stringify(defaultEvents));
+  }
+}
+
+// Call seed function on load
+seedEvents();
