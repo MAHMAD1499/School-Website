@@ -1,0 +1,164 @@
+﻿<?php
+$_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
+function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
+function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
+function ksm_err($m,$code=400){ksm_json(null,$m,$code);}
+function ksm_esc($v){return ksm_db()->real_escape_string(trim($v??''));}
+header('Access-Control-Allow-Origin: *');header('Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS');header('Access-Control-Allow-Headers: Content-Type,X-Requested-With');
+if(($_SERVER['REQUEST_METHOD']??'')==='OPTIONS')exit;
+$isAjax=isset($_SERVER['HTTP_X_REQUESTED_WITH'])||strpos($_SERVER['CONTENT_TYPE']??'','application/json')!==false||isset($_GET['_api']);
+$method=$_SERVER['REQUEST_METHOD']??'GET';
+$body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
+  if($method==='GET'){$r=ksm_db()->query("SELECT * FROM admissions ORDER BY submittedAt DESC");$rows=[];while($row=$r->fetch_assoc())$rows[]=$row;ksm_json($rows);}
+  if($method==='PUT'){$id=intval($body['id']??0);$status=ksm_esc($body['status']??'Pending');if(!$id)ksm_err('Invalid ID.');ksm_db()->query("UPDATE admissions SET status='$status' WHERE id=$id");ksm_json(null,'Status updated.');}
+  if($method==='DELETE'){$id=intval($_GET['id']??0);if(!$id)ksm_err('Invalid ID.');ksm_db()->query("DELETE FROM admissions WHERE id=$id");ksm_json(null,'Deleted.');}
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admissions — Admin Panel</title>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+<div class="portal-wrapper">
+  <div class="portal-main">
+    <div class="portal-topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menuToggle"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <span class="topbar-title">Admissions Management</span>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-sm btn-danger" onclick="Auth.logoutAdmin();window.location.href='login.php'">Logout</button>
+      </div>
+    </div>
+
+    <div class="portal-content fade-up">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1 class="page-title">📝 Admissions Applications</h1>
+          <p class="page-subtitle">Review and manage all submitted admission applications</p>
+        </div>
+        <div style="display:flex;gap:0.75rem;">
+          <select id="filterStatus" class="form-control" style="width:auto;border-radius:var(--radius-full);">
+            <option value="">All Statuses</option>
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
+            <option value="Under Review">Under Review</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr><th>Student Name</th><th>Program</th><th>Parent</th><th>Phone</th><th>Submitted</th><th>Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="admissionsTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="portal-footer">© 2026 KSM Admin Panel.</div>
+  </div>
+</div>
+
+<!-- View Details Modal -->
+<div class="modal-overlay" id="viewModal">
+  <div class="modal" style="max-width:620px;">
+    <div class="modal-header">
+      <h2 class="modal-title">Application Details</h2>
+      <button class="modal-close" data-modal-close><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div id="viewContent" style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;"></div>
+    <hr class="divider">
+    <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+      <button class="btn btn-accent" onclick="updateStatus('Approved')">✅ Approve</button>
+      <button class="btn btn-outline" onclick="updateStatus('Under Review')">🔍 Under Review</button>
+      <button class="btn btn-danger" onclick="updateStatus('Rejected')">❌ Reject</button>
+      <button class="btn btn-outline" data-modal-close style="margin-left:auto;">Close</button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/portal.js"></script>
+<script src="../assets/api.js"></script>
+<script src="../assets/sidebar.js"></script>
+<script>
+  buildSidebar('admin');
+  let currentViewId = null;
+
+  const statusColors = { Pending:'badge-gold', Approved:'badge-green', Rejected:'badge-red', 'Under Review':'badge-purple' };
+
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!Auth.isAdminLoggedIn()) { window.location.href = 'login.php'; return; }
+    renderTable();
+    document.getElementById('filterStatus').addEventListener('change', renderTable);
+  });
+
+  function renderTable() {
+    const statusFilter = document.getElementById('filterStatus').value;
+    let apps = DB.get('admissions');
+    if (statusFilter) apps = apps.filter(a => a.status === statusFilter);
+
+    const tbody = document.getElementById('admissionsTbody');
+    if (apps.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-medium);padding:2rem;">No applications found.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = apps.map(a => `
+      <tr>
+        <td><strong>${a.studentName}</strong></td>
+        <td>${a.program}</td>
+        <td>${a.parentName}</td>
+        <td>${a.phone}</td>
+        <td style="font-size:0.82rem;color:var(--text-medium);">${formatDate(a.submittedAt)}</td>
+        <td><span class="badge ${statusColors[a.status] || 'badge-blue'}">${a.status}</span></td>
+        <td>
+          <button class="btn btn-sm btn-outline" onclick="viewApplication('${a.id}')">👁️ View</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function viewApplication(id) {
+    const a = DB.get('admissions').find(a => a.id === id);
+    if (!a) return;
+    currentViewId = id;
+
+    const fields = [
+      ['Student Name', a.studentName], ['Date of Birth', a.dob],
+      ['Gender', a.gender], ['Nationality', a.nationality],
+      ['Parent Name', a.parentName], ['Relation', a.relation],
+      ['Phone', a.phone], ['Email', a.email],
+      ['Occupation', a.occupation || '—'], ['Program', a.program],
+      ['Academic Year', a.academicYear], ['Previous School', a.previousSchool || '—'],
+      ['Medical Info', a.medical || 'None'], ['Status', a.status],
+    ];
+
+    document.getElementById('viewContent').innerHTML = fields.map(([label, val]) => `
+      <div style="background:var(--primary-bg);padding:0.75rem;border-radius:var(--radius-sm);">
+        <p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.2rem;text-transform:uppercase;letter-spacing:0.5px;">${label}</p>
+        <p style="font-weight:600;font-size:0.9rem;">${val || '—'}</p>
+      </div>
+    `).join('') + (a.additionalInfo ? `<div style="grid-column:1/-1;background:var(--accent-light);padding:0.75rem;border-radius:var(--radius-sm);"><p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.2rem;">Additional Info</p><p style="font-size:0.88rem;">${a.additionalInfo}</p></div>` : '');
+
+    openModal('viewModal');
+  }
+
+  function updateStatus(newStatus) {
+    if (!currentViewId) return;
+    DB.update('admissions', currentViewId, { status: newStatus });
+    showToast(`Application marked as ${newStatus}.`, 'success');
+    closeModal('viewModal');
+    renderTable();
+  }
+</script>
+</body>
+</html>
+
+

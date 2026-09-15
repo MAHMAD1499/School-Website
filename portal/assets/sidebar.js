@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Sidebar builder — call buildSidebar(role) in each page
  * role: 'portal' | 'admin' | 'student'
  */
@@ -10,44 +10,44 @@ function buildSidebar(role = 'portal') {
   const rootBase = (isAdmin || isStudent || isStaff) ? '../../' : '../';
 
   const portalLinks = [
-    { href: base + 'index.html', icon: 'home', label: 'Home' },
-    { href: base + 'about.html', icon: 'info', label: 'About School' },
-    { href: base + 'teachers.html', icon: 'users', label: 'Teachers & Staff' },
-    { href: base + 'classes.html', icon: 'book-open', label: 'Classes & Subjects' },
-    { href: base + 'gallery.html', icon: 'image', label: 'Gallery' },
-    { href: base + 'news.html', icon: 'bell', label: 'News & Announcements' },
-    { href: base + 'events.html', icon: 'calendar', label: 'Events' },
-    { href: base + 'admissions.html', icon: 'file-text', label: 'Admissions' },
-    { href: base + 'contact.html', icon: 'phone', label: 'Contact' },
+    { href: base + 'index.php', icon: 'home', label: 'Home' },
+    { href: base + 'about.php', icon: 'info', label: 'About School' },
+    { href: base + 'teachers.php', icon: 'users', label: 'Teachers & Staff' },
+    { href: base + 'classes.php', icon: 'book-open', label: 'Classes & Subjects' },
+    { href: base + 'gallery.php', icon: 'image', label: 'Gallery' },
+    { href: base + 'news.php', icon: 'bell', label: 'News & Announcements' },
+    { href: base + 'events.php', icon: 'calendar', label: 'Events' },
+    { href: base + 'admissions.php', icon: 'file-text', label: 'Admissions' },
+    { href: base + 'contact.php', icon: 'phone', label: 'Contact' },
   ];
 
   const adminLinks = [
-    { href: 'dashboard.html', icon: 'layout', label: 'Dashboard' },
-    { href: 'teachers.html', icon: 'users', label: 'Manage Teachers' },
-    { href: 'gallery.html', icon: 'image', label: 'Manage Gallery' },
-    { href: 'news.html', icon: 'bell', label: 'Manage News' },
-    { href: 'events.html', icon: 'calendar', label: 'Manage Events' },
-    { href: 'admissions.html', icon: 'file-text', label: 'Admissions' },
-    { href: 'contacts.html', icon: 'mail', label: 'Contact Messages' },
-    { href: 'credentials.html', icon: 'shield', label: 'Credentials' },
+    { href: 'dashboard.php', icon: 'layout', label: 'Dashboard' },
+    { href: 'teachers.php', icon: 'users', label: 'Manage Teachers' },
+    { href: 'gallery.php', icon: 'image', label: 'Manage Gallery' },
+    { href: 'news.php', icon: 'bell', label: 'Manage News' },
+    { href: 'events.php', icon: 'calendar', label: 'Manage Events' },
+    { href: 'admissions.php', icon: 'file-text', label: 'Admissions' },
+    { href: 'contacts.php', icon: 'mail', label: 'Contact Messages' },
+    { href: 'credentials.php', icon: 'shield', label: 'Credentials' },
   ];
 
   const studentLinks = [
-    { href: 'profile.html', icon: 'user', label: 'My Profile' },
-    { href: 'dashboard.html', icon: 'home', label: 'My Dashboard' },
-    { href: 'homework.html', icon: 'clipboard', label: 'Homework (Diary)' },
-    { href: 'attendance.html', icon: 'check-square', label: 'My Attendance' },
-    { href: 'news.html', icon: 'bell', label: 'Announcements' },
-    { href: 'events.html', icon: 'calendar', label: 'Events' },
-    { href: 'classes.html', icon: 'book-open', label: 'Classes' },
-    { href: 'gallery.html', icon: 'image', label: 'Gallery' }
+    { href: 'profile.php', icon: 'user', label: 'My Profile' },
+    { href: 'dashboard.php', icon: 'home', label: 'My Dashboard' },
+    { href: 'homework.php', icon: 'clipboard', label: 'Homework (Diary)' },
+    { href: 'attendance.php', icon: 'check-square', label: 'My Attendance' },
+    { href: 'news.php', icon: 'bell', label: 'Announcements' },
+    { href: 'events.php', icon: 'calendar', label: 'Events' },
+    { href: 'classes.php', icon: 'book-open', label: 'Classes' },
+    { href: 'gallery.php', icon: 'image', label: 'Gallery' }
   ];
 
   const staffLinks = [
-    { href: 'dashboard.html', icon: 'layout', label: 'Dashboard' },
-    { href: 'profile.html', icon: 'user', label: 'My Profile' },
-    { href: 'homework.html', icon: 'clipboard', label: 'Assign Homework' },
-    { href: 'attendance.html', icon: 'check-square', label: 'Mark Attendance' },
+    { href: 'dashboard.php', icon: 'layout', label: 'Dashboard' },
+    { href: 'profile.php', icon: 'user', label: 'My Profile' },
+    { href: 'homework.php', icon: 'clipboard', label: 'Assign Homework' },
+    { href: 'attendance.php', icon: 'check-square', label: 'Mark Attendance' },
   ];
 
   const svgIcons = {
@@ -90,29 +90,29 @@ function buildSidebar(role = 'portal') {
 
   if (isAdmin) {
     userSection = `<div class="sidebar-section-label">Admin Panel</div>`;
-    logoutBtn = `<a href="javascript:void(0)" class="sidebar-link" onclick="Auth.logoutAdmin(); window.location='login.html';">
+    logoutBtn = `<a href="javascript:void(0)" class="sidebar-link" onclick="Auth.logoutAdmin(); window.location='login.php';">
       ${makeIconSVG('log-out')}<span>Logout</span>
     </a>`;
   } else if (isStudent) {
-    const student = Auth.getStudent();
+    const student = JSON.parse(sessionStorage.getItem('ksm_student_auth'));
     userSection = student ? `<div class="sidebar-section-label">Student Portal</div>` : '';
-    logoutBtn = `<a href="javascript:void(0)" class="sidebar-link" onclick="Auth.logoutStudent(); window.location='login.html';">
+    logoutBtn = `<a href="javascript:void(0)" class="sidebar-link" onclick="Auth.logoutStudent(); window.location='login.php';">
       ${makeIconSVG('log-out')}<span>Logout</span>
     </a>`;
   } else if (isStaff) {
-    const staff = Auth.getStaff();
+    const staff = JSON.parse(sessionStorage.getItem('ksm_staff_auth'));
     userSection = staff ? `<div class="sidebar-section-label">Staff Portal</div>` : '';
-    logoutBtn = `<a href="javascript:void(0)" class="sidebar-link" onclick="Auth.logoutStaff(); window.location='login.html';">
+    logoutBtn = `<a href="javascript:void(0)" class="sidebar-link" onclick="Auth.logoutStaff(); window.location='login.php';">
       ${makeIconSVG('log-out')}<span>Logout</span>
     </a>`;
   } else {
     userSection = `<div class="sidebar-section-label">Navigation</div>`;
-    logoutBtn = `<a href="${rootBase}index.html" class="sidebar-link">${makeIconSVG('home')}<span>Back to Website</span></a>`;
+    logoutBtn = `<a href="${rootBase}index.php" class="sidebar-link">${makeIconSVG('home')}<span>Back to Website</span></a>`;
   }
 
   const sidebarHTML = `
     <div class="portal-sidebar" id="portalSidebar">
-      <a href="${isAdmin ? '../index.html' : isStudent ? '../index.html' : isStaff ? '../index.html' : 'index.html'}" class="sidebar-brand">
+      <a href="${isAdmin ? '../index.php' : isStudent ? '../index.php' : isStaff ? '../index.php' : 'index.php'}" class="sidebar-brand">
         <img src="${rootBase}assets/images/logo.svg" alt="KSM Logo" onerror="this.style.display='none'">
         <div class="sidebar-brand-text">
           <span class="brand-title">KSM Portal</span>
@@ -138,3 +138,4 @@ function buildSidebar(role = 'portal') {
     }
   });
 }
+

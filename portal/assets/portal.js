@@ -44,12 +44,12 @@ function seedData() {
 
   // Teachers
   DB.set('teachers', [
-    { id: '1', name: 'Ms. Saadia Khan', role: 'Principal & Head Teacher', subject: 'Administration', emoji: '👩‍💼', bio: 'Certified Montessori educator with 15+ years of experience.' },
-    { id: '2', name: 'Ms. Ayesha Raza', role: 'Senior Teacher', subject: 'Language & Literacy', emoji: '👩‍🏫', bio: 'Specializes in early childhood language development.' },
-    { id: '3', name: 'Mr. Bilal Ahmed', role: 'Teacher', subject: 'Mathematics & Science', emoji: '👨‍🏫', bio: 'Passionate about making math fun for young learners.' },
-    { id: '4', name: 'Ms. Fatima Malik', role: 'Teacher', subject: 'Art & Creativity', emoji: '👩‍🎨', bio: 'Art enthusiast promoting creative expression in children.' },
-    { id: '5', name: 'Ms. Hira Yousuf', role: 'Teacher', subject: 'Physical Education', emoji: '🏃‍♀️', bio: 'Focused on gross motor development and healthy habits.' },
-    { id: '6', name: 'Mr. Usman Tariq', role: 'Teaching Assistant', subject: 'General Support', emoji: '👨‍🎓', bio: 'Dedicated assistant supporting classroom activities.' },
+    { id: '1', name: 'Ms. Saadia Khan', role: 'Principal', subject: 'Administration', emoji: '👩‍💼', bio: 'Certified Montessori educator with 15+ years of experience.' },
+    { id: '2', name: 'Ms. Ayesha Raza', role: 'Junior/senior teacher', subject: 'Language & Literacy', emoji: '👩‍🏫', bio: 'Specializes in early childhood language development.' },
+    { id: '3', name: 'Mr. Bilal Ahmed', role: 'Science teacher', subject: 'Mathematics & Science', emoji: '👨‍🏫', bio: 'Passionate about making math fun for young learners.' },
+    { id: '4', name: 'Ms. Fatima Malik', role: 'Montessori teacher', subject: 'Art & Creativity', emoji: '👩‍🎨', bio: 'Art enthusiast promoting creative expression in children.' },
+    { id: '5', name: 'Ms. Hira Yousuf', role: 'P.E teacher\'s', subject: 'Physical Education', emoji: '🏃‍♀️', bio: 'Focused on gross motor development and healthy habits.' },
+    { id: '6', name: 'Mr. Usman Tariq', role: 'Computer teacher', subject: 'General Support', emoji: '👨‍🎓', bio: 'Dedicated assistant supporting classroom activities.' },
   ]);
 
   // Gallery
