@@ -38,7 +38,6 @@
           <p style="color:rgba(255,255,255,0.75);font-size:0.9rem;">Manage your classes, homework and attendance from here.</p>
         </div>
         <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
-          <a href="../index.html" class="btn btn-outline" style="border-color:rgba(255,255,255,0.5);color:white;font-size:0.85rem;">View Portal</a>
         </div>
       </div>
 
@@ -57,8 +56,8 @@
         </div>
 
         <div class="card">
-          <div class="card-header"><h2 class="card-title">📚 My Class Students</h2></div>
-          <div id="classStudents"></div>
+          <div class="card-header"><h2 class="card-title">📢 Announcements</h2></div>
+          <div id="announcementsList"></div>
         </div>
       </div>
     </div>
@@ -83,30 +82,29 @@
     // Stats
     const homework = DB.get('homework');
     const attendance = DB.get('attendance');
-    const students = DB.get('students');
+    const news = DB.get('news');
     const myHomework = homework.filter(h => h.staffId === staff.id);
     const myAttendance = attendance.filter(a => a.staffId === staff.id);
-    const myStudents = students.filter(s => s.class === staff.class);
 
     document.getElementById('staffStats').innerHTML = `
-      <div class="stat-card"><div class="stat-icon green"><svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg></div><div class="stat-info"><div class="stat-number">${myHomework.length}</div><div class="stat-label">Homework Assigned</div></div></div>
-      <div class="stat-card"><div class="stat-icon blue"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><div class="stat-info"><div class="stat-number">${myAttendance.length}</div><div class="stat-label">Attendance Records</div></div></div>
-      <div class="stat-card"><div class="stat-icon gold"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="stat-info"><div class="stat-number">${myStudents.length}</div><div class="stat-label">My Students</div></div></div>
-      <div class="stat-card"><div class="stat-icon purple"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><div class="stat-info"><div class="stat-number">${staff.subject}</div><div class="stat-label">Subject</div></div></div>
+      <a href="homework.html" class="stat-card" style="text-decoration:none;color:inherit;"><div class="stat-icon green"><svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg></div><div class="stat-info"><div class="stat-number">${myHomework.length}</div><div class="stat-label">Homework Assigned</div></div></a>
+      <a href="attendance.html" class="stat-card" style="text-decoration:none;color:inherit;"><div class="stat-icon blue"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><div class="stat-info"><div class="stat-number">${myAttendance.length}</div><div class="stat-label">Attendance Records</div></div></a>
+      <div class="stat-card" style="cursor:default;"><div class="stat-icon gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div><div class="stat-info"><div class="stat-number">${news.length}</div><div class="stat-label">Announcements</div></div></div>
+      <a href="profile.html" class="stat-card" style="text-decoration:none;color:inherit;"><div class="stat-icon purple"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><div class="stat-info"><div style="font-size:1.15rem;font-weight:700;line-height:1.2;color:var(--text-dark);margin-bottom:0.25rem;">${staff.subject}</div><div class="stat-label">Subject</div></div></a>
     `;
 
-    // Class students
-    const el = document.getElementById('classStudents');
-    if (myStudents.length === 0) {
-      el.innerHTML = '<div class="empty-state" style="padding:2rem;"><div class="empty-state-icon">📚</div><p>No students in your class yet.</p></div>';
+    // Announcements
+    const el = document.getElementById('announcementsList');
+    if (news.length === 0) {
+      el.innerHTML = '<div class="empty-state" style="padding:2rem;"><div class="empty-state-icon">📢</div><p>No announcements available.</p></div>';
     } else {
-      el.innerHTML = myStudents.map(s => `
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:0.65rem 0;border-bottom:1px solid var(--border-color);">
-          <div>
-            <p style="font-weight:600;font-size:0.88rem;">${s.name}</p>
-            <p style="font-size:0.75rem;color:var(--text-medium);">${s.rollNo} — ${s.class}</p>
+      el.innerHTML = news.slice(0, 4).map(n => `
+        <div style="padding:0.75rem 0;border-bottom:1px solid var(--border-color);">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.25rem;">
+            <p style="font-weight:600;font-size:0.9rem;color:var(--text-dark);">${n.title}</p>
+            <span class="badge badge-blue" style="font-size:0.7rem;">${n.category}</span>
           </div>
-          <span class="badge badge-blue">${s.class}</span>
+          <p style="font-size:0.8rem;color:var(--text-medium);margin-bottom:0.35rem;">${n.body}</p>
         </div>
       `).join('');
     }

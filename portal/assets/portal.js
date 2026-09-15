@@ -40,7 +40,7 @@ const DB = {
 // SEED DEFAULT DATA (only if first visit)
 // ============================================================
 function seedData() {
-  if (DB.get('seeded', false)) return;
+  if (DB.get('seeded_v2', false)) return;
 
   // Teachers
   DB.set('teachers', [
@@ -105,7 +105,7 @@ function seedData() {
   // Attendance (empty — filled by staff)
   DB.set('attendance', []);
 
-  DB.set('seeded', true);
+  DB.set('seeded_v2', true);
 }
 
 // ============================================================

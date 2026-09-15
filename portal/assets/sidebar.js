@@ -35,6 +35,8 @@ function buildSidebar(role = 'portal') {
   const studentLinks = [
     { href: 'profile.html', icon: 'user', label: 'My Profile' },
     { href: 'dashboard.html', icon: 'home', label: 'My Dashboard' },
+    { href: 'homework.html', icon: 'clipboard', label: 'Homework (Diary)' },
+    { href: 'attendance.html', icon: 'check-square', label: 'My Attendance' },
     { href: 'news.html', icon: 'bell', label: 'Announcements' },
     { href: 'events.html', icon: 'calendar', label: 'Events' },
     { href: 'classes.html', icon: 'book-open', label: 'Classes' },
@@ -43,9 +45,9 @@ function buildSidebar(role = 'portal') {
 
   const staffLinks = [
     { href: 'dashboard.html', icon: 'layout', label: 'Dashboard' },
+    { href: 'profile.html', icon: 'user', label: 'My Profile' },
     { href: 'homework.html', icon: 'clipboard', label: 'Assign Homework' },
     { href: 'attendance.html', icon: 'check-square', label: 'Mark Attendance' },
-    { href: 'profile.html', icon: 'user', label: 'My Profile' },
   ];
 
   const svgIcons = {

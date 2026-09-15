@@ -41,6 +41,7 @@
 }
 
 /* ===== RESET ===== */
+.hidden { display: none !important; }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body { font-family: var(--font-body); color: var(--text-dark); background: var(--bg-main); line-height: 1.6; overflow-x: hidden; }
