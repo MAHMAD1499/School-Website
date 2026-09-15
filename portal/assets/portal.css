@@ -917,6 +917,144 @@ tbody tr:hover { background: var(--primary-bg); }
   color: var(--primary-deep);
 }
 
+/* ===== STAFF AUTH PAGE ===== */
+.auth-page.auth-staff {
+  background: linear-gradient(135deg, #065F46 0%, #047857 50%, #10B981 100%);
+}
+.auth-page.auth-staff::before {
+  background: rgba(245,158,11,0.1);
+}
+.auth-page.auth-staff::after {
+  background: rgba(16,185,129,0.15);
+}
+
+/* ===== ATTENDANCE TOGGLE ===== */
+.attendance-toggle {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.attendance-toggle .toggle-btn {
+  padding: 0.4rem 0.9rem;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-card);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-family: var(--font-heading);
+}
+.attendance-toggle .toggle-btn:hover {
+  border-color: var(--primary-light);
+}
+.attendance-toggle .toggle-btn.present {
+  background: #D1FAE5;
+  border-color: #10B981;
+  color: #065F46;
+}
+.attendance-toggle .toggle-btn.absent {
+  background: #FEE2E2;
+  border-color: #EF4444;
+  color: #991B1B;
+}
+
+/* ===== CREDENTIAL TABS ===== */
+.cred-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid var(--border-color);
+}
+.cred-tab {
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: var(--text-medium);
+  position: relative;
+  transition: color var(--transition);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+}
+.cred-tab:hover { color: var(--primary-deep); }
+.cred-tab.active {
+  color: var(--primary-deep);
+  border-bottom-color: var(--primary-deep);
+}
+
+.cred-panel { display: none; }
+.cred-panel.active { display: block; }
+
+/* ===== PASSWORD FIELD ===== */
+.pwd-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: monospace;
+  font-size: 0.85rem;
+}
+.pwd-field .pwd-text {
+  min-width: 80px;
+}
+.pwd-reveal {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-medium);
+  font-size: 0.75rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+}
+.pwd-reveal:hover { background: var(--primary-bg); color: var(--primary-deep); }
+
+/* ===== HOMEWORK CARD ===== */
+.homework-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  border-left: 4px solid var(--accent-warm);
+  transition: transform var(--transition);
+}
+.homework-card:hover { transform: translateY(-3px); }
+.homework-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.3rem; color: var(--primary-deep); }
+.homework-meta { font-size: 0.8rem; color: var(--text-medium); margin-bottom: 0.5rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+.homework-desc { font-size: 0.85rem; color: var(--text-medium); }
+
+/* ===== ATTENDANCE LIST ===== */
+.attendance-student-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  transition: background var(--transition);
+}
+.attendance-student-row:last-child { border-bottom: none; }
+.attendance-student-row:hover { background: var(--primary-bg); }
+.attendance-student-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.attendance-student-avatar {
+  width: 36px; height: 36px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--primary-deep), var(--primary-light));
+  color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.8rem;
+  flex-shrink: 0;
+}
+.attendance-student-name { font-weight: 600; font-size: 0.9rem; }
+.attendance-student-roll { font-size: 0.75rem; color: var(--text-medium); }
+
 /* Scrollbar */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }

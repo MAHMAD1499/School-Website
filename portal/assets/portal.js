@@ -87,7 +87,23 @@ function seedData() {
   DB.set('students', [
     { id: '1', name: 'Ali Hassan', email: 'ali@student.ksm', phone: '+92 300 1234567', address: '123 Main St, Karachi', password: 'student123', class: 'Kindergarten A', rollNo: 'KA-001', parentName: 'Mr. Hassan Ali' },
     { id: '2', name: 'Zara Ahmed', email: 'zara@student.ksm', phone: '+92 321 7654321', address: '456 Elm St, Lahore', password: 'student123', class: 'Early Childhood B', rollNo: 'ECB-002', parentName: 'Mrs. Sana Ahmed' },
+    { id: '3', name: 'Ibrahim Khan', email: 'ibrahim@student.ksm', phone: '+92 333 9876543', address: '789 Oak Ave, Haripur', password: 'student123', class: 'Kindergarten A', rollNo: 'KA-003', parentName: 'Mr. Imran Khan' },
+    { id: '4', name: 'Fatima Noor', email: 'fatima@student.ksm', phone: '+92 345 1112233', address: '12 Pine Rd, Haripur', password: 'student123', class: 'Junior Level', rollNo: 'JL-001', parentName: 'Mr. Noor Ahmed' },
+    { id: '5', name: 'Hamza Rauf', email: 'hamza@student.ksm', phone: '+92 312 4445566', address: '56 Cedar Ln, Haripur', password: 'student123', class: 'Early Childhood B', rollNo: 'ECB-003', parentName: 'Mr. Abdul Rauf' },
   ]);
+
+  // Staff (teacher login accounts)
+  DB.set('staff', [
+    { id: 's1', name: 'Ms. Ayesha Raza', email: 'ayesha@staff.ksm', phone: '+92 300 1111111', password: 'staff123', subject: 'Language & Literacy', class: 'Kindergarten A', bio: 'Specializes in early childhood language development.', emoji: '👩‍🏫' },
+    { id: 's2', name: 'Mr. Bilal Ahmed', email: 'bilal@staff.ksm', phone: '+92 300 2222222', password: 'staff123', subject: 'Mathematics & Science', class: 'Early Childhood B', bio: 'Passionate about making math fun for young learners.', emoji: '👨‍🏫' },
+    { id: 's3', name: 'Ms. Fatima Malik', email: 'fatima@staff.ksm', phone: '+92 300 3333333', password: 'staff123', subject: 'Art & Creativity', class: 'Junior Level', bio: 'Art enthusiast promoting creative expression in children.', emoji: '👩‍🎨' },
+  ]);
+
+  // Homework (empty — filled by staff)
+  DB.set('homework', []);
+
+  // Attendance (empty — filled by staff)
+  DB.set('attendance', []);
 
   DB.set('seeded', true);
 }
@@ -131,7 +147,26 @@ const Auth = {
 
   isStudentLoggedIn() { return !!this.getStudent(); },
 
-  logoutStudent() { sessionStorage.removeItem('ksm_student_auth'); }
+  logoutStudent() { sessionStorage.removeItem('ksm_student_auth'); },
+
+  // Staff auth
+  loginStaff(email, pass) {
+    const staff = DB.get('staff');
+    const member = staff.find(s => s.email === email && s.password === pass);
+    if (member) {
+      sessionStorage.setItem('ksm_staff_auth', JSON.stringify(member));
+      return member;
+    }
+    return null;
+  },
+
+  getStaff() {
+    try { return JSON.parse(sessionStorage.getItem('ksm_staff_auth')); } catch { return null; }
+  },
+
+  isStaffLoggedIn() { return !!this.getStaff(); },
+
+  logoutStaff() { sessionStorage.removeItem('ksm_staff_auth'); }
 };
 
 // ============================================================
