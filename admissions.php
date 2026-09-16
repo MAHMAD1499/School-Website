@@ -121,146 +121,132 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
     </section>
 
     <!-- Admissions Main Section -->
-    <section class="section" id="admissions-page">
-        <div class="admissions-grid container">
-
-            <!-- Admissions Info Column -->
-            <div class="admissions-info">
-                <h3>Admissions Process</h3>
-                <p>Enrolling your child at Saadia's Montessori School is straightforward. We evaluate entries
-                    holistically, focusing on community match and readiness.</p>
-
-                <div class="steps-list">
-                    <div class="step-item">
-                        <span class="step-num">1</span>
-                        <div class="step-text">
-                            <h4>Online Inquiry Form</h4>
-                            <p>Fill out the primary info using our step-by-step inquiry wizard on the right side.</p>
-                        </div>
-                    </div>
-
-                    <div class="step-item">
-                        <span class="step-num">2</span>
-                        <div class="step-text">
-                            <h4>Campus Orientation & Tour</h4>
-                            <p>Visit classrooms, meet certified Montessori coordinators, and observe classroom flows.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="step-item">
-                        <span class="step-num">3</span>
-                        <div class="step-text">
-                            <h4>Parent Interaction Session</h4>
-                            <p>A friendly chat to coordinate educational values and mutual expectations.</p>
-                        </div>
-                    </div>
+    <section class="section container" id="admissions-page" style="margin-bottom: 4rem;">
+        <div class="admissions-full-wrapper">
+            <div class="inquiry-card professional-form-card">
+                <div class="form-header text-center">
+                    <h2>Application for Admission</h2>
+                    <p class="text-muted" style="font-size: 0.95rem;">Please provide the correct information below to enroll your child at Kindergarten Saadia's Montessori.</p>
                 </div>
 
-                <a href="#" class="btn btn-outline"
-                    onclick="alert('Prospectus download will start shortly.'); return false;">
-                    📥 Download Prospectus (PDF)
-                </a>
-            </div>
-
-            <!-- Multi-Step Inquiry Form Column -->
-            <div class="inquiry-card">
-                <div class="form-header">
-                    <h3 class="text-center">Inquiry Form</h3>
-                    <p class="text-muted text-center" style="font-size: 0.85rem;">Fill in the form to register your
-                        interest</p>
-                </div>
-
-                <div class="form-progress">
-                    <div class="progress-line" id="progressLine"></div>
-                    <div class="progress-step active" data-step="1">1</div>
-                    <div class="progress-step" data-step="2">2</div>
-                    <div class="progress-step" data-step="3">3</div>
-                </div>
-
-                <form id="admissionForm">
-                    <!-- Step 1: Parent Information -->
-                    <div class="form-step active" data-step="1">
-                        <div class="form-group">
-                            <label>Parent / Guardian Name *</label>
-                            <input type="text" class="form-control" name="parent_name" placeholder="John Doe" required>
+                <form id="admissionForm" class="professional-grid-form" novalidate>
+                    <div class="form-section-title">Student Information</div>
+                    <div class="form-row">
+                        <div class="form-group half-width">
+                            <label for="studentName">Name of Student *</label>
+                            <input type="text" id="studentName" name="child_name" class="form-control" placeholder="e.g. Sarah Doe" required>
                         </div>
-                        <div class="form-group">
-                            <label>Email Address *</label>
-                            <input type="email" class="form-control" name="email" placeholder="john@example.com"
-                                required>
-                        </div>
-                        <div class="form-group">
-                            <label>Phone Number *</label>
-                            <input type="tel" class="form-control" name="phone" placeholder="+92 300 0000000" required>
-                        </div>
-                        <div class="form-navigation" style="justify-content: flex-end;">
-                            <button type="button" class="btn btn-primary next-step-btn">Next →</button>
+                        <div class="form-group half-width">
+                            <label for="studentDOB">Date of Birth *</label>
+                            <input type="date" id="studentDOB" name="dob" class="form-control" required>
                         </div>
                     </div>
 
-                    <!-- Step 2: Child Information -->
-                    <div class="form-step" data-step="2">
-                        <div class="form-group">
-                            <label>Child's Full Name *</label>
-                            <input type="text" class="form-control" name="child_name" placeholder="Child's Name"
-                                required>
-                        </div>
-                        <div class="form-group">
-                            <label>Date of Birth *</label>
-                            <input type="date" class="form-control" name="child_dob" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Program of Interest *</label>
-                            <select class="form-control" name="program" required>
-                                <option value="">Select a Program</option>
-                                <option value="Early Toddler Years (1.5 - 3 Years)">Early Toddler Years (1.5 - 3 Years)
-                                </option>
-                                <option value="Primary/Kindergarten (3 - 6 Years)">Primary/Kindergarten (3 - 6 Years)
-                                </option>
-                                <option value="Montessori Junior Level (6 - 9 Years)">Montessori Junior Level (6 - 9
-                                    Years)</option>
+                    <div class="form-row">
+                        <div class="form-group half-width">
+                            <label for="bloodGroup">Blood Group</label>
+                            <select id="bloodGroup" name="blood_group" class="form-control">
+                                <option value="" disabled selected>Select</option>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
                             </select>
                         </div>
-                        <div class="form-navigation">
-                            <button type="button" class="btn btn-outline prev-step-btn">← Back</button>
-                            <button type="button" class="btn btn-primary next-step-btn">Next →</button>
-                        </div>
-                    </div>
-
-                    <!-- Step 3: Additional Notes & Submit -->
-                    <div class="form-step" data-step="3">
-                        <div class="form-group">
-                            <label>Preferred Start Term</label>
-                            <select class="form-control" name="term">
-                                <option value="Immediate Enrollment">Immediate Enrollment</option>
-                                <option value="Next Academic Session">Next Academic Term</option>
+                        <div class="form-group half-width">
+                            <label for="programSelect">Program Applying For *</label>
+                            <select id="programSelect" name="program" class="form-control" required>
+                                <option value="" disabled selected>Select Program</option>
+                                <option value="Early Toddler (1.5 - 3 Yrs)">Early Toddler (1.5 - 3 Yrs)</option>
+                                <option value="Primary/Kindergarten (3 - 6 Yrs)">Primary/Kindergarten (3 - 6 Yrs)</option>
+                                <option value="Junior Level (6 - 9 Yrs)">Junior Level (6 - 9 Yrs)</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label>Additional Notes / Questions</label>
-                            <textarea class="form-control" name="notes" rows="3"
-                                placeholder="Tell us anything specific about your child..."></textarea>
+                    </div>
+
+                    <div class="form-section-title">Medical History</div>
+                    <div class="form-group full-width">
+                        <label for="medicalHistory">Disease / Medical Records / Inherited Condition / Medications / Autistic / ADHD</label>
+                        <textarea id="medicalHistory" name="notes" class="form-control" rows="3" placeholder="Please provide any relevant medical details or type 'None'..."></textarea>
+                    </div>
+
+                    <div class="form-section-title">Parent / Guardian Information</div>
+                    <div class="form-row">
+                        <div class="form-group half-width">
+                            <label for="parentName">Name of Parent / Guardian *</label>
+                            <input type="text" id="parentName" name="parent_name" class="form-control" placeholder="e.g. John Doe" required>
                         </div>
-                        <div class="form-navigation">
-                            <button type="button" class="btn btn-outline prev-step-btn">← Back</button>
-                            <button type="submit" class="btn btn-accent">Submit Application</button>
+                        <div class="form-group half-width">
+                            <label for="parentOccupation">Father / Mother / Guardian Occupation</label>
+                            <input type="text" id="parentOccupation" name="address" class="form-control" placeholder="Occupation">
                         </div>
                     </div>
 
-                    <!-- Success Message Screen -->
-                    <div class="form-success-msg" style="display: none;">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                            <polyline points="22 4 12 14.01 9 11.01" />
-                        </svg>
-                        <h3>Application Received!</h3>
-                        <p class="text-muted">Thank you for submitting your interest. Our admissions officer will
-                            contact you within 24 hours.</p>
+                    <div class="form-row">
+                        <div class="form-group half-width">
+                            <label for="parentContact">Contact No. *</label>
+                            <input type="tel" id="parentContact" name="phone" class="form-control" placeholder="+92 300 0000000" required>
+                        </div>
+                        <div class="form-group half-width">
+                            <label for="parentEmail">E-mail *</label>
+                            <input type="email" id="parentEmail" name="email" class="form-control" placeholder="example@domain.com" required>
+                        </div>
+                    </div>
+
+                    <div class="form-section-title">Required Documents Checklist</div>
+                    <p class="text-muted" style="font-size:0.85rem; margin-bottom: 1rem;">Please confirm that you will attach the following copies along with this form:</p>
+                    <div class="checkbox-group row-checkboxes">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="checkIdCard" required>
+                            <span class="checkmark"></span>
+                            ID Card of Father / Mother
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="checkBirthCert" required>
+                            <span class="checkmark"></span>
+                            Birth Certificate of Child
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="checkPhotos" required>
+                            <span class="checkmark"></span>
+                            4 Passport Size Pictures
+                        </label>
+                    </div>
+
+                    <div class="form-section-title">Declaration</div>
+                    <div class="checkbox-group full-width" style="margin-bottom:1.5rem;">
+                        <label class="checkbox-label terms-label">
+                            <input type="checkbox" id="termsCheck" required>
+                            <span class="checkmark"></span>
+                            I agree with the rules & regulations of the institution & shall conform to them. I certify that the above information is correct and please admit my son/daughter in this institution. I have read and understand the terms & conditions of this form.
+                        </label>
+                    </div>
+
+                    <div class="form-row signature-row">
+                        <div class="form-group full-width">
+                            <label for="digitalSignature">Digital Signature of Parents or Guardian *</label>
+                            <input type="text" id="digitalSignature" name="prior_school" class="form-control signature-input" placeholder="Type your full name as signature" required>
+                        </div>
+                    </div>
+
+                    <div class="form-submit-row">
+                        <button type="submit" class="btn btn-primary submit-btn-large">Submit Application</button>
                     </div>
                 </form>
-            </div>
 
+                <div id="formSuccess" class="form-success-msg" style="display: none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                        <polyline points="22 4 12 14.01 9 11.01" />
+                    </svg>
+                    <h3>Application Received!</h3>
+                    <p>Thank you for submitting your application. Our admissions office will contact you shortly regarding the next steps.</p>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -329,48 +315,8 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
     <!-- Scripts -->
     <script src="assets/js/app.js"></script>
     <script>
-        // Multi-Step Form Logic
+        // Single-Step Form Submission Logic
         document.addEventListener('DOMContentLoaded', () => {
-            const steps = document.querySelectorAll('.form-step');
-            const progressSteps = document.querySelectorAll('.progress-step');
-            let currentStep = 1;
-
-            function updateStep(stepNumber) {
-                steps.forEach(step => {
-                    step.classList.toggle('active', parseInt(step.dataset.step) === stepNumber);
-                });
-
-                progressSteps.forEach(pStep => {
-                    const stepVal = parseInt(pStep.dataset.step);
-                    pStep.classList.toggle('active', stepVal === stepNumber);
-                    pStep.classList.toggle('completed', stepVal < stepNumber);
-                });
-
-                const line = document.getElementById('progressLine');
-                if (line) {
-                    line.style.width = ((stepNumber - 1) / (steps.length - 1)) * 100 + '%';
-                }
-            }
-
-            document.querySelectorAll('.next-step-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    if (currentStep < 3) {
-                        currentStep++;
-                        updateStep(currentStep);
-                    }
-                });
-            });
-
-            document.querySelectorAll('.prev-step-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    if (currentStep > 1) {
-                        currentStep--;
-                        updateStep(currentStep);
-                    }
-                });
-            });
-
-            // Submit form to backend
             const form = document.getElementById('admissionForm');
             if (form) {
                 form.addEventListener('submit', async (e) => {
@@ -406,11 +352,10 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
                         
                         if (result.success) {
                             // Show success message
-                            document.querySelectorAll('.form-step').forEach(s => s.style.display = 'none');
-                            document.querySelector('.form-progress').style.display = 'none';
-                            document.querySelector('.form-success-msg').style.display = 'block';
+                            form.style.display = 'none';
+                            document.getElementById('formSuccess').style.display = 'block';
                             if (result.data && result.data.refCode) {
-                                document.querySelector('.form-success-msg').innerHTML += `<p style="margin-top:1rem;font-weight:bold;">Your Reference Code: ${result.data.refCode}</p>`;
+                                document.getElementById('formSuccess').innerHTML += `<p style="margin-top:1rem;font-weight:bold;">Your Reference Code: ${result.data.refCode}</p>`;
                             }
                         } else {
                             alert(result.message || 'Failed to submit application.');

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -87,6 +87,13 @@
 
       <nav class="nav-menu" id="navMenu">
         <a href="index.php" class="nav-link active">Home</a>
+        <div class="nav-dropdown">
+          <a href="#" class="nav-link">Campuses ▾</a>
+          <div class="dropdown-content">
+            <a href="#">Campus 1 (Main)</a>
+            <a href="#">Campus 2</a>
+          </div>
+        </div>
         <a href="#programs" class="nav-link">Programs</a>
         <a href="admissions.php" class="nav-link">Admissions</a>
         <a href="#gallery" class="nav-link">Gallery & Events</a>
@@ -103,7 +110,7 @@
       <div class="header-buttons">
         <a href="portal/admin/login.php" class="btn btn-outline" id="adminPortalBtn" style="padding:0.5rem 1rem;font-size:0.8rem;border-color:rgba(30,58,138,0.3);">Admin Portal</a>
         <a href="portal/index.php" class="btn btn-accent" id="portalBtn">Portal</a>
-        <a href="admissions.php" class="btn btn-primary" id="headerCTA">Apply Now</a>
+        <a href="#admissions" class="btn btn-primary" id="headerCTA">Apply Now</a>
       </div>
 
       <button class="nav-toggle" id="navToggle" aria-label="Toggle Navigation">
@@ -112,12 +119,13 @@
     </div>
   </header>
 
+
   <!-- Full Width Marquee Headline -->
   <div class="headline-ticker"
     style="background: rgba(30, 58, 138, 0.75); color: white; padding: 5px 0; overflow: hidden; white-space: nowrap; border-bottom: 2px solid var(--accent-warm);">
     <div
       style="display: inline-block; animation: marquee 20s linear infinite; font-family: var(--font-heading); font-weight: 600; font-size: 0.9rem; letter-spacing: 1px;">
-      "Free The Child's Potential and You Will Transform Him Into The World."
+      "Free The Child's Potential and You Will Transform Him Into The World." &nbsp;|&nbsp; Excellence 2024. Pesra certified. Extracurricular events.
     </div>
   </div>
 
@@ -412,128 +420,129 @@
 
   <!-- Admissions & Inquiry Section -->
   <section class="section container" id="admissions">
-    <div class="admissions-grid">
-      <div class="admissions-info">
-        <h2 class="section-title" style="left: 0; transform: none; display: block;">Admissions Process</h2>
-        <p class="section-subtitle" style="margin-left: 0; text-align: left; max-width: 100%;">Enrolling your child at
-          Saadia's Montessori School is straightforward. We evaluate entries holistically, focusing on community match
-          and readiness.</p>
-
-        <div class="steps-list">
-          <div class="step-item">
-            <div class="step-num">1</div>
-            <div class="step-text">
-              <h4>Online Inquiry Form</h4>
-              <p>Fill out the primary info using our step-by-step inquiry wizard on the right side.</p>
-            </div>
-          </div>
-          <div class="step-item">
-            <div class="step-num">2</div>
-            <div class="step-text">
-              <h4>Campus Orientation & Tour</h4>
-              <p>Visit classrooms, meet certified Montessori coordinators and observe classroom flows.</p>
-            </div>
-          </div>
-          <div class="step-item">
-            <div class="step-num">3</div>
-            <div class="step-text">
-              <h4>Parent Interaction Session</h4>
-              <p>A friendly chat to coordinate educational values and mutual expectations.</p>
-            </div>
-          </div>
+    <div class="admissions-full-wrapper">
+      <div class="inquiry-card professional-form-card">
+        <div class="form-header text-center">
+          <h2>Application for Admission</h2>
+          <p class="text-muted" style="font-size: 0.95rem;">Please provide the correct information below to enroll your child at Kindergarten Saadia's Montessori.</p>
         </div>
 
-        <a href="#" class="btn btn-outline" download>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="7 10 12 15 17 10" />
-            <line x1="12" y1="15" x2="12" y2="3" />
-          </svg>
-          Download Prospectus (PDF)
-        </a>
-      </div>
-
-      <div class="inquiry-card">
-        <div class="form-header">
-          <h3 class="text-center">Inquiry Form</h3>
-          <p class="text-center text-muted" style="font-size: 0.9rem;">Fill in the form to register your interest</p>
-        </div>
-
-        <div class="form-progress">
-          <div class="progress-line" id="progressLine"></div>
-          <div class="progress-step active" data-step="1">1</div>
-          <div class="progress-step" data-step="2">2</div>
-          <div class="progress-step" data-step="3">3</div>
-        </div>
-
-        <form id="inquiryForm" novalidate>
-          <div class="form-step active" data-step="1">
-            <div class="form-group">
-              <label for="parentName">Parent / Guardian Name *</label>
-              <input type="text" id="parentName" class="form-control" placeholder="Zain Shaki" required>
+        <form id="admissionForm" class="professional-grid-form" novalidate>
+          <div class="form-section-title">Student Information</div>
+          <div class="form-row">
+            <div class="form-group half-width">
+              <label for="studentName">Name of Student *</label>
+              <input type="text" id="studentName" class="form-control" placeholder="e.g. Sarah Doe" required>
             </div>
-            <div class="form-group">
-              <label for="parentEmail">Email Address *</label>
-              <input type="email" id="parentEmail" class="form-control" placeholder="zainshaki@example.com" required>
-            </div>
-            <div class="form-group">
-              <label for="parentPhone">Phone Number *</label>
-              <input type="tel" id="parentPhone" class="form-control" placeholder="+92 300 0000000" required>
+            <div class="form-group half-width">
+              <label for="studentDOB">Date of Birth *</label>
+              <input type="date" id="studentDOB" class="form-control" required>
             </div>
           </div>
-
-          <div class="form-step" data-step="2">
-            <div class="form-group">
-              <label for="childName">Child's Name *</label>
-              <input type="text" id="childName" class="form-control" placeholder="Sarah Doe" required>
-            </div>
-            <div class="form-group">
-              <label for="childAge">Child's Age (Years) *</label>
-              <select id="childAge" class="form-control" required>
-                <option value="" disabled selected>Select age</option>
-                <option value="1.5-3">1.5 - 3 Years</option>
-                <option value="3-6">3 - 6 Years</option>
-                <option value="6-9">6 - 9 Years</option>
+          
+          <div class="form-row">
+            <div class="form-group half-width">
+              <label for="bloodGroup">Blood Group</label>
+              <select id="bloodGroup" class="form-control">
+                <option value="" disabled selected>Select</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
               </select>
             </div>
-            <div class="form-group">
-              <label for="targetDate">Target Enrollment Date *</label>
-              <input type="date" id="targetDate" class="form-control" required>
-            </div>
-          </div>
-
-          <div class="form-step" data-step="3">
-            <div class="form-group">
-              <label for="sourceInfo">How did you hear about us?</label>
-              <select id="sourceInfo" class="form-control">
-                <option value="google">Google Search</option>
-                <option value="social">Social Media</option>
-                <option value="friends">Word of Mouth</option>
-                <option value="flyer">Flyer / Banner</option>
+            <div class="form-group half-width">
+              <label for="programSelect">Program Applying For *</label>
+              <select id="programSelect" class="form-control" required>
+                <option value="" disabled selected>Select Program</option>
+                <option value="toddler">Early Toddler (1.5 - 3 Yrs)</option>
+                <option value="kindergarten">Primary/Kindergarten (3 - 6 Yrs)</option>
+                <option value="junior">Junior Level (6 - 9 Yrs)</option>
               </select>
             </div>
-            <div class="form-group">
-              <label for="additionalNotes">Additional Notes / Questions</label>
-              <textarea id="additionalNotes" class="form-control" rows="4"
-                placeholder="Tell us more about your child's needs..."></textarea>
+          </div>
+
+          <div class="form-section-title">Medical History</div>
+          <div class="form-group full-width">
+            <label for="medicalHistory">Disease / Medical Records / Inherited Condition / Medications / Autistic / ADHD</label>
+            <textarea id="medicalHistory" class="form-control" rows="3" placeholder="Please provide any relevant medical details or type 'None'..."></textarea>
+          </div>
+
+          <div class="form-section-title">Parent / Guardian Information</div>
+          <div class="form-row">
+            <div class="form-group half-width">
+              <label for="parentName">Name of Parent / Guardian *</label>
+              <input type="text" id="parentName" class="form-control" placeholder="e.g. John Doe" required>
+            </div>
+            <div class="form-group half-width">
+              <label for="parentOccupation">Father / Mother / Guardian Occupation</label>
+              <input type="text" id="parentOccupation" class="form-control" placeholder="Occupation">
             </div>
           </div>
 
-          <div class="form-navigation">
-            <button type="button" class="btn btn-outline" id="prevBtn" style="display: none;">Back</button>
-            <button type="button" class="btn btn-primary" id="nextBtn" style="margin-left: auto;">Next</button>
+          <div class="form-row">
+            <div class="form-group half-width">
+              <label for="parentContact">Contact No. *</label>
+              <input type="tel" id="parentContact" class="form-control" placeholder="+92 300 0000000" required>
+            </div>
+            <div class="form-group half-width">
+              <label for="parentEmail">E-mail *</label>
+              <input type="email" id="parentEmail" class="form-control" placeholder="example@domain.com" required>
+            </div>
+          </div>
+
+          <div class="form-section-title">Required Documents Checklist</div>
+          <p class="text-muted" style="font-size:0.85rem; margin-bottom: 1rem;">Please confirm that you will attach the following copies along with this form:</p>
+          <div class="checkbox-group row-checkboxes">
+            <label class="checkbox-label">
+              <input type="checkbox" id="checkIdCard" required>
+              <span class="checkmark"></span>
+              ID Card of Father / Mother
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="checkBirthCert" required>
+              <span class="checkmark"></span>
+              Birth Certificate of Child
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="checkPhotos" required>
+              <span class="checkmark"></span>
+              4 Passport Size Pictures
+            </label>
+          </div>
+
+          <div class="form-section-title">Declaration</div>
+          <div class="checkbox-group full-width" style="margin-bottom:1.5rem;">
+            <label class="checkbox-label terms-label">
+              <input type="checkbox" id="termsCheck" required>
+              <span class="checkmark"></span>
+              I agree with the rules & regulations of the institution & shall conform to them. I certify that the above information is correct and please admit my son/daughter in this institution. I have read and understand the terms & conditions of this form.
+            </label>
+          </div>
+          
+          <div class="form-row signature-row">
+            <div class="form-group full-width">
+              <label for="digitalSignature">Digital Signature of Parents or Guardian *</label>
+              <input type="text" id="digitalSignature" class="form-control signature-input" placeholder="Type your full name as signature" required>
+            </div>
+          </div>
+
+          <div class="form-submit-row">
+            <button type="submit" class="btn btn-primary submit-btn-large">Submit Application</button>
           </div>
         </form>
 
         <div id="formSuccess" style="display: none;" class="form-success-msg">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
             <polyline points="22 4 12 14.01 9 11.01" />
           </svg>
-          <h3>Thank You!</h3>
-          <p>Your admission inquiry has been received. Our administrative coordinator will contact you within 24 hours.
-          </p>
+          <h3>Application Received!</h3>
+          <p>Thank you for submitting your application. Our admissions office will contact you shortly regarding the next steps.</p>
         </div>
       </div>
     </div>
