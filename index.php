@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -388,153 +388,17 @@
     </div>
   </section>
 
-  <!-- Key Highlights & Stats -->
+  <!-- Key Highlights -->
   <section class="stats">
-    <div class="stats-grid">
-      <div class="stat-item">
-        <h3 class="stat-counter" data-target="15">0</h3>
-        <p>Years of Excellence</p>
+    <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); text-align: center;">
+      <div class="stat-item" style="display: flex; justify-content: center; align-items: center; min-height: 80px;">
+        <h3 style="font-size: 1.5rem; color: #f59e0b; margin: 0;">Excellence Since 2024</h3>
       </div>
-      <div class="stat-item">
-        <h3 class="stat-counter" data-target="24">0</h3>
-        <p>Certified AMI Guides</p>
+      <div class="stat-item" style="display: flex; justify-content: center; align-items: center; min-height: 80px;">
+        <h3 style="font-size: 1.5rem; color: #f59e0b; margin: 0;">Verified by PESRA</h3>
       </div>
-      <div class="stat-item">
-        <h3 class="stat-counter" data-target="150">0</h3>
-        <p>Happy Toddlers</p>
-      </div>
-      <div class="stat-item">
-        <h3 class="stat-counter" data-target="8">0</h3>
-        <p>Extracurricular Clubs</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Admissions & Inquiry Section -->
-  <section class="section container" id="admissions">
-    <div class="admissions-grid">
-      <div class="admissions-info">
-        <h2 class="section-title" style="left: 0; transform: none; display: block;">Admissions Process</h2>
-        <p class="section-subtitle" style="margin-left: 0; text-align: left; max-width: 100%;">Enrolling your child at
-          Saadia's Montessori School is straightforward. We evaluate entries holistically, focusing on community match
-          and readiness.</p>
-
-        <div class="steps-list">
-          <div class="step-item">
-            <div class="step-num">1</div>
-            <div class="step-text">
-              <h4>Online Inquiry Form</h4>
-              <p>Fill out the primary info using our step-by-step inquiry wizard on the right side.</p>
-            </div>
-          </div>
-          <div class="step-item">
-            <div class="step-num">2</div>
-            <div class="step-text">
-              <h4>Campus Orientation & Tour</h4>
-              <p>Visit classrooms, meet certified Montessori coordinators and observe classroom flows.</p>
-            </div>
-          </div>
-          <div class="step-item">
-            <div class="step-num">3</div>
-            <div class="step-text">
-              <h4>Parent Interaction Session</h4>
-              <p>A friendly chat to coordinate educational values and mutual expectations.</p>
-            </div>
-          </div>
-        </div>
-
-        <a href="#" class="btn btn-outline" download>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="7 10 12 15 17 10" />
-            <line x1="12" y1="15" x2="12" y2="3" />
-          </svg>
-          Download Prospectus (PDF)
-        </a>
-      </div>
-
-      <div class="inquiry-card">
-        <div class="form-header">
-          <h3 class="text-center">Inquiry Form</h3>
-          <p class="text-center text-muted" style="font-size: 0.9rem;">Fill in the form to register your interest</p>
-        </div>
-
-        <div class="form-progress">
-          <div class="progress-line" id="progressLine"></div>
-          <div class="progress-step active" data-step="1">1</div>
-          <div class="progress-step" data-step="2">2</div>
-          <div class="progress-step" data-step="3">3</div>
-        </div>
-
-        <form id="inquiryForm" novalidate>
-          <div class="form-step active" data-step="1">
-            <div class="form-group">
-              <label for="parentName">Parent / Guardian Name *</label>
-              <input type="text" id="parentName" class="form-control" placeholder="Zain Shaki" required>
-            </div>
-            <div class="form-group">
-              <label for="parentEmail">Email Address *</label>
-              <input type="email" id="parentEmail" class="form-control" placeholder="zainshaki@example.com" required>
-            </div>
-            <div class="form-group">
-              <label for="parentPhone">Phone Number *</label>
-              <input type="tel" id="parentPhone" class="form-control" placeholder="+92 300 0000000" required>
-            </div>
-          </div>
-
-          <div class="form-step" data-step="2">
-            <div class="form-group">
-              <label for="childName">Child's Name *</label>
-              <input type="text" id="childName" class="form-control" placeholder="Sarah Doe" required>
-            </div>
-            <div class="form-group">
-              <label for="childAge">Child's Age (Years) *</label>
-              <select id="childAge" class="form-control" required>
-                <option value="" disabled selected>Select age</option>
-                <option value="1.5-3">1.5 - 3 Years</option>
-                <option value="3-6">3 - 6 Years</option>
-                <option value="6-9">6 - 9 Years</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="targetDate">Target Enrollment Date *</label>
-              <input type="date" id="targetDate" class="form-control" required>
-            </div>
-          </div>
-
-          <div class="form-step" data-step="3">
-            <div class="form-group">
-              <label for="sourceInfo">How did you hear about us?</label>
-              <select id="sourceInfo" class="form-control">
-                <option value="google">Google Search</option>
-                <option value="social">Social Media</option>
-                <option value="friends">Word of Mouth</option>
-                <option value="flyer">Flyer / Banner</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="additionalNotes">Additional Notes / Questions</label>
-              <textarea id="additionalNotes" class="form-control" rows="4"
-                placeholder="Tell us more about your child's needs..."></textarea>
-            </div>
-          </div>
-
-          <div class="form-navigation">
-            <button type="button" class="btn btn-outline" id="prevBtn" style="display: none;">Back</button>
-            <button type="button" class="btn btn-primary" id="nextBtn" style="margin-left: auto;">Next</button>
-          </div>
-        </form>
-
-        <div id="formSuccess" style="display: none;" class="form-success-msg">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-            <polyline points="22 4 12 14.01 9 11.01" />
-          </svg>
-          <h3>Thank You!</h3>
-          <p>Your admission inquiry has been received. Our administrative coordinator will contact you within 24 hours.
-          </p>
-        </div>
+      <div class="stat-item" style="display: flex; justify-content: center; align-items: center; min-height: 80px;">
+        <h3 style="font-size: 1.5rem; color: #f59e0b; margin: 0;">Extracurricular Events</h3>
       </div>
     </div>
   </section>

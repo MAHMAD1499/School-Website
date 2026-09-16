@@ -121,146 +121,386 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
     </section>
 
     <!-- Admissions Main Section -->
-    <section class="section" id="admissions-page">
-        <div class="admissions-grid container">
+    <style>
+        #admissions-page {
+            background-image: url('assets/images/bg-building.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            padding: 4rem 1rem;
+            position: relative;
+        }
+        #admissions-page::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        .paper-form-card {
+            position: relative;
+            z-index: 1;
+            background: #e8ebf0; /* Light grayish-blue background */
+            max-width: 850px;
+            margin: 0 auto;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+            color: #333;
+        }
+        .paper-header {
+            background: #d84545; /* Red header */
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+        }
+        .paper-logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .paper-logo-area img {
+            width: 60px;
+            height: 60px;
+            background: #fff;
+            border-radius: 50%;
+            padding: 5px;
+        }
+        .paper-logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+        .paper-logo-text .title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin: 0;
+        }
+        .paper-logo-text .subtitle {
+            font-size: 1.2rem;
+            font-weight: 400;
+            margin: 0;
+        }
+        .paper-badge {
+            background: #fff;
+            color: #d84545;
+            padding: 8px 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border-radius: 4px;
+        }
+        .paper-sub-header {
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        .paper-sub-title {
+            color: #d84545;
+            font-size: 1.2rem;
+            font-weight: 600;
+            max-width: 70%;
+            text-transform: uppercase;
+        }
+        .paper-address {
+            color: #d84545;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        .passport-photo-box {
+            width: 120px;
+            height: 150px;
+            border: 1px solid #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #666;
+            background: #fff;
+        }
+        .paper-instruction-bar {
+            background: #d84545;
+            color: #fff;
+            text-align: center;
+            padding: 8px;
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+        .paper-body {
+            padding: 2rem;
+        }
+        .paper-instruction-text {
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        .paper-form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .paper-form-group label {
+            width: 30%;
+            font-size: 0.95rem;
+            color: #444;
+            font-weight: 500;
+        }
+        .paper-form-group input[type="text"],
+        .paper-form-group input[type="date"],
+        .paper-form-group input[type="tel"],
+        .paper-form-group input[type="email"],
+        .paper-form-group select {
+            width: 70%;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #fff;
+            font-size: 0.95rem;
+            outline: none;
+        }
+        .paper-form-group textarea {
+            width: 70%;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #fff;
+            font-size: 0.95rem;
+            outline: none;
+            resize: vertical;
+        }
+        .paper-checkbox-group {
+            margin-top: 30px;
+        }
+        .paper-check-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+        .paper-check-item input[type="checkbox"] {
+            margin-right: 10px;
+            width: 16px;
+            height: 16px;
+        }
+        .paper-check-item input[type="text"] {
+            margin-left: 10px;
+            padding: 4px 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #fff;
+            flex-grow: 1;
+            max-width: 300px;
+        }
+        .paper-declaration {
+            margin-top: 40px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #444;
+        }
+        .paper-signature-row {
+            margin-top: 40px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .paper-signature-box {
+            width: 300px;
+            text-align: center;
+        }
+        .paper-signature-box input {
+            width: 100%;
+            border: none;
+            border-bottom: 1px solid #d84545;
+            background: transparent;
+            text-align: center;
+            font-family: 'Brush Script MT', cursive;
+            font-size: 1.5rem;
+            padding-bottom: 5px;
+            outline: none;
+        }
+        .paper-signature-box .signature-label {
+            color: #d84545;
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+        .paper-submit {
+            margin-top: 40px;
+            text-align: center;
+        }
+        .paper-submit button {
+            background: #d84545;
+            color: #fff;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .paper-submit button:hover {
+            background: #c03535;
+        }
+        @media (max-width: 768px) {
+            .paper-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            .paper-sub-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 20px;
+            }
+            .paper-sub-title {
+                max-width: 100%;
+            }
+            .paper-form-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .paper-form-group label {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+            .paper-form-group input[type="text"],
+            .paper-form-group input[type="date"],
+            .paper-form-group input[type="tel"],
+            .paper-form-group input[type="email"],
+            .paper-form-group select,
+            .paper-form-group textarea {
+                width: 100%;
+            }
+        }
+    </style>
 
-            <!-- Admissions Info Column -->
-            <div class="admissions-info">
-                <h3>Admissions Process</h3>
-                <p>Enrolling your child at Saadia's Montessori School is straightforward. We evaluate entries
-                    holistically, focusing on community match and readiness.</p>
-
-                <div class="steps-list">
-                    <div class="step-item">
-                        <span class="step-num">1</span>
-                        <div class="step-text">
-                            <h4>Online Inquiry Form</h4>
-                            <p>Fill out the primary info using our step-by-step inquiry wizard on the right side.</p>
+    <section id="admissions-page">
+        <div class="container">
+            <div class="paper-form-card">
+                
+                <div class="paper-header">
+                    <div class="paper-logo-area">
+                        <img src="assets/images/logo.svg" alt="KSM Logo">
+                        <div class="paper-logo-text">
+                            <span class="title">Kindergarten</span>
+                            <span class="subtitle">Saadia's Montessori</span>
                         </div>
                     </div>
-
-                    <div class="step-item">
-                        <span class="step-num">2</span>
-                        <div class="step-text">
-                            <h4>Campus Orientation & Tour</h4>
-                            <p>Visit classrooms, meet certified Montessori coordinators, and observe classroom flows.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="step-item">
-                        <span class="step-num">3</span>
-                        <div class="step-text">
-                            <h4>Parent Interaction Session</h4>
-                            <p>A friendly chat to coordinate educational values and mutual expectations.</p>
-                        </div>
+                    <div class="paper-badge">
+                        Admission Form
                     </div>
                 </div>
 
-                <a href="#" class="btn btn-outline"
-                    onclick="alert('Prospectus download will start shortly.'); return false;">
-                    📥 Download Prospectus (PDF)
-                </a>
-            </div>
-
-            <!-- Multi-Step Inquiry Form Column -->
-            <div class="inquiry-card">
-                <div class="form-header">
-                    <h3 class="text-center">Inquiry Form</h3>
-                    <p class="text-muted text-center" style="font-size: 0.85rem;">Fill in the form to register your
-                        interest</p>
-                </div>
-
-                <div class="form-progress">
-                    <div class="progress-line" id="progressLine"></div>
-                    <div class="progress-step active" data-step="1">1</div>
-                    <div class="progress-step" data-step="2">2</div>
-                    <div class="progress-step" data-step="3">3</div>
-                </div>
-
-                <form id="admissionForm">
-                    <!-- Step 1: Parent Information -->
-                    <div class="form-step active" data-step="1">
-                        <div class="form-group">
-                            <label>Parent / Guardian Name *</label>
-                            <input type="text" class="form-control" name="parent_name" placeholder="John Doe" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Email Address *</label>
-                            <input type="email" class="form-control" name="email" placeholder="john@example.com"
-                                required>
-                        </div>
-                        <div class="form-group">
-                            <label>Phone Number *</label>
-                            <input type="tel" class="form-control" name="phone" placeholder="+92 300 0000000" required>
-                        </div>
-                        <div class="form-navigation" style="justify-content: flex-end;">
-                            <button type="button" class="btn btn-primary next-step-btn">Next →</button>
-                        </div>
+                <div class="paper-sub-header">
+                    <div>
+                        <div class="paper-sub-title">FORM FOR THE ADMISSION IN KINDERGARTEN SAADIA'S MONTESSORI</div>
+                        <div class="paper-address">Circular Road, 1st Floor of the Micro Finance Bank</div>
                     </div>
+                    <div class="passport-photo-box">
+                        Passport<br>Size<br>Photo
+                    </div>
+                </div>
 
-                    <!-- Step 2: Child Information -->
-                    <div class="form-step" data-step="2">
-                        <div class="form-group">
-                            <label>Child's Full Name *</label>
-                            <input type="text" class="form-control" name="child_name" placeholder="Child's Name"
-                                required>
+                <div class="paper-instruction-bar">
+                    Provide the correct information below.
+                </div>
+
+                <div class="paper-body">
+                    <form id="admissionForm" novalidate>
+                        <div class="paper-instruction-text">Parents or Guardian must fill out and sign the form</div>
+
+                        <div class="paper-form-group">
+                            <label for="studentName">Name of Student:</label>
+                            <input type="text" id="studentName" name="child_name" required>
                         </div>
-                        <div class="form-group">
-                            <label>Date of Birth *</label>
-                            <input type="date" class="form-control" name="child_dob" required>
+                        <div class="paper-form-group">
+                            <label for="studentDOB">Date of Birth:</label>
+                            <input type="date" id="studentDOB" name="dob" required>
                         </div>
-                        <div class="form-group">
-                            <label>Program of Interest *</label>
-                            <select class="form-control" name="program" required>
-                                <option value="">Select a Program</option>
-                                <option value="Early Toddler Years (1.5 - 3 Years)">Early Toddler Years (1.5 - 3 Years)
-                                </option>
-                                <option value="Primary/Kindergarten (3 - 6 Years)">Primary/Kindergarten (3 - 6 Years)
-                                </option>
-                                <option value="Montessori Junior Level (6 - 9 Years)">Montessori Junior Level (6 - 9
-                                    Years)</option>
+                        <div class="paper-form-group">
+                            <label for="parentName">Name of Parent/Guardian:</label>
+                            <input type="text" id="parentName" name="parent_name" required>
+                        </div>
+                        <div class="paper-form-group">
+                            <label for="parentContact">Contact No.:</label>
+                            <input type="tel" id="parentContact" name="phone" required>
+                        </div>
+                        <div class="paper-form-group">
+                            <label for="parentEmail">E-mail:</label>
+                            <input type="email" id="parentEmail" name="email" required>
+                        </div>
+
+                        <div class="paper-form-group" style="margin-top: 20px;">
+                            <label for="bloodGroup">Blood Group:</label>
+                            <select id="bloodGroup" name="blood_group">
+                                <option value="" disabled selected>Select</option>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
                             </select>
                         </div>
-                        <div class="form-navigation">
-                            <button type="button" class="btn btn-outline prev-step-btn">← Back</button>
-                            <button type="button" class="btn btn-primary next-step-btn">Next →</button>
+                        
+                        <div class="paper-form-group">
+                            <label for="medicalHistory">Medical Records/ADHD:</label>
+                            <input type="text" id="medicalHistory" name="notes" placeholder="Any disease, inherited condition, medications...">
                         </div>
-                    </div>
-
-                    <!-- Step 3: Additional Notes & Submit -->
-                    <div class="form-step" data-step="3">
-                        <div class="form-group">
-                            <label>Preferred Start Term</label>
-                            <select class="form-control" name="term">
-                                <option value="Immediate Enrollment">Immediate Enrollment</option>
-                                <option value="Next Academic Session">Next Academic Term</option>
+                        
+                        <div class="paper-form-group">
+                            <label for="programSelect">Program Applying For:</label>
+                            <select id="programSelect" name="program" required>
+                                <option value="" disabled selected>Select Program</option>
+                                <option value="Early Toddler (1.5 - 3 Yrs)">Early Toddler (1.5 - 3 Yrs)</option>
+                                <option value="Primary/Kindergarten (3 - 6 Yrs)">Primary/Kindergarten (3 - 6 Yrs)</option>
+                                <option value="Junior Level (6 - 9 Yrs)">Junior Level (6 - 9 Yrs)</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label>Additional Notes / Questions</label>
-                            <textarea class="form-control" name="notes" rows="3"
-                                placeholder="Tell us anything specific about your child..."></textarea>
-                        </div>
-                        <div class="form-navigation">
-                            <button type="button" class="btn btn-outline prev-step-btn">← Back</button>
-                            <button type="submit" class="btn btn-accent">Submit Application</button>
-                        </div>
-                    </div>
 
-                    <!-- Success Message Screen -->
-                    <div class="form-success-msg" style="display: none;">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                            <polyline points="22 4 12 14.01 9 11.01" />
-                        </svg>
+                        <div class="paper-checkbox-group">
+                            <label class="paper-check-item">
+                                <input type="checkbox" id="checkIdCard" required>
+                                Attach copy of Father/Mother/Guardian ID Card, Birth Certificate, 4 Passport Size Pictures.
+                            </label>
+                            <label class="paper-check-item">
+                                <input type="checkbox" id="checkOccupation">
+                                Father/Mother/Guardian Occupation.
+                                <input type="text" id="parentOccupation" name="address" placeholder="Occupation">
+                            </label>
+                            <label class="paper-check-item">
+                                <input type="checkbox" id="termsCheck" required>
+                                I have read and understand the terms & conditions of this form.
+                            </label>
+                        </div>
+
+                        <div class="paper-declaration">
+                            I agree with the rules & regulations of institution & shall conform to them. I certify that the above information is correct please admit my Son/ Daughter in this institution.
+                        </div>
+
+                        <div class="paper-signature-row">
+                            <div class="paper-signature-box">
+                                <input type="text" id="digitalSignature" name="prior_school" placeholder="Type name" required>
+                                <div class="signature-label">Signature of Parents or Guardian</div>
+                            </div>
+                        </div>
+
+                        <div class="paper-submit">
+                            <button type="submit">Submit Application Form</button>
+                        </div>
+                    </form>
+
+                    <div id="formSuccess" class="form-success-msg" style="display: none; text-align:center; margin-top:30px; color: #28a745;">
                         <h3>Application Received!</h3>
-                        <p class="text-muted">Thank you for submitting your interest. Our admissions officer will
-                            contact you within 24 hours.</p>
+                        <p>Thank you for submitting your application. Our admissions office will contact you shortly.</p>
                     </div>
-                </form>
-            </div>
+                </div>
 
+            </div>
         </div>
     </section>
 
@@ -329,48 +569,8 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
     <!-- Scripts -->
     <script src="assets/js/app.js"></script>
     <script>
-        // Multi-Step Form Logic
+        // Single-Step Form Submission Logic
         document.addEventListener('DOMContentLoaded', () => {
-            const steps = document.querySelectorAll('.form-step');
-            const progressSteps = document.querySelectorAll('.progress-step');
-            let currentStep = 1;
-
-            function updateStep(stepNumber) {
-                steps.forEach(step => {
-                    step.classList.toggle('active', parseInt(step.dataset.step) === stepNumber);
-                });
-
-                progressSteps.forEach(pStep => {
-                    const stepVal = parseInt(pStep.dataset.step);
-                    pStep.classList.toggle('active', stepVal === stepNumber);
-                    pStep.classList.toggle('completed', stepVal < stepNumber);
-                });
-
-                const line = document.getElementById('progressLine');
-                if (line) {
-                    line.style.width = ((stepNumber - 1) / (steps.length - 1)) * 100 + '%';
-                }
-            }
-
-            document.querySelectorAll('.next-step-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    if (currentStep < 3) {
-                        currentStep++;
-                        updateStep(currentStep);
-                    }
-                });
-            });
-
-            document.querySelectorAll('.prev-step-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    if (currentStep > 1) {
-                        currentStep--;
-                        updateStep(currentStep);
-                    }
-                });
-            });
-
-            // Submit form to backend
             const form = document.getElementById('admissionForm');
             if (form) {
                 form.addEventListener('submit', async (e) => {
@@ -406,11 +606,10 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
                         
                         if (result.success) {
                             // Show success message
-                            document.querySelectorAll('.form-step').forEach(s => s.style.display = 'none');
-                            document.querySelector('.form-progress').style.display = 'none';
-                            document.querySelector('.form-success-msg').style.display = 'block';
+                            form.style.display = 'none';
+                            document.getElementById('formSuccess').style.display = 'block';
                             if (result.data && result.data.refCode) {
-                                document.querySelector('.form-success-msg').innerHTML += `<p style="margin-top:1rem;font-weight:bold;">Your Reference Code: ${result.data.refCode}</p>`;
+                                document.getElementById('formSuccess').innerHTML += `<p style="margin-top:1rem;font-weight:bold;">Your Reference Code: ${result.data.refCode}</p>`;
                             }
                         } else {
                             alert(result.message || 'Failed to submit application.');
