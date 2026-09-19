@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
@@ -94,24 +94,36 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     el.innerHTML = myHW.map(h => {
       const sub = submissions.find(s => s.hwId === h.id && s.studentId === currentStudent.id);
       const isPast = new Date(h.dueDate) < new Date();
-      return \`
+        return `
       <div class="homework-card">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.5rem;">
-          <h3 class="homework-title">\${h.title}</h3>
-          \${sub ? '<span class="badge badge-green">Submitted</span>' : isPast ? '<span class="badge badge-red">Past Due</span>' : '<span class="badge badge-blue">Pending</span>'}
+          <h3 class="homework-title">${h.title}</h3>
+          ${sub ? '<span class="badge badge-green">Submitted</span>' : isPast ? '<span class="badge badge-red">Past Due</span>' : '<span class="badge badge-blue">Pending</span>'}
         </div>
         <div class="homework-meta">
-          <span>📚 \${h.subject}</span>
-          <span>👨‍🏫 \${h.staffName}</span>
-          <span>📅 Due: \${formatDate(h.dueDate)}</span>
+          <span>📚 ${h.subject}</span>
+          <span>👨‍🏫 ${h.staffName}</span>
+          <span>📅 Due: ${formatDate(h.dueDate)}</span>
         </div>
-        <p class="homework-desc">\${h.description || 'No description provided.'}</p>
-        <div style="margin-top:0.75rem;">
-          \${sub ? '<p style="font-size:0.8rem;color:var(--success);font-weight:500;">✓ You have submitted your answer.</p>' : 
-           '<button class="btn btn-sm btn-primary" onclick="openSubmitModal(\\''+h.id+'\\')">Answer</button>'}
-        </div>
-      </div>\`;
+        <p class="homework-desc">${h.description || 'No description provided.'}</p>
+        ${renderAssignment({ ...h, student_submitted: !!sub })}
+      </div>`;
     }).join('');
+  }
+
+  function renderAssignment(h) {
+    if (h.student_submitted) {
+      return `
+        <div style="margin-top:0.5rem;display:flex;align-items:center;gap:0.5rem;">
+          <span style="color:var(--primary);font-size:0.85rem;">✅ Submitted</span>
+        </div>
+      `;
+    }
+    return `
+      <div style="margin-top:0.5rem;">
+        <button class="btn btn-sm btn-primary" onclick="openSubmitModal('${h.id}')">Answer</button>
+      </div>
+    `;
   }
 
   function openSubmitModal(id) {

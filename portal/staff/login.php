@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
@@ -20,8 +20,8 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Staff Login — KSM School Portal">
-  <title>Staff Login — KSM Portal</title>
+  <meta name="description" content="Teacher Login — KSM School Portal">
+  <title>Teacher Login — KSM Portal</title>
   <link rel="stylesheet" href="../assets/portal.css">
 </head>
 <body>
@@ -29,11 +29,11 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   <div class="auth-card">
     <div class="auth-logo">
       <div style="width:60px;height:60px;background:linear-gradient(135deg,#047857,#10B981);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto 0.75rem;">👨‍🏫</div>
-      <div class="auth-logo-title">KSM Staff Portal</div>
+      <div class="auth-logo-title">KSM Teacher Portal</div>
       <div class="auth-logo-sub">Kindergarten Saadia's Montessori School</div>
     </div>
 
-    <h1 class="auth-title">Staff Login</h1>
+    <h1 class="auth-title">Teacher Login</h1>
     <p class="auth-subtitle">Sign in to manage homework, attendance & your profile</p>
 
     <div class="demo-creds" style="background:#D1FAE5;border-color:rgba(16,185,129,0.3);color:#065F46;">
@@ -58,7 +58,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
         Invalid email or password. Please try again.
       </div>
 
-      <button type="submit" class="btn btn-primary w-full" style="margin-top:0.5rem;background:#047857;">👨‍🏫 Login to Staff Portal</button>
+      <button type="submit" class="btn btn-primary w-full" style="margin-top:0.5rem;background:#047857;">👨‍🏫 Login to Teacher Portal</button>
     </form>
 
     <div style="text-align:center;margin-top:1.5rem;display:flex;flex-direction:column;gap:0.5rem;">
@@ -93,7 +93,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
       } else {
         document.getElementById('loginError').classList.remove('hidden');
         btn.disabled = false;
-        btn.textContent = '👨‍🏫 Login to Staff Portal';
+        btn.textContent = '👨‍🏫 Login to Teacher Portal';
       }
     } catch {
       document.getElementById('loginError').classList.remove('hidden');

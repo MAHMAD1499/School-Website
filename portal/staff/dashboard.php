@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
@@ -24,8 +24,8 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Staff Dashboard — KSM School Portal">
-  <title>Staff Dashboard — KSM Portal</title>
+  <meta name="description" content="Teacher Dashboard - KSM School Portal">
+  <title>Teacher Dashboard - KSM Portal</title>
   <link rel="stylesheet" href="../assets/portal.css">
   <style>
     .quick-action { display:flex;align-items:center;gap:0.75rem;padding:0.9rem 1rem;background:var(--primary-bg);border-radius:var(--radius-sm);text-decoration:none;color:var(--text-dark);transition:var(--transition);font-weight:500;font-size:0.9rem;border:1px solid rgba(59,130,246,0.15); }
@@ -39,10 +39,8 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   <div class="portal-main">
     <div class="portal-topbar">
       <div class="topbar-left">
-        <button class="menu-toggle" id="menuToggle">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-        </button>
-        <span class="topbar-title">Staff Dashboard</span>
+        <button class="menu-toggle" id="menuToggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <span class="topbar-title">Teacher Dashboard</span>
       </div>
       <div class="topbar-right">
         <span id="staffNameTopbar" style="font-size:0.82rem;color:var(--text-medium);"></span>

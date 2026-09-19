@@ -339,6 +339,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
   scrollElements.forEach(el => scrollObserver.observe(el));
   slideElements.forEach(el => scrollObserver.observe(el));
+
+  // 9. Single-Step Form Submission Logic
+  const admissionForm = document.getElementById('admissionForm');
+  if (admissionForm) {
+      admissionForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          
+          const btn = admissionForm.querySelector('button[type="submit"]');
+          btn.disabled = true;
+          btn.textContent = 'Submitting...';
+
+          const formData = new FormData(admissionForm);
+          const data = {
+              parent_name: formData.get('parent_name'),
+              email: formData.get('email'),
+              phone: formData.get('phone'),
+              child_name: formData.get('child_name'),
+              dob: formData.get('dob'),
+              address: formData.get('address'),
+              prior_school: formData.get('prior_school'),
+              program: formData.get('program'),
+              notes: formData.get('notes')
+          };
+
+          try {
+              const res = await fetch('admissions.php', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'X-Requested-With': 'XMLHttpRequest'
+                  },
+                  body: JSON.stringify(data)
+              });
+              const result = await res.json();
+              
+              if (result.success) {
+                  // Show success message
+                  admissionForm.style.display = 'none';
+                  document.getElementById('formSuccess').style.display = 'block';
+                  if (result.data && result.data.refCode) {
+                      document.getElementById('formSuccess').innerHTML += `<p style="margin-top:1rem;font-weight:bold;">Your Reference Code: ${result.data.refCode}</p>`;
+                  }
+              } else {
+                  alert(result.message || 'Failed to submit application.');
+                  btn.disabled = false;
+                  btn.textContent = 'Submit Application';
+              }
+          } catch (err) {
+              alert('Server error. Please try again.');
+              btn.disabled = false;
+              btn.textContent = 'Submit Application';
+          }
+      });
+  }
 });
 
 // 9. Lightbox Popup Logic for Event Photo Sets

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Sidebar builder — call buildSidebar(role) in each page
  * role: 'portal' | 'admin' | 'student'
  */
@@ -24,12 +24,12 @@ function buildSidebar(role = 'portal') {
   const adminLinks = [
     { href: 'dashboard.php', icon: 'layout', label: 'Dashboard' },
     { href: 'teachers.php', icon: 'users', label: 'Manage Teachers' },
+    { href: 'students.php', icon: 'users', label: 'Manage Students' },
     { href: 'gallery.php', icon: 'image', label: 'Manage Gallery' },
     { href: 'news.php', icon: 'bell', label: 'Manage News' },
     { href: 'events.php', icon: 'calendar', label: 'Manage Events' },
     { href: 'admissions.php', icon: 'file-text', label: 'Admissions' },
     { href: 'contacts.php', icon: 'mail', label: 'Contact Messages' },
-    { href: 'credentials.php', icon: 'shield', label: 'Credentials' },
   ];
 
   const studentLinks = [
@@ -40,7 +40,8 @@ function buildSidebar(role = 'portal') {
     { href: 'news.php', icon: 'bell', label: 'Announcements' },
     { href: 'events.php', icon: 'calendar', label: 'Events' },
     { href: 'classes.php', icon: 'book-open', label: 'Classes' },
-    { href: 'gallery.php', icon: 'image', label: 'Gallery' }
+    { href: 'gallery.php', icon: 'image', label: 'School Gallery' },
+    { href: 'my_gallery.php', icon: 'image', label: 'My Personal Photos' }
   ];
 
   const staffLinks = [
@@ -101,7 +102,7 @@ function buildSidebar(role = 'portal') {
     </a>`;
   } else if (isStaff) {
     const staff = JSON.parse(sessionStorage.getItem('ksm_staff_auth'));
-    userSection = staff ? `<div class="sidebar-section-label">Staff Portal</div>` : '';
+    userSection = staff ? `<div class="sidebar-section-label">Teachers Portal</div>` : '';
     logoutBtn = `<a href="javascript:void(0)" class="sidebar-link" onclick="Auth.logoutStaff(); window.location='login.php';">
       ${makeIconSVG('log-out')}<span>Logout</span>
     </a>`;

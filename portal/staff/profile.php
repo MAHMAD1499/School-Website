@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
@@ -18,8 +18,8 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Staff Profile — KSM School Portal">
-  <title>My Profile — KSM Staff Portal</title>
+  <meta name="description" content="Teacher Profile - KSM School Portal">
+  <title>My Profile - KSM Teacher Portal</title>
   <link rel="stylesheet" href="../assets/portal.css">
 </head>
 <body>
@@ -48,7 +48,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
           <div style="flex-shrink:0;width:100%;max-width:200px;text-align:center;">
             <div id="bigAvatar" style="width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#047857,#10B981);color:white;display:flex;align-items:center;justify-content:center;font-size:3.5rem;font-weight:bold;margin:0 auto 1rem;box-shadow:var(--shadow-md);">S</div>
             <h3 id="bigName" style="margin-bottom:0.2rem;font-size:1.2rem;">Name</h3>
-            <p style="font-size:0.85rem;color:var(--text-medium);font-weight:600;">Teaching Staff</p>
+            <p style="font-size:0.85rem;color:var(--text-medium);font-weight:600;">Teacher</p>
           </div>
           <div id="profileDisplay" style="flex:1;min-width:250px;display:grid;grid-template-columns:1fr 1fr;gap:1rem;"></div>
         </div>

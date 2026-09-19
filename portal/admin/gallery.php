@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
@@ -59,9 +59,10 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
       <button class="modal-close" data-modal-close><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <input type="hidden" id="editId">
+    <input type="hidden" id="gUrl">
     <div class="form-group">
-      <label class="form-label">Image URL *</label>
-      <input type="url" id="gUrl" class="form-control" placeholder="https://example.com/photo.jpg" required>
+      <label class="form-label">Upload Image *</label>
+      <input type="file" id="gFile" class="form-control" accept="image/*" required>
     </div>
     <div class="form-group">
       <label class="form-label">Caption</label>
@@ -71,10 +72,6 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     <!-- Preview -->
     <div id="imgPreview" style="display:none;margin-top:1rem;border-radius:var(--radius-sm);overflow:hidden;">
       <img id="previewImg" src="" alt="Preview" style="width:100%;max-height:200px;object-fit:cover;">
-    </div>
-
-    <div class="info-banner mt-2">
-      💡 Tip: Use Unsplash URLs (https://images.unsplash.com/...) for best results.
     </div>
 
     <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:1rem;">
@@ -94,20 +91,27 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     if (!Auth.isAdminLoggedIn()) { window.location.href = 'login.php'; return; }
     renderGrid();
 
-    // Preview image on URL change
-    document.getElementById('gUrl').addEventListener('input', function() {
-      const url = this.value.trim();
-      if (url) {
-        document.getElementById('previewImg').src = url;
-        document.getElementById('imgPreview').style.display = 'block';
+    // Preview image on file change
+    document.getElementById('gFile').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          document.getElementById('gUrl').value = evt.target.result;
+          document.getElementById('previewImg').src = evt.target.result;
+          document.getElementById('imgPreview').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
       } else {
         document.getElementById('imgPreview').style.display = 'none';
+        document.getElementById('gUrl').value = '';
       }
     });
   });
 
-  function renderGrid() {
-    const gallery = DB.get('gallery');
+  async function renderGrid() {
+    const res = await API.getGallery();
+    const gallery = res.data || [];
     const grid = document.getElementById('adminGalleryGrid');
     if (gallery.length === 0) {
       grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">🖼️</div><div class="empty-state-title">No photos yet</div><p class="empty-state-text">Add photos using the button above.</p></div>`;
@@ -130,16 +134,20 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   function clearForm() {
     document.getElementById('editId').value = '';
     document.getElementById('gUrl').value = '';
+    document.getElementById('gFile').value = '';
     document.getElementById('gCaption').value = '';
     document.getElementById('imgPreview').style.display = 'none';
     document.getElementById('galleryModalTitle').textContent = 'Add Photo';
   }
 
-  function editPhoto(id) {
-    const item = DB.get('gallery').find(g => g.id === id);
+  async function editPhoto(id) {
+    const res = await API.getGallery();
+    const gallery = res.data || [];
+    const item = gallery.find(g => g.id == id);
     if (!item) return;
     document.getElementById('editId').value = id;
     document.getElementById('gUrl').value = item.url;
+    document.getElementById('gFile').value = '';
     document.getElementById('gCaption').value = item.caption || '';
     document.getElementById('previewImg').src = item.url;
     document.getElementById('imgPreview').style.display = 'block';
@@ -147,16 +155,16 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     openModal('galleryModal');
   }
 
-  function savePhoto() {
+  async function savePhoto() {
     const url = document.getElementById('gUrl').value.trim();
-    if (!url) { showToast('Please enter an image URL.', 'error'); return; }
+    if (!url) { showToast('Please select an image.', 'error'); return; }
     const data = { url, caption: document.getElementById('gCaption').value.trim() };
     const editId = document.getElementById('editId').value;
     if (editId) {
-      DB.update('gallery', editId, data);
+      await API.updateGalleryImage({ id: editId, ...data });
       showToast('Photo updated!', 'success');
     } else {
-      DB.push('gallery', data);
+      await API.addGalleryImage(data);
       showToast('Photo added to gallery!', 'success');
     }
     closeModal('galleryModal');
@@ -164,8 +172,8 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   }
 
   function deletePhoto(id) {
-    confirmDelete('Delete this photo from the gallery?', () => {
-      DB.delete('gallery', id);
+    confirmDelete('Delete this photo from the gallery?', async () => {
+      await API.deleteGalleryImage(id);
       showToast('Photo deleted.', 'info');
       renderGrid();
     });

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
@@ -20,8 +20,8 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Assign Homework — KSM Staff Portal">
-  <title>Assign Homework — KSM Staff Portal</title>
+  <meta name="description" content="Assign Homework - KSM Teacher Portal">
+  <title>Assign Homework - KSM Teacher Portal</title>
   <link rel="stylesheet" href="../assets/portal.css">
 </head>
 <body>

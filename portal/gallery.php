@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
@@ -62,8 +62,9 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){$r=ksm_
 <script>
   buildSidebar('portal');
 
-  function renderGallery() {
-    const gallery = DB.get('gallery');
+  async function renderGallery() {
+    const res = await API.getGallery();
+    const gallery = res.data || [];
     const grid = document.getElementById('galleryGrid');
 
     if (gallery.length === 0) {
@@ -79,8 +80,9 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){$r=ksm_
     `).join('');
   }
 
-  function openLightbox(index) {
-    const gallery = DB.get('gallery');
+  async function openLightbox(index) {
+    const res = await API.getGallery();
+    const gallery = res.data || [];
     const item = gallery[index];
     if (!item) return;
     document.getElementById('lightboxImg').src = item.url;

@@ -432,18 +432,18 @@
           <div class="form-row">
             <div class="form-group half-width">
               <label for="studentName">Name of Student *</label>
-              <input type="text" id="studentName" class="form-control" placeholder="e.g. Sarah Doe" required>
+              <input type="text" id="studentName" name="child_name" class="form-control" placeholder="e.g. Sarah Doe" required>
             </div>
             <div class="form-group half-width">
               <label for="studentDOB">Date of Birth *</label>
-              <input type="date" id="studentDOB" class="form-control" required>
+              <input type="date" id="studentDOB" name="dob" class="form-control" required>
             </div>
           </div>
           
           <div class="form-row">
             <div class="form-group half-width">
               <label for="bloodGroup">Blood Group</label>
-              <select id="bloodGroup" class="form-control">
+              <select id="bloodGroup" name="blood_group" class="form-control">
                 <option value="" disabled selected>Select</option>
                 <option value="A+">A+</option>
                 <option value="A-">A-</option>
@@ -457,11 +457,11 @@
             </div>
             <div class="form-group half-width">
               <label for="programSelect">Program Applying For *</label>
-              <select id="programSelect" class="form-control" required>
+              <select id="programSelect" name="program" class="form-control" required>
                 <option value="" disabled selected>Select Program</option>
-                <option value="toddler">Early Toddler (1.5 - 3 Yrs)</option>
-                <option value="kindergarten">Primary/Kindergarten (3 - 6 Yrs)</option>
-                <option value="junior">Junior Level (6 - 9 Yrs)</option>
+                <option value="Early Toddler (1.5 - 3 Yrs)">Early Toddler (1.5 - 3 Yrs)</option>
+                <option value="Primary/Kindergarten (3 - 6 Yrs)">Primary/Kindergarten (3 - 6 Yrs)</option>
+                <option value="Junior Level (6 - 9 Yrs)">Junior Level (6 - 9 Yrs)</option>
               </select>
             </div>
           </div>
@@ -469,29 +469,29 @@
           <div class="form-section-title">Medical History</div>
           <div class="form-group full-width">
             <label for="medicalHistory">Disease / Medical Records / Inherited Condition / Medications / Autistic / ADHD</label>
-            <textarea id="medicalHistory" class="form-control" rows="3" placeholder="Please provide any relevant medical details or type 'None'..."></textarea>
+            <textarea id="medicalHistory" name="notes" class="form-control" rows="3" placeholder="Please provide any relevant medical details or type 'None'..."></textarea>
           </div>
 
           <div class="form-section-title">Parent / Guardian Information</div>
           <div class="form-row">
             <div class="form-group half-width">
               <label for="parentName">Name of Parent / Guardian *</label>
-              <input type="text" id="parentName" class="form-control" placeholder="e.g. John Doe" required>
+              <input type="text" id="parentName" name="parent_name" class="form-control" placeholder="e.g. John Doe" required>
             </div>
             <div class="form-group half-width">
               <label for="parentOccupation">Father / Mother / Guardian Occupation</label>
-              <input type="text" id="parentOccupation" class="form-control" placeholder="Occupation">
+              <input type="text" id="parentOccupation" name="address" class="form-control" placeholder="Occupation">
             </div>
           </div>
 
           <div class="form-row">
             <div class="form-group half-width">
               <label for="parentContact">Contact No. *</label>
-              <input type="tel" id="parentContact" class="form-control" placeholder="+92 300 0000000" required>
+              <input type="tel" id="parentContact" name="phone" class="form-control" placeholder="+92 300 0000000" required>
             </div>
             <div class="form-group half-width">
               <label for="parentEmail">E-mail *</label>
-              <input type="email" id="parentEmail" class="form-control" placeholder="example@domain.com" required>
+              <input type="email" id="parentEmail" name="email" class="form-control" placeholder="example@domain.com" required>
             </div>
           </div>
 
@@ -527,7 +527,7 @@
           <div class="form-row signature-row">
             <div class="form-group full-width">
               <label for="digitalSignature">Digital Signature of Parents or Guardian *</label>
-              <input type="text" id="digitalSignature" class="form-control signature-input" placeholder="Type your full name as signature" required>
+              <input type="text" id="digitalSignature" name="prior_school" class="form-control signature-input" placeholder="Type your full name as signature" required>
             </div>
           </div>
 

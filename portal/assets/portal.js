@@ -149,10 +149,12 @@ const Auth = {
 
   logoutStudent() { sessionStorage.removeItem('ksm_student_auth'); },
 
-  // Staff auth
   loginStaff(email, pass) {
+    // Check both teachers and staff for legacy compatibility
+    const teachers = DB.get('teachers');
     const staff = DB.get('staff');
-    const member = staff.find(s => s.email === email && s.password === pass);
+    const allStaff = [...teachers, ...staff];
+    const member = allStaff.find(s => s.email === email && s.password === pass);
     if (member) {
       sessionStorage.setItem('ksm_staff_auth', JSON.stringify(member));
       return member;

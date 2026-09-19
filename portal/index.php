@@ -1,11 +1,11 @@
-﻿<?php
+<?php
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="KSM School Portal — Staff and Student access for Kindergarten Saadia's Montessori School.">
+  <meta name="description" content="KSM School Portal — Teacher and Student access for Kindergarten Saadia's Montessori School.">
   <title>Portal — Kindergarten Saadia's Montessori School</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -372,12 +372,12 @@
 
 <div class="landing">
 
-  <!-- ===== LEFT: STAFF ===== -->
-  <a href="staff/login.php" class="side side-admin" id="staffSide">
+  <!-- ===== LEFT: TEACHER ===== -->
+  <a href="staff/login.php" class="side side-admin" id="teacherSide">
     <div class="side-content">
       <div class="side-icon">👨‍🏫</div>
-      <div class="side-tag">Teaching Staff</div>
-      <h1 class="side-title">Staff<br>Portal</h1>
+      <div class="side-tag">Teachers</div>
+      <h1 class="side-title">Teacher<br>Portal</h1>
       <p class="side-desc">Assign homework, mark student attendance, manage class records, and update your profile.</p>
 
       <div class="feature-list">
@@ -388,7 +388,7 @@
       </div>
 
       <span class="side-btn">
-        Staff Login
+        Teacher Login
         <span class="btn-arrow">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </span>

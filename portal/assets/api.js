@@ -1,4 +1,4 @@
-﻿// ============================================================
+// ============================================================
 // KSM Portal — Inline PHP API Bridge
 // Each page handles its own AJAX via embedded PHP at the top.
 // We send X-Requested-With header so PHP detects AJAX mode.
@@ -104,9 +104,14 @@ const API = {
   async saveAttendance(records) { return apiCall(makePageUrl('attendance','staff'), 'POST', {records}); },
 
   // STUDENTS
-  async getStudents() { return apiCall(makePageUrl('credentials','admin') + '?_api&type=students', 'GET'); },
+  async getStudents() { return apiCall(makePageUrl('students','admin'), 'GET'); },
   async getStudent(id) { return apiCall(makePageUrl('profile','student') + '?id=' + id, 'GET'); },
-  async updateStudent(d) { return apiCall(makePageUrl('profile','student'), 'PUT', d); },
+  async addStudent(d) { return apiCall(makePageUrl('students','admin'), 'POST', d); },
+  async updateStudent(d) { return apiCall(makePageUrl('students','admin'), 'PUT', d); },
+  async deleteStudent(id) { return apiCall(makePageUrl('students','admin') + '?id=' + id, 'DELETE'); },
+  async getStudentPersonalGallery(student_id) { return apiCall('../api/student_gallery_api.php?student_id=' + student_id, 'GET'); },
+  async addStudentPersonalPhoto(d) { return apiCall('../api/student_gallery_api.php', 'POST', d); },
+  async deleteStudentPersonalPhoto(id) { return apiCall('../api/student_gallery_api.php?id=' + id, 'DELETE'); },
 
   // STAFF
   async getStaff() { return apiCall(makePageUrl('credentials','admin') + '?_api&type=staff', 'GET'); },

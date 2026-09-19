@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
@@ -79,7 +79,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
       </div>
       <div class="form-group">
         <label class="form-label">Time</label>
-        <input type="text" id="eTime" class="form-control" placeholder="e.g. 9:00 AM">
+        <input type="time" id="eTime" class="form-control" required>
       </div>
     </div>
     <div class="form-grid">
@@ -174,10 +174,11 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   function saveEvent() {
     const title = document.getElementById('eTitle').value.trim();
     const date = document.getElementById('eDate').value;
-    if (!title || !date) { showToast('Please fill in Title and Date.', 'error'); return; }
+    const time = document.getElementById('eTime').value;
+    if (!title || !date || !time) { showToast('Please fill in Title, Date, and Time.', 'error'); return; }
     const data = {
       title, date,
-      time: document.getElementById('eTime').value.trim(),
+      time: time.trim(),
       location: document.getElementById('eLocation').value.trim(),
       category: document.getElementById('eCategory').value,
       description: document.getElementById('eDescription').value.trim()
