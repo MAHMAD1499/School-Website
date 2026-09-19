@@ -1,4 +1,6 @@
-﻿<?php
+<?php
+require_once __DIR__ . '/../auth.php';
+check_admin_auth();
 $_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
@@ -9,7 +11,7 @@ if(($_SERVER['REQUEST_METHOD']??'')==='OPTIONS')exit;
 $isAjax=isset($_SERVER['HTTP_X_REQUESTED_WITH'])||strpos($_SERVER['CONTENT_TYPE']??'','application/json')!==false||isset($_GET['_api']);
 $method=$_SERVER['REQUEST_METHOD']??'GET';
 $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
-  if($method==='GET'){$r=ksm_db()->query("SELECT * FROM admissions ORDER BY submittedAt DESC");$rows=[];while($row=$r->fetch_assoc())$rows[]=$row;ksm_json($rows);}
+  if($method==='GET'){$r=ksm_db()->query("SELECT * FROM admissions ORDER BY submitted_at DESC");$rows=[];while($row=$r->fetch_assoc())$rows[]=$row;ksm_json($rows);}
   if($method==='PUT'){$id=intval($body['id']??0);$status=ksm_esc($body['status']??'Pending');if(!$id)ksm_err('Invalid ID.');ksm_db()->query("UPDATE admissions SET status='$status' WHERE id=$id");ksm_json(null,'Status updated.');}
   if($method==='DELETE'){$id=intval($_GET['id']??0);if(!$id)ksm_err('Invalid ID.');ksm_db()->query("DELETE FROM admissions WHERE id=$id");ksm_json(null,'Deleted.');}
 }
@@ -94,15 +96,27 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
 
   const statusColors = { Pending:'badge-gold', Approved:'badge-green', Rejected:'badge-red', 'Under Review':'badge-purple' };
 
-  document.addEventListener('DOMContentLoaded', () => {
+  let allAdmissions = [];
+
+  document.addEventListener('DOMContentLoaded', async () => {
     if (!Auth.isAdminLoggedIn()) { window.location.href = 'login.php'; return; }
-    renderTable();
+    await fetchAndRender();
     document.getElementById('filterStatus').addEventListener('change', renderTable);
   });
 
+  async function fetchAndRender() {
+    try {
+      const res = await API.getAdmissions();
+      allAdmissions = res.data || [];
+      renderTable();
+    } catch (e) {
+      showToast('Error fetching admissions.', 'error');
+    }
+  }
+
   function renderTable() {
     const statusFilter = document.getElementById('filterStatus').value;
-    let apps = DB.get('admissions');
+    let apps = allAdmissions;
     if (statusFilter) apps = apps.filter(a => a.status === statusFilter);
 
     const tbody = document.getElementById('admissionsTbody');
@@ -112,11 +126,11 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     }
     tbody.innerHTML = apps.map(a => `
       <tr>
-        <td><strong>${a.studentName}</strong></td>
+        <td><strong>${a.child_name || a.studentName}</strong></td>
         <td>${a.program}</td>
-        <td>${a.parentName}</td>
+        <td>${a.parent_name || a.parentName}</td>
         <td>${a.phone}</td>
-        <td style="font-size:0.82rem;color:var(--text-medium);">${formatDate(a.submittedAt)}</td>
+        <td style="font-size:0.82rem;color:var(--text-medium);">${formatDate(a.submitted_at || a.submittedAt)}</td>
         <td><span class="badge ${statusColors[a.status] || 'badge-blue'}">${a.status}</span></td>
         <td>
           <button class="btn btn-sm btn-outline" onclick="viewApplication('${a.id}')">👁️ View</button>
@@ -126,17 +140,17 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   }
 
   function viewApplication(id) {
-    const a = DB.get('admissions').find(a => a.id === id);
+    const a = allAdmissions.find(a => String(a.id) === String(id));
     if (!a) return;
     currentViewId = id;
 
     const fields = [
-      ['Student Name', a.studentName], ['Date of Birth', a.dob],
+      ['Student Name', a.child_name || a.studentName], ['Date of Birth', a.dob],
       ['Gender', a.gender], ['Nationality', a.nationality],
-      ['Parent Name', a.parentName], ['Relation', a.relation],
+      ['Parent Name', a.parent_name || a.parentName], ['Relation', a.relation],
       ['Phone', a.phone], ['Email', a.email],
       ['Occupation', a.occupation || '—'], ['Program', a.program],
-      ['Academic Year', a.academicYear], ['Previous School', a.previousSchool || '—'],
+      ['Academic Year', a.academic_year || a.academicYear], ['Previous School', a.previous_school || a.previousSchool || '—'],
       ['Medical Info', a.medical || 'None'], ['Status', a.status],
     ];
 
@@ -145,17 +159,21 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
         <p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.2rem;text-transform:uppercase;letter-spacing:0.5px;">${label}</p>
         <p style="font-weight:600;font-size:0.9rem;">${val || '—'}</p>
       </div>
-    `).join('') + (a.additionalInfo ? `<div style="grid-column:1/-1;background:var(--accent-light);padding:0.75rem;border-radius:var(--radius-sm);"><p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.2rem;">Additional Info</p><p style="font-size:0.88rem;">${a.additionalInfo}</p></div>` : '');
+    `).join('') + (a.additional_info || a.additionalInfo ? `<div style="grid-column:1/-1;background:var(--accent-light);padding:0.75rem;border-radius:var(--radius-sm);"><p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.2rem;">Additional Info</p><p style="font-size:0.88rem;">${a.additional_info || a.additionalInfo}</p></div>` : '');
 
     openModal('viewModal');
   }
 
-  function updateStatus(newStatus) {
+  async function updateStatus(newStatus) {
     if (!currentViewId) return;
-    DB.update('admissions', currentViewId, { status: newStatus });
-    showToast(`Application marked as ${newStatus}.`, 'success');
-    closeModal('viewModal');
-    renderTable();
+    const res = await API.updateAdmissionStatus(currentViewId, newStatus);
+    if(res && res.success){
+      showToast(`Application marked as ${newStatus}.`, 'success');
+      closeModal('viewModal');
+      await fetchAndRender();
+    } else {
+      showToast('Error updating status.', 'error');
+    }
   }
 </script>
 </body>

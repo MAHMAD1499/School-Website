@@ -23,43 +23,25 @@ INSERT IGNORE INTO `users_students` (`id`, `name`, `email`, `phone`, `address`, 
 (5, 'Hamza Rauf', 'hamza@student.ksm', '+92 312 4445566', '56 Cedar Ln, Haripur', 'student123', 'Early Childhood B', 'ECB-003', 'Mr. Abdul Rauf');
 
 
--- 2. users_staff
+-- 2. users_staff (Unified Staff & Teachers)
 CREATE TABLE IF NOT EXISTS `users_staff` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `name` VARCHAR(255) NOT NULL,
-  `email` VARCHAR(255) UNIQUE NOT NULL,
+  `email` VARCHAR(255) DEFAULT NULL,
+  `staffNumber` VARCHAR(50) UNIQUE DEFAULT NULL,
   `phone` VARCHAR(50),
   `password` VARCHAR(255) NOT NULL,
+  `role` VARCHAR(255) DEFAULT 'Teacher',
   `subject` VARCHAR(255),
   `class` VARCHAR(100),
   `bio` TEXT,
-  `emoji` VARCHAR(50),
+  `emoji` VARCHAR(50) DEFAULT '👤',
   `profilePic` VARCHAR(500)
 );
 
-INSERT IGNORE INTO `users_staff` (`id`, `name`, `email`, `phone`, `password`, `subject`, `class`, `bio`, `emoji`) VALUES
-(1, 'Ms. Ayesha Raza', 'ayesha@staff.ksm', '+92 300 1111111', 'staff123', 'Language & Literacy', 'Kindergarten A', 'Specializes in early childhood language development.', '👩‍🏫'),
-(2, 'Mr. Bilal Ahmed', 'bilal@staff.ksm', '+92 300 2222222', 'staff123', 'Mathematics & Science', 'Early Childhood B', 'Passionate about making math fun for young learners.', '👨‍🏫'),
-(3, 'Ms. Fatima Malik', 'fatima@staff.ksm', '+92 300 3333333', 'staff123', 'Art & Creativity', 'Junior Level', 'Art enthusiast promoting creative expression in children.', '👩‍🎨');
-
-
--- 3. teachers
-CREATE TABLE IF NOT EXISTS `teachers` (
-  `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `name` VARCHAR(255) NOT NULL,
-  `role` VARCHAR(255),
-  `subject` VARCHAR(255),
-  `emoji` VARCHAR(50),
-  `bio` TEXT
-);
-
-INSERT IGNORE INTO `teachers` (`id`, `name`, `role`, `subject`, `emoji`, `bio`) VALUES
-(1, 'Ms. Saadia Khan', 'Principal', 'Administration', '👩‍💼', 'Certified Montessori educator with 15+ years of experience.'),
-(2, 'Ms. Ayesha Raza', 'Junior/senior teacher', 'Language & Literacy', '👩‍🏫', 'Specializes in early childhood language development.'),
-(3, 'Mr. Bilal Ahmed', 'Science teacher', 'Mathematics & Science', '👨‍🏫', 'Passionate about making math fun for young learners.'),
-(4, 'Ms. Fatima Malik', 'Montessori teacher', 'Art & Creativity', '👩‍🎨', 'Art enthusiast promoting creative expression in children.'),
-(5, 'Ms. Hira Yousuf', 'P.E teacher\'s', 'Physical Education', '🏃‍♀️', 'Focused on gross motor development and healthy habits.'),
-(6, 'Mr. Usman Tariq', 'Computer teacher', 'General Support', '👨‍🎓', 'Dedicated assistant supporting classroom activities.');
+INSERT IGNORE INTO `users_staff` (`id`, `name`, `email`, `staffNumber`, `phone`, `password`, `role`, `subject`, `class`, `bio`, `emoji`) VALUES
+(2, 'Mr. Bilal Ahmed', 'bilal@staff.ksm', 'ST-002', '+92 300 2222222', 'staff123', 'Science teacher', 'Mathematics & Science', 'Early Childhood B', 'Passionate about making math fun for young learners.', '👨‍🏫'),
+(3, 'Ms. Fatima Malik', 'fatima@staff.ksm', 'ST-003', '+92 300 3333333', 'staff123', 'Montessori teacher', 'Art & Creativity', 'Junior Level', 'Art enthusiast promoting creative expression in children.', '👩‍🎨');
 
 
 -- 4. gallery
@@ -161,5 +143,17 @@ CREATE TABLE IF NOT EXISTS `attendance` (
   `date` DATE NOT NULL,
   `status` VARCHAR(50) NOT NULL,
   `notes` TEXT,
-  FOREIGN KEY (`student_id`) REFERENCES `users_students`(`id`)
+  FOREIGN KEY (`student_id`) REFERENCES `users_students`(`id`) ON DELETE CASCADE
+);
+
+-- 11. homework_submissions
+CREATE TABLE IF NOT EXISTS `homework_submissions` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `homework_id` INT NOT NULL,
+  `student_id` INT NOT NULL,
+  `answer` TEXT NOT NULL,
+  `submitted_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`homework_id`) REFERENCES `homework`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`student_id`) REFERENCES `users_students`(`id`) ON DELETE CASCADE,
+  UNIQUE KEY `hw_student_unique` (`homework_id`, `student_id`)
 );

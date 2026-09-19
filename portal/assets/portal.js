@@ -40,12 +40,11 @@ const DB = {
 // SEED DEFAULT DATA (only if first visit)
 // ============================================================
 function seedData() {
-  if (DB.get('seeded_v2', false)) return;
+  if (DB.get('seeded_v3', false)) return;
 
   // Teachers
   DB.set('teachers', [
     { id: '1', name: 'Ms. Saadia Khan', role: 'Principal', subject: 'Administration', emoji: '👩‍💼', bio: 'Certified Montessori educator with 15+ years of experience.' },
-    { id: '2', name: 'Ms. Ayesha Raza', role: 'Junior/senior teacher', subject: 'Language & Literacy', emoji: '👩‍🏫', bio: 'Specializes in early childhood language development.' },
     { id: '3', name: 'Mr. Bilal Ahmed', role: 'Science teacher', subject: 'Mathematics & Science', emoji: '👨‍🏫', bio: 'Passionate about making math fun for young learners.' },
     { id: '4', name: 'Ms. Fatima Malik', role: 'Montessori teacher', subject: 'Art & Creativity', emoji: '👩‍🎨', bio: 'Art enthusiast promoting creative expression in children.' },
     { id: '5', name: 'Ms. Hira Yousuf', role: 'P.E teacher\'s', subject: 'Physical Education', emoji: '🏃‍♀️', bio: 'Focused on gross motor development and healthy habits.' },
@@ -94,9 +93,8 @@ function seedData() {
 
   // Staff (teacher login accounts)
   DB.set('staff', [
-    { id: 's1', name: 'Ms. Ayesha Raza', email: 'ayesha@staff.ksm', phone: '+92 300 1111111', password: 'staff123', subject: 'Language & Literacy', class: 'Kindergarten A', bio: 'Specializes in early childhood language development.', emoji: '👩‍🏫' },
-    { id: 's2', name: 'Mr. Bilal Ahmed', email: 'bilal@staff.ksm', phone: '+92 300 2222222', password: 'staff123', subject: 'Mathematics & Science', class: 'Early Childhood B', bio: 'Passionate about making math fun for young learners.', emoji: '👨‍🏫' },
-    { id: 's3', name: 'Ms. Fatima Malik', email: 'fatima@staff.ksm', phone: '+92 300 3333333', password: 'staff123', subject: 'Art & Creativity', class: 'Junior Level', bio: 'Art enthusiast promoting creative expression in children.', emoji: '👩‍🎨' },
+    { id: 's2', staffNumber: 'ST-002', name: 'Mr. Bilal Ahmed', email: 'bilal@staff.ksm', phone: '+92 300 2222222', password: 'staff123', subject: 'Mathematics & Science', class: 'Early Childhood B', bio: 'Passionate about making math fun for young learners.', emoji: '👨‍🏫' },
+    { id: 's3', staffNumber: 'ST-003', name: 'Ms. Fatima Malik', email: 'fatima@staff.ksm', phone: '+92 300 3333333', password: 'staff123', subject: 'Art & Creativity', class: 'Junior Level', bio: 'Art enthusiast promoting creative expression in children.', emoji: '👩‍🎨' },
   ]);
 
   // Homework (empty — filled by staff)
@@ -105,7 +103,7 @@ function seedData() {
   // Attendance (empty — filled by staff)
   DB.set('attendance', []);
 
-  DB.set('seeded_v2', true);
+  DB.set('seeded_v3', true);
 }
 
 // ============================================================
@@ -129,11 +127,12 @@ const Auth = {
 
   logoutAdmin() {
     sessionStorage.removeItem('ksm_admin_auth');
+    navigator.sendBeacon('../logout_api.php');
   },
 
-  loginStudent(email, pass) {
+  loginStudent(rollNo, pass) {
     const students = DB.get('students');
-    const student = students.find(s => s.email === email && s.password === pass);
+    const student = students.find(s => s.rollNo === rollNo && s.password === pass);
     if (student) {
       sessionStorage.setItem('ksm_student_auth', JSON.stringify(student));
       return student;
@@ -147,14 +146,17 @@ const Auth = {
 
   isStudentLoggedIn() { return !!this.getStudent(); },
 
-  logoutStudent() { sessionStorage.removeItem('ksm_student_auth'); },
+  logoutStudent() {
+    sessionStorage.removeItem('ksm_student_auth');
+    navigator.sendBeacon('../logout_api.php');
+  },
 
-  loginStaff(email, pass) {
+  loginStaff(staffNumber, pass) {
     // Check both teachers and staff for legacy compatibility
     const teachers = DB.get('teachers');
     const staff = DB.get('staff');
     const allStaff = [...teachers, ...staff];
-    const member = allStaff.find(s => s.email === email && s.password === pass);
+    const member = allStaff.find(s => s.staffNumber === staffNumber && s.password === pass);
     if (member) {
       sessionStorage.setItem('ksm_staff_auth', JSON.stringify(member));
       return member;
@@ -168,7 +170,10 @@ const Auth = {
 
   isStaffLoggedIn() { return !!this.getStaff(); },
 
-  logoutStaff() { sessionStorage.removeItem('ksm_staff_auth'); }
+  logoutStaff() {
+    sessionStorage.removeItem('ksm_staff_auth');
+    navigator.sendBeacon('../logout_api.php');
+  }
 };
 
 // ============================================================

@@ -432,11 +432,11 @@
           <div class="form-row">
             <div class="form-group half-width">
               <label for="studentName">Name of Student *</label>
-              <input type="text" id="studentName" name="child_name" class="form-control" placeholder="e.g. Sarah Doe" required>
+              <input type="text" id="studentName" name="child_name" class="form-control" placeholder="e.g. Sarah Doe" pattern="[A-Za-z\s]{2,50}" maxlength="50" title="Only letters and spaces allowed" required>
             </div>
             <div class="form-group half-width">
               <label for="studentDOB">Date of Birth *</label>
-              <input type="date" id="studentDOB" name="dob" class="form-control" required>
+              <input type="date" id="studentDOB" name="dob" class="form-control" max="2024-01-01" min="2010-01-01" required>
             </div>
           </div>
           
@@ -476,7 +476,7 @@
           <div class="form-row">
             <div class="form-group half-width">
               <label for="parentName">Name of Parent / Guardian *</label>
-              <input type="text" id="parentName" name="parent_name" class="form-control" placeholder="e.g. John Doe" required>
+              <input type="text" id="parentName" name="parent_name" class="form-control" placeholder="e.g. John Doe" pattern="[A-Za-z\s]{2,50}" maxlength="50" title="Only letters and spaces allowed" required>
             </div>
             <div class="form-group half-width">
               <label for="parentOccupation">Father / Mother / Guardian Occupation</label>
@@ -487,11 +487,11 @@
           <div class="form-row">
             <div class="form-group half-width">
               <label for="parentContact">Contact No. *</label>
-              <input type="tel" id="parentContact" name="phone" class="form-control" placeholder="+92 300 0000000" required>
+              <input type="tel" id="parentContact" name="phone" class="form-control" placeholder="+92 300 0000000" pattern="^(\+92|0)[0-9]{10}$" maxlength="13" title="Enter a valid 11-digit phone number" required>
             </div>
             <div class="form-group half-width">
               <label for="parentEmail">E-mail *</label>
-              <input type="email" id="parentEmail" name="email" class="form-control" placeholder="example@domain.com" required>
+              <input type="email" id="parentEmail" name="email" class="form-control" placeholder="example@domain.com" maxlength="100" required>
             </div>
           </div>
 
@@ -527,7 +527,7 @@
           <div class="form-row signature-row">
             <div class="form-group full-width">
               <label for="digitalSignature">Digital Signature of Parents or Guardian *</label>
-              <input type="text" id="digitalSignature" name="prior_school" class="form-control signature-input" placeholder="Type your full name as signature" required>
+              <input type="text" id="digitalSignature" name="prior_school" class="form-control signature-input" placeholder="Type your full name as signature" pattern="[A-Za-z\s]{2,50}" maxlength="50" title="Only letters and spaces allowed" required>
             </div>
           </div>
 

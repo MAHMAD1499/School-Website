@@ -1,4 +1,5 @@
-﻿<?php
+<?php
+require_once __DIR__ . '/../auth.php';
 $ksm_db_config = ['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
 function ksm_db() { global $ksm_db_config; static $c=null; if($c)return $c; $c=new mysqli($ksm_db_config['host'],$ksm_db_config['user'],$ksm_db_config['pass'],$ksm_db_config['name']); if($c->connect_error){http_response_code(500);echo json_encode(['error'=>$c->connect_error]);exit;} $c->set_charset('utf8mb4'); return $c; }
 function ksm_json($data,$msg='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$msg,'data'=>$data]);exit;}
@@ -15,8 +16,10 @@ if($isAjax){
     $action=$body['action']??$_GET['action']??'';
     if($action==='admin_login'){
         $user=trim($body['username']??''); $pass=trim($body['password']??'');
-        if($user==='admin'&&$pass==='admin123') ksm_json(['role'=>'admin'],'Login successful.');
-        else ksm_json(null,'Invalid credentials.',401);
+        if($user==='admin'&&$pass==='admin123') {
+            $_SESSION['ksm_admin_auth'] = true;
+            ksm_json(['role'=>'admin'],'Login successful.');
+        } else ksm_json(null,'Invalid credentials.',401);
     }
     ksm_json(null,'Unknown action.',400);
 }
@@ -41,10 +44,7 @@ if($isAjax){
     <h1 class="auth-title">Administrator Login</h1>
     <p class="auth-subtitle">Sign in to manage school portal content</p>
 
-    <div class="demo-creds">
-      <strong>Demo Credentials:</strong><br>
-      Username: <strong>admin</strong> &nbsp;|&nbsp; Password: <strong>admin123</strong>
-    </div>
+
 
     <form id="loginForm" onsubmit="doLogin(event)">
       <div class="form-group">
@@ -67,7 +67,7 @@ if($isAjax){
     </form>
 
     <div style="text-align:center;margin-top:1.5rem;">
-      <a href="../index.php" style="font-size:0.85rem;color:var(--text-medium);">← Back to Portal</a>
+      <a href="../../index.php" style="font-size:0.85rem;color:var(--text-medium);">← Back to KSM website</a>
     </div>
   </div>
 </div>

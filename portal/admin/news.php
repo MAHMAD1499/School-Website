@@ -1,4 +1,6 @@
-﻿<?php
+<?php
+require_once __DIR__ . '/../auth.php';
+check_admin_auth();
 $_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
@@ -10,8 +12,19 @@ $isAjax=isset($_SERVER['HTTP_X_REQUESTED_WITH'])||strpos($_SERVER['CONTENT_TYPE'
 $method=$_SERVER['REQUEST_METHOD']??'GET';
 $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   if($method==='GET'){$r=ksm_db()->query("SELECT * FROM news ORDER BY date DESC");$rows=[];while($row=$r->fetch_assoc())$rows[]=$row;ksm_json($rows);}
-  if($method==='POST'){$t=ksm_esc($body['title']??'');$b=ksm_esc($body['body']??'');$d=ksm_esc($body['date']??date('Y-m-d'));$cat=ksm_esc($body['category']??'General');if(!$t||!$b)ksm_err('Title and body required.');ksm_db()->query("INSERT INTO news(title,body,date,category)VALUES('$t','$b','$d','$cat')");ksm_json(['id'=>ksm_db()->insert_id],'News added.');}
-  if($method==='PUT'){$id=intval($body['id']??0);$t=ksm_esc($body['title']??'');$b=ksm_esc($body['body']??'');$d=ksm_esc($body['date']??date('Y-m-d'));$cat=ksm_esc($body['category']??'General');if(!$id)ksm_err('Invalid ID.');ksm_db()->query("UPDATE news SET title='$t',body='$b',date='$d',category='$cat' WHERE id=$id");ksm_json(null,'Updated.');}
+  if($method==='POST'||$method==='PUT'){
+    $t=ksm_esc($body['title']??'');$b=ksm_esc($body['body']??'');$d=ksm_esc($body['date']??date('Y-m-d'));$cat=ksm_esc($body['category']??'General');
+    if(!$t||!$b)ksm_err('Title and body required.');
+    if(strlen($t)>100) ksm_err('Title too long.');
+    if(strlen($b)>2000) ksm_err('Body too long.');
+    $b = htmlspecialchars($b, ENT_QUOTES, 'UTF-8');
+    if($method==='POST'){
+      ksm_db()->query("INSERT INTO news(title,body,date,category)VALUES('$t','$b','$d','$cat')");ksm_json(['id'=>ksm_db()->insert_id],'News added.');
+    }else{
+      $id=intval($body['id']??0);if(!$id)ksm_err('Invalid ID.');
+      ksm_db()->query("UPDATE news SET title='$t',body='$b',date='$d',category='$cat' WHERE id=$id");ksm_json(null,'Updated.');
+    }
+  }
   if($method==='DELETE'){$id=intval($_GET['id']??0);if(!$id)ksm_err('Invalid ID.');ksm_db()->query("DELETE FROM news WHERE id=$id");ksm_json(null,'Deleted.');}
 }
 ?>
@@ -70,7 +83,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     <input type="hidden" id="editId">
     <div class="form-group">
       <label class="form-label">Title *</label>
-      <input type="text" id="nTitle" class="form-control" placeholder="News headline..." required>
+      <input type="text" id="nTitle" class="form-control" placeholder="News headline..." maxlength="100" required>
     </div>
     <div class="form-grid">
       <div class="form-group">
@@ -90,7 +103,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     </div>
     <div class="form-group">
       <label class="form-label">Body / Content *</label>
-      <textarea id="nBody" class="form-control" rows="5" placeholder="Write the full announcement here..." required></textarea>
+      <textarea id="nBody" class="form-control" rows="5" placeholder="Write the full announcement here..." maxlength="2000" required></textarea>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:1rem;">
       <button class="btn btn-outline" data-modal-close>Cancel</button>
@@ -105,15 +118,27 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
 <script>
   buildSidebar('admin');
 
-  document.addEventListener('DOMContentLoaded', () => {
+  let allNews = [];
+
+  document.addEventListener('DOMContentLoaded', async () => {
     if (!Auth.isAdminLoggedIn()) { window.location.href = 'login.php'; return; }
     // Set default date to today
     document.getElementById('nDate').value = new Date().toISOString().split('T')[0];
-    renderTable();
+    await fetchAndRender();
   });
 
+  async function fetchAndRender() {
+    try {
+      const res = await API.getNews();
+      allNews = res.data || [];
+      renderTable();
+    } catch (e) {
+      showToast('Error fetching news.', 'error');
+    }
+  }
+
   function renderTable() {
-    const news = DB.get('news');
+    const news = allNews;
     const tbody = document.getElementById('newsTbody');
     if (news.length === 0) {
       tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-medium);padding:2rem;">No news posts yet.</td></tr>';
@@ -145,7 +170,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   }
 
   function editNews(id) {
-    const n = DB.get('news').find(n => n.id === id);
+    const n = allNews.find(n => String(n.id) === String(id));
     if (!n) return;
     document.getElementById('editId').value = n.id;
     document.getElementById('nTitle').value = n.title;
@@ -156,24 +181,39 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     openModal('newsModal');
   }
 
-  function saveNews() {
+  async function saveNews() {
     const title = document.getElementById('nTitle').value.trim();
     const body = document.getElementById('nBody').value.trim();
     const date = document.getElementById('nDate').value;
     if (!title || !body || !date) { showToast('Please fill in all required fields.', 'error'); return; }
     const data = { title, body, date, category: document.getElementById('nCategory').value };
     const editId = document.getElementById('editId').value;
-    if (editId) { DB.update('news', editId, data); showToast('News updated!', 'success'); }
-    else { DB.push('news', data); showToast('News post published!', 'success'); }
-    closeModal('newsModal');
-    renderTable();
+    
+    let res;
+    if (editId) { 
+      res = await API.updateNews({id: editId, ...data}); 
+    } else { 
+      res = await API.addNews(data); 
+    }
+    
+    if (res && res.success) {
+      showToast(editId ? 'News updated!' : 'News post published!', 'success');
+      closeModal('newsModal');
+      await fetchAndRender();
+    } else {
+      showToast('Error saving news.', 'error');
+    }
   }
 
   function deleteNews(id) {
-    confirmDelete('Delete this news post? This cannot be undone.', () => {
-      DB.delete('news', id);
-      showToast('News post deleted.', 'info');
-      renderTable();
+    confirmDelete('Delete this news post? This cannot be undone.', async () => {
+      const res = await API.deleteNews(id);
+      if (res && res.success) {
+        showToast('News post deleted.', 'info');
+        await fetchAndRender();
+      } else {
+        showToast('Error deleting news.', 'error');
+      }
     });
   }
 </script>

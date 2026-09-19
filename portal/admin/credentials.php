@@ -1,4 +1,8 @@
-﻿<?php
+<?php
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Cache-Control: post-check=0, pre-check=0', false);
+header('Pragma: no-cache');
+
 $_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
@@ -8,19 +12,66 @@ header('Access-Control-Allow-Origin: *');header('Access-Control-Allow-Methods: G
 if(($_SERVER['REQUEST_METHOD']??'')==='OPTIONS')exit;
 $isAjax=isset($_SERVER['HTTP_X_REQUESTED_WITH'])||strpos($_SERVER['CONTENT_TYPE']??'','application/json')!==false||isset($_GET['_api']);
 $method=$_SERVER['REQUEST_METHOD']??'GET';
-$body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
+$body=json_decode(file_get_contents('php://input'),true)??[];
+if($isAjax){
+  $db = ksm_db();
   if($method==='GET'){
     $type=$_GET['type']??'students';
-    if($type==='students'){$r=ksm_db()->query("SELECT id,name,email,class,rollNo,parentName FROM users_students ORDER BY name ASC");}
-    else{$r=ksm_db()->query("SELECT id,name,email,subject,class FROM users_staff ORDER BY name ASC");}
-    $rows=[];while($row=$r->fetch_assoc())$rows[]=$row;ksm_json($rows);
+    if($type==='students'){
+      $r=$db->query("SELECT id,name,email,class,rollNo,parentName,password FROM users_students ORDER BY name ASC");
+    } else {
+      $r=$db->query("SELECT id,name,email,subject,class,staffNumber,password,role,emoji FROM users_staff ORDER BY name ASC");
+    }
+    $rows=[];
+    while($row=$r->fetch_assoc())$rows[]=$row;
+    ksm_json($rows);
   }
   if($method==='POST'){
     $type=ksm_esc($body['type']??'student');
-    if($type==='student'){$n=ksm_esc($body['name']??'');$e=ksm_esc($body['email']??'');$p=ksm_esc($body['password']??'student123');$cl=ksm_esc($body['class']??'');$roll=ksm_esc($body['rollNo']??'');$par=ksm_esc($body['parentName']??'');if(!$n||!$e)ksm_err('Name and email required.');ksm_db()->query("INSERT INTO users_students(name,email,password,class,rollNo,parentName)VALUES('$n','$e','$p','$cl','$roll','$par')");ksm_json(['id'=>ksm_db()->insert_id],'Student added.');}
-    else{$n=ksm_esc($body['name']??'');$e=ksm_esc($body['email']??'');$p=ksm_esc($body['password']??'staff123');$sub=ksm_esc($body['subject']??'');$cl=ksm_esc($body['class']??'');if(!$n||!$e)ksm_err('Name and email required.');ksm_db()->query("INSERT INTO users_staff(name,email,password,subject,class)VALUES('$n','$e','$p','$sub','$cl')");ksm_json(['id'=>ksm_db()->insert_id],'Staff added.');}
+    if($type==='student'){
+      $n=ksm_esc($body['name']??'');$e=ksm_esc($body['email']??'');$p=ksm_esc($body['password']??'student123');$cl=ksm_esc($body['class']??'');$roll=ksm_esc($body['rollNo']??'');$par=ksm_esc($body['parentName']??'');
+      if(!$n||!$roll)ksm_err('Name and Roll No required.');
+      $chk=$db->query("SELECT id FROM users_students WHERE rollNo='$roll' LIMIT 1");
+      if($chk&&$chk->num_rows>0)ksm_err("Roll number '$roll' is already assigned.");
+      $db->query("INSERT INTO users_students(name,email,password,class,rollNo,parentName)VALUES('$n','$e','$p','$cl','$roll','$par')");
+      ksm_json(['id'=>$db->insert_id],'Student added.');
+    } else {
+      $n=ksm_esc($body['name']??'');$e=ksm_esc($body['email']??'');$p=ksm_esc($body['password']??'staff123');$sub=ksm_esc($body['subject']??'');$cl=ksm_esc($body['class']??'');$sn=ksm_esc($body['staffNumber']??'');$role=ksm_esc($body['role']??'Teacher');
+      if(!$n||!$sn)ksm_err('Name and Staff Number required.');
+      $chk=$db->query("SELECT id FROM users_staff WHERE staffNumber='$sn' LIMIT 1");
+      if($chk&&$chk->num_rows>0)ksm_err("Staff number '$sn' is already assigned.");
+      $db->query("INSERT INTO users_staff(name,email,password,subject,class,staffNumber,role)VALUES('$n','$e','$p','$sub','$cl','$sn','$role')");
+      ksm_json(['id'=>$db->insert_id],'Staff added.');
+    }
   }
-  if($method==='DELETE'){$id=intval($_GET['id']??0);$type=$_GET['type']??'student';if(!$id)ksm_err('Invalid ID.');$tbl=$type==='student'?'users_students':'users_staff';ksm_db()->query("DELETE FROM $tbl WHERE id=$id");ksm_json(null,'Deleted.');}
+  if($method==='PUT'){
+    $id=intval($body['id']??0);
+    $type=$body['type']??'student';
+    $newPass=ksm_esc($body['password']??'');
+    if(!$id||!$newPass)ksm_err('ID and new password required.');
+    if($type==='student'){
+      $db->query("UPDATE users_students SET password='$newPass' WHERE id=$id");
+    } else {
+      $db->query("UPDATE users_staff SET password='$newPass' WHERE id=$id");
+    }
+    ksm_json(null,'Password reset successfully.');
+  }
+  if($method==='DELETE'){
+    $id=intval($_GET['id']??0);
+    $type=$_GET['type']??'student';
+    if(!$id)ksm_err('Invalid ID.');
+    if($type==='student'){
+      $db->query("DELETE FROM attendance WHERE student_id=$id");
+      $db->query("DELETE FROM users_students WHERE id=$id");
+    } else {
+      $s=$db->query("SELECT * FROM users_staff WHERE id=$id")->fetch_assoc();
+      $sn=ksm_esc($s['staffNumber']??'');
+      $db->query("DELETE FROM homework WHERE staff_id=$id");
+      $db->query("DELETE FROM users_staff WHERE id=$id");
+      if($sn) $db->query("DELETE FROM users_staff WHERE staffNumber='$sn'");
+    }
+    ksm_json(null,'Deleted.');
+  }
 }
 ?>
 <!DOCTYPE html>
@@ -68,7 +119,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
       <!-- Student Credentials Panel -->
       <div class="cred-panel active" id="panel-students">
         <div class="search-bar">
-          <input type="text" class="search-input" placeholder="Search students by name or email..." oninput="renderStudents(this.value)">
+          <input type="text" class="search-input" placeholder="Search students by name or roll number..." oninput="renderStudents(this.value)">
         </div>
         <div class="card">
           <div class="table-container">
@@ -76,9 +127,9 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
               <thead>
                 <tr>
                   <th>Name</th>
-                  <th>Email</th>
-                  <th>Class</th>
                   <th>Roll No</th>
+                  <th>Class</th>
+                  <th>Parent Name</th>
                   <th>Password</th>
                   <th>Actions</th>
                 </tr>
@@ -92,7 +143,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
       <!-- Staff Credentials Panel -->
       <div class="cred-panel" id="panel-staff">
         <div class="search-bar">
-          <input type="text" class="search-input" placeholder="Search staff by name or email..." oninput="renderStaff(this.value)">
+          <input type="text" class="search-input" placeholder="Search staff by name or staff number..." oninput="renderStaff(this.value)">
         </div>
         <div class="card">
           <div class="table-container">
@@ -100,9 +151,9 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
               <thead>
                 <tr>
                   <th>Name</th>
-                  <th>Email</th>
+                  <th>Staff Number</th>
+                  <th>Role</th>
                   <th>Subject</th>
-                  <th>Class</th>
                   <th>Password</th>
                   <th>Actions</th>
                 </tr>
@@ -128,7 +179,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     <input type="hidden" id="resetType">
     <div class="info-banner" style="margin-bottom:1.25rem;">
       Resetting password for: <strong id="resetName">—</strong>
-      <br><small id="resetEmail" style="color:var(--text-medium);"></small>
+      <br><small id="resetIdentifier" style="color:var(--text-medium);"></small>
     </div>
     <div class="form-group">
       <label class="form-label">New Password *</label>
@@ -154,11 +205,27 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
 <script>
   buildSidebar('admin');
 
-  document.addEventListener('DOMContentLoaded', () => {
+  let allStudents = [];
+  let allStaff = [];
+
+  document.addEventListener('DOMContentLoaded', async () => {
     if (!Auth.isAdminLoggedIn()) { window.location.href = 'login.php'; return; }
-    renderStudents();
-    renderStaff();
+    await loadData();
   });
+
+  async function loadData() {
+    try {
+      const sRes = await API.getCredentials('students');
+      allStudents = sRes.data || [];
+      renderStudents();
+
+      const stRes = await API.getCredentials('staff');
+      allStaff = stRes.data || [];
+      renderStaff();
+    } catch(e) {
+      console.error(e);
+    }
+  }
 
   function switchTab(tab) {
     document.querySelectorAll('.cred-tab').forEach(t => t.classList.remove('active'));
@@ -168,10 +235,10 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   }
 
   function renderStudents(search = '') {
-    let students = DB.get('students');
+    let students = allStudents;
     if (search) {
       const s = search.toLowerCase();
-      students = students.filter(st => st.name.toLowerCase().includes(s) || st.email.toLowerCase().includes(s));
+      students = students.filter(st => (st.name && st.name.toLowerCase().includes(s)) || (st.rollNo && st.rollNo.toLowerCase().includes(s)));
     }
 
     const tbody = document.getElementById('studentsTbody');
@@ -183,27 +250,27 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     tbody.innerHTML = students.map(s => `
       <tr>
         <td><strong>${s.name}</strong></td>
-        <td style="font-size:0.85rem;">${s.email}</td>
-        <td><span class="badge badge-blue">${s.class}</span></td>
-        <td>${s.rollNo}</td>
+        <td><span class="badge badge-gold" style="font-weight:600;">${s.rollNo || '—'}</span></td>
+        <td><span class="badge badge-blue">${s.class || '—'}</span></td>
+        <td>${s.parentName || '—'}</td>
         <td>
           <div class="pwd-field">
             <span class="pwd-text" id="pwd-student-${s.id}">••••••••</span>
-            <button class="pwd-reveal" onclick="togglePwdReveal('student','${s.id}','${s.password}')">👁️</button>
+            <button class="pwd-reveal" onclick="togglePwdReveal('student','${s.id}','${s.password || ''}')">👁️</button>
           </div>
         </td>
         <td>
-          <button class="btn btn-sm btn-accent" onclick="openResetModal('student','${s.id}','${s.name}','${s.email}')">🔑 Reset</button>
+          <button class="btn btn-sm btn-accent" onclick="openResetModal('student','${s.id}','${s.name}','Roll No: ${s.rollNo || ''}')">🔑 Reset</button>
         </td>
       </tr>
     `).join('');
   }
 
   function renderStaff(search = '') {
-    let staff = DB.get('staff');
+    let staff = allStaff;
     if (search) {
       const s = search.toLowerCase();
-      staff = staff.filter(st => st.name.toLowerCase().includes(s) || st.email.toLowerCase().includes(s));
+      staff = staff.filter(st => (st.name && st.name.toLowerCase().includes(s)) || (st.staffNumber && st.staffNumber.toLowerCase().includes(s)));
     }
 
     const tbody = document.getElementById('staffTbody');
@@ -215,17 +282,17 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     tbody.innerHTML = staff.map(s => `
       <tr>
         <td><strong>${s.emoji || '👤'} ${s.name}</strong></td>
-        <td style="font-size:0.85rem;">${s.email}</td>
-        <td>${s.subject}</td>
-        <td><span class="badge badge-green">${s.class}</span></td>
+        <td><span class="badge badge-green" style="font-weight:600;">${s.staffNumber || '—'}</span></td>
+        <td><span class="badge badge-blue">${s.role || 'Teacher'}</span></td>
+        <td>${s.subject || '—'}</td>
         <td>
           <div class="pwd-field">
             <span class="pwd-text" id="pwd-staff-${s.id}">••••••••</span>
-            <button class="pwd-reveal" onclick="togglePwdReveal('staff','${s.id}','${s.password}')">👁️</button>
+            <button class="pwd-reveal" onclick="togglePwdReveal('staff','${s.id}','${s.password || ''}')">👁️</button>
           </div>
         </td>
         <td>
-          <button class="btn btn-sm btn-accent" onclick="openResetModal('staff','${s.id}','${s.name}','${s.email}')">🔑 Reset</button>
+          <button class="btn btn-sm btn-accent" onclick="openResetModal('staff','${s.id}','${s.name}','Staff No: ${s.staffNumber || ''}')">🔑 Reset</button>
         </td>
       </tr>
     `).join('');
@@ -245,17 +312,17 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     }
   }
 
-  function openResetModal(type, id, name, email) {
+  function openResetModal(type, id, name, identifier) {
     document.getElementById('resetId').value = id;
     document.getElementById('resetType').value = type;
     document.getElementById('resetName').textContent = name;
-    document.getElementById('resetEmail').textContent = email;
+    document.getElementById('resetIdentifier').textContent = identifier;
     document.getElementById('newPassword').value = '';
     document.getElementById('confirmPassword').value = '';
     openModal('resetModal');
   }
 
-  function doResetPassword() {
+  async function doResetPassword() {
     const newPass = document.getElementById('newPassword').value;
     const confirmPass = document.getElementById('confirmPassword').value;
     const id = document.getElementById('resetId').value;
@@ -270,15 +337,14 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
       return;
     }
 
-    const key = type === 'student' ? 'students' : 'staff';
-    DB.update(key, id, { password: newPass });
-
-    showToast('Password reset successfully!', 'success');
-    closeModal('resetModal');
-
-    // Re-render to reflect changes
-    if (type === 'student') renderStudents();
-    else renderStaff();
+    const res = await API.resetCredentialsPassword(type, id, newPass);
+    if (res && res.success) {
+      showToast('Password reset successfully in database!', 'success');
+      closeModal('resetModal');
+      await loadData();
+    } else {
+      showToast(res?.message || 'Failed to reset password.', 'error');
+    }
 
     // Reset revealed state
     const revealKey = type + '-' + id;
@@ -297,5 +363,3 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
 </script>
 </body>
 </html>
-
-

@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../auth.php';
 $_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
@@ -9,10 +10,24 @@ if(($_SERVER['REQUEST_METHOD']??'')==='OPTIONS')exit;
 $isAjax=isset($_SERVER['HTTP_X_REQUESTED_WITH'])||strpos($_SERVER['CONTENT_TYPE']??'','application/json')!==false||isset($_GET['_api']);
 $method=$_SERVER['REQUEST_METHOD']??'GET';
 $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
-  $email=ksm_esc($body['email']??'');$pass=ksm_db()->real_escape_string(trim($body['password']??''));
-  $r=ksm_db()->query("SELECT id,name,email,phone,subject,class,bio,emoji,profilePic FROM users_staff WHERE email='$email' AND password='$pass' LIMIT 1");
-  if($r&&$r->num_rows>0) ksm_json($r->fetch_assoc(),'Login successful.');
-  else ksm_err('Invalid email or password.',401);
+  $staffNumber=ksm_esc($body['staffNumber']??'');$pass=trim($body['password']??'');
+  $r=ksm_db()->query("SELECT * FROM users_staff WHERE staffNumber='$staffNumber' LIMIT 1");
+  if ($r && $r->num_rows > 0) {
+      $user = $r->fetch_assoc();
+      if ($pass === $user['password'] || password_verify($pass, $user['password'])) {
+          if ($pass === $user['password']) {
+              $hashed = password_hash($pass, PASSWORD_DEFAULT);
+              ksm_db()->query("UPDATE users_staff SET password='$hashed' WHERE id={$user['id']}");
+          }
+          $_SESSION['ksm_staff_auth'] = $user['id'];
+          unset($user['password']);
+          ksm_json($user, 'Login successful.');
+      } else {
+          ksm_err('Invalid staff number or password.', 401);
+      }
+  } else {
+      ksm_err('Invalid staff number or password.', 401);
+  }
 }
 ?>
 <!DOCTYPE html>
@@ -36,15 +51,12 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     <h1 class="auth-title">Teacher Login</h1>
     <p class="auth-subtitle">Sign in to manage homework, attendance & your profile</p>
 
-    <div class="demo-creds" style="background:#D1FAE5;border-color:rgba(16,185,129,0.3);color:#065F46;">
-      <strong>Demo Credentials:</strong><br>
-      Email: <strong>ayesha@staff.ksm</strong> &nbsp;|&nbsp; Password: <strong>staff123</strong>
-    </div>
+
 
     <form id="loginForm" onsubmit="doLogin(event)">
       <div class="form-group">
-        <label class="form-label" for="email">Email Address</label>
-        <input type="email" id="email" class="form-control" placeholder="your@staff.ksm" autocomplete="email" required>
+        <label class="form-label" for="staffNumber">Staff Number</label>
+        <input type="text" id="staffNumber" class="form-control" placeholder="e.g. ST-001" autocomplete="username" required>
       </div>
       <div class="form-group">
         <label class="form-label" for="password">Password</label>
@@ -55,7 +67,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
       </div>
 
       <div id="loginError" class="hidden" style="background:#FEE2E2;color:#991B1B;padding:0.75rem;border-radius:var(--radius-sm);font-size:0.85rem;margin-bottom:1rem;text-align:center;">
-        Invalid email or password. Please try again.
+        Invalid staff number or password. Please try again.
       </div>
 
       <button type="submit" class="btn btn-primary w-full" style="margin-top:0.5rem;background:#047857;">👨‍🏫 Login to Teacher Portal</button>
@@ -63,7 +75,6 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
 
     <div style="text-align:center;margin-top:1.5rem;display:flex;flex-direction:column;gap:0.5rem;">
       <a href="../index.php" style="font-size:0.85rem;color:var(--text-medium);">← Back to Portal</a>
-      <a href="../student/login.php" style="font-size:0.82rem;color:var(--text-light);">Student Login →</a>
     </div>
   </div>
 </div>
@@ -71,21 +82,32 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
 <script src="../assets/portal.js?v=2"></script>
 <script src="../assets/api.js"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    if (sessionStorage.getItem('ksm_staff_auth')) {
-      window.location.href = 'dashboard.php';
+  document.addEventListener('DOMContentLoaded', async () => {
+    const raw = sessionStorage.getItem('ksm_staff_auth');
+    if (raw) {
+      try {
+        const staff = JSON.parse(raw);
+        if (staff && staff.id) {
+          const res = await API.getStaffDashboard(staff.id);
+          if (res && res.success) {
+            window.location.href = 'dashboard.php';
+            return;
+          }
+        }
+      } catch(e) {}
+      sessionStorage.removeItem('ksm_staff_auth');
     }
   });
 
   async function doLogin(e) {
     e.preventDefault();
-    const email = document.getElementById('email').value.trim();
+    const staffNumber = document.getElementById('staffNumber').value.trim();
     const pass = document.getElementById('password').value;
     const btn = e.submitter;
     btn.disabled = true;
     btn.textContent = 'Signing in...';
     try {
-      const res = await API.staffLogin(email, pass);
+      const res = await API.staffLogin(staffNumber, pass);
       if (res.success) {
         sessionStorage.setItem('ksm_staff_auth', JSON.stringify(res.data));
         showToast('Welcome back, ' + res.data.name + '!', 'success');

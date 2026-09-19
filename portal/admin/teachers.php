@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../auth.php';
+check_admin_auth();
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 header('Cache-Control: post-check=0, pre-check=0', false);
 header('Pragma: no-cache');
@@ -42,8 +44,9 @@ $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strpos($_SERVER['CONTENT_T
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $body = json_decode(file_get_contents('php://input'), true) ?? [];
 if ($isAjax) {
+  $db = ksm_db();
   if ($method === 'GET') {
-    $r = ksm_db()->query("SELECT * FROM teachers ORDER BY id ASC");
+    $r = $db->query("SELECT id, name, role, subject, emoji, bio, email, staffNumber, password, profilePic FROM users_staff ORDER BY id ASC");
     $rows = [];
     while ($row = $r->fetch_assoc())
       $rows[] = $row;
@@ -53,36 +56,99 @@ if ($isAjax) {
     $name = ksm_esc($body['name'] ?? '');
     $role = ksm_esc($body['role'] ?? '');
     $subject = ksm_esc($body['subject'] ?? '');
-    $emoji = ksm_esc($body['emoji'] ?? '?');
+    $emoji = ksm_esc($body['emoji'] ?? '👤');
     $bio = ksm_esc($body['bio'] ?? '');
     $email = ksm_esc($body['email'] ?? '');
+    $staffNumber = ksm_esc($body['staffNumber'] ?? '');
     $password = ksm_esc($body['password'] ?? '');
-    if (!$name || !$role || !$subject)
-      ksm_err('Name, Role, Subject required.');
-    ksm_db()->query("ALTER TABLE teachers ADD COLUMN email VARCHAR(255) DEFAULT NULL;");
-    ksm_db()->query("ALTER TABLE teachers ADD COLUMN password VARCHAR(255) DEFAULT NULL;");
-    ksm_db()->query("INSERT INTO teachers(name,role,subject,emoji,bio,email,password)VALUES('$name','$role','$subject','$emoji','$bio','$email','$password')");
-    ksm_json(['id' => ksm_db()->insert_id], 'Teacher added.');
+    if (!$name || !$role || !$subject || !$staffNumber)
+      ksm_err('Name, Role, Subject, and Staff Number required.');
+    if (!$password)
+      ksm_err('Password required for new teacher.');
+    if(!preg_match('/^[A-Za-z\s]{2,50}$/', $name)) ksm_err('Invalid name format.');
+    if($email && (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email)>100)) ksm_err('Invalid email format.');
+    if(strlen($subject)>50 || strlen($staffNumber)>50) ksm_err('Subject or Staff Number too long.');
+    if(strlen($bio)>1000) ksm_err('Bio too long.');
+    if(strlen($password)<6 || strlen($password)>50) ksm_err('Password must be between 6 and 50 characters.');
+
+    // Check duplicate staffNumber in users_staff
+    $chk = $db->query("SELECT id FROM users_staff WHERE staffNumber='$staffNumber' LIMIT 1");
+    if ($chk && $chk->num_rows > 0) {
+      ksm_err("Staff number '$staffNumber' is already assigned to another teacher. Please use a different staff number.");
+    }
+
+    // Check duplicate email if provided
+    if ($email) {
+      $chkEmail = $db->query("SELECT id FROM users_staff WHERE email='$email' LIMIT 1");
+      if ($chkEmail && $chkEmail->num_rows > 0) {
+        ksm_err("Email '$email' is already registered. Please use a different email.");
+      }
+    }
+
+    // Insert directly into users_staff
+    $hashed_pass = password_hash($password, PASSWORD_DEFAULT);
+    $sql = "INSERT INTO users_staff (name, email, password, subject, bio, emoji, staffNumber, role) VALUES ('$name', '$email', '$hashed_pass', '$subject', '$bio', '$emoji', '$staffNumber', '$role')";
+    if (!$db->query($sql)) {
+      ksm_err('Failed to create teacher account: ' . $db->error);
+    }
+    $newId = $db->insert_id;
+    ksm_json(['id' => $newId], 'Teacher added successfully.');
   }
   if ($method === 'PUT') {
     $id = intval($body['id'] ?? 0);
-    $name = ksm_esc($body['name'] ?? '');
-    $role = ksm_esc($body['role'] ?? '');
-    $subject = ksm_esc($body['subject'] ?? '');
-    $emoji = ksm_esc($body['emoji'] ?? '?');
-    $bio = ksm_esc($body['bio'] ?? '');
-    $email = ksm_esc($body['email'] ?? '');
-    $password = ksm_esc($body['password'] ?? '');
-    if (!$id)
-      ksm_err('Invalid ID.');
-    ksm_db()->query("UPDATE teachers SET name='$name',role='$role',subject='$subject',emoji='$emoji',bio='$bio',email='$email',password='$password' WHERE id=$id");
+    if (!$id) ksm_err('Invalid ID.');
+
+    $curr = $db->query("SELECT * FROM users_staff WHERE id=$id")->fetch_assoc();
+    if (!$curr) ksm_err('Teacher not found.');
+
+    $name = isset($body['name']) ? ksm_esc($body['name']) : ksm_esc($curr['name'] ?? '');
+    $role = isset($body['role']) ? ksm_esc($body['role']) : ksm_esc($curr['role'] ?? '');
+    $subject = isset($body['subject']) ? ksm_esc($body['subject']) : ksm_esc($curr['subject'] ?? '');
+    $emoji = isset($body['emoji']) ? ksm_esc($body['emoji']) : ksm_esc($curr['emoji'] ?? '👤');
+    $bio = isset($body['bio']) ? ksm_esc($body['bio']) : ksm_esc($curr['bio'] ?? '');
+    $email = isset($body['email']) ? ksm_esc($body['email']) : ksm_esc($curr['email'] ?? '');
+    $staffNumber = isset($body['staffNumber']) ? ksm_esc($body['staffNumber']) : ksm_esc($curr['staffNumber'] ?? '');
+    $password = trim($body['password'] ?? '');
+
+    if(!preg_match('/^[A-Za-z\s]{2,50}$/', $name)) ksm_err('Invalid name format.');
+    if($email && (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email)>100)) ksm_err('Invalid email format.');
+    if(strlen($subject)>50 || strlen($staffNumber)>50) ksm_err('Subject or Staff Number too long.');
+    if(strlen($bio)>1000) ksm_err('Bio too long.');
+    
+    $password_update_sql = "";
+    if ($password !== '') {
+        if(strlen($password)<6 || strlen($password)>50) ksm_err('Password must be between 6 and 50 characters.');
+        $hashed = password_hash($password, PASSWORD_DEFAULT);
+        $password_update_sql = ", password='$hashed'";
+    }
+
+    $oldStaffNumber = ksm_esc($curr['staffNumber'] ?? '');
+
+    if ($staffNumber && $staffNumber !== $oldStaffNumber) {
+      $chk = $db->query("SELECT id FROM users_staff WHERE staffNumber='$staffNumber' AND id != $id LIMIT 1");
+      if ($chk && $chk->num_rows > 0) {
+        ksm_err("Staff number '$staffNumber' is already in use by another teacher.");
+      }
+    }
+
+    $db->query("UPDATE users_staff SET name='$name', role='$role', subject='$subject', emoji='$emoji', bio='$bio', email='$email', staffNumber='$staffNumber' $password_update_sql WHERE id=$id");
     ksm_json(null, 'Updated.');
   }
   if ($method === 'DELETE') {
     $id = intval($_GET['id'] ?? 0);
     if (!$id)
       ksm_err('Invalid ID.');
-    ksm_db()->query("DELETE FROM teachers WHERE id=$id");
+
+    $s = $db->query("SELECT * FROM users_staff WHERE id=$id")->fetch_assoc();
+    $sn = ksm_esc($s['staffNumber'] ?? '');
+
+    // Clean up homework
+    $db->query("DELETE FROM homework WHERE staff_id=$id");
+
+    // Delete from users_staff
+    $db->query("DELETE FROM users_staff WHERE id=$id");
+    if ($sn) $db->query("DELETE FROM users_staff WHERE staffNumber='$sn'");
+
     ksm_json(null, 'Deleted.');
   }
 }
@@ -160,7 +226,7 @@ if ($isAjax) {
       <div class="form-grid">
         <div class="form-group">
           <label class="form-label">Full Name *</label>
-          <input type="text" id="tName" class="form-control" placeholder="Ms. Jane Doe" required>
+          <input type="text" id="tName" class="form-control" placeholder="Ms. Jane Doe" pattern="[A-Za-z\s]{2,50}" maxlength="50" title="Only letters and spaces allowed" required>
         </div>
         <div class="form-group">
           <label class="form-label">Role *</label>
@@ -183,8 +249,12 @@ if ($isAjax) {
       </div>
       <div class="form-grid">
         <div class="form-group">
+          <label class="form-label">Email Address (Optional)</label>
+          <input type="email" id="tEmail" class="form-control" placeholder="teacher@ksm.edu" maxlength="100">
+        </div>
+        <div class="form-group">
           <label class="form-label">Subject / Specialty *</label>
-          <input type="text" id="tSubject" class="form-control" placeholder="e.g. Mathematics">
+          <input type="text" id="tSubject" class="form-control" placeholder="e.g. Mathematics" maxlength="50">
         </div>
         <div class="form-group">
           <label class="form-label">Emoji / Avatar</label>
@@ -193,7 +263,7 @@ if ($isAjax) {
       </div>
       <div class="form-group">
         <label class="form-label">Bio / Description</label>
-        <textarea id="tBio" class="form-control" rows="3" placeholder="Short bio..."></textarea>
+        <textarea id="tBio" class="form-control" rows="3" placeholder="Short bio..." maxlength="1000"></textarea>
       </div>
 
       <hr style="margin:1rem 0;border:none;border-top:1px solid var(--border-color);">
@@ -201,12 +271,12 @@ if ($isAjax) {
 
       <div class="form-grid">
         <div class="form-group">
-          <label class="form-label">Email Address (Optional)</label>
-          <input type="email" id="tEmail" class="form-control" placeholder="teacher@ksm.edu">
+          <label class="form-label">Staff Number</label>
+          <input type="text" id="tStaffNumber" class="form-control" placeholder="e.g. ST-001" maxlength="50">
         </div>
         <div class="form-group" id="tPwdGroup">
           <label class="form-label">Password</label>
-          <input type="text" id="tPassword" class="form-control" placeholder="teacher123">
+          <input type="text" id="tPassword" class="form-control" placeholder="teacher123" minlength="6" maxlength="50">
         </div>
       </div>
 
@@ -235,7 +305,7 @@ if ($isAjax) {
       <div class="form-group">
         <label class="form-label">New Password *</label>
         <div style="position:relative;">
-          <input type="password" id="newPassword" class="form-control" placeholder="Enter new password" minlength="4"
+          <input type="password" id="newPassword" class="form-control" placeholder="Enter new password" minlength="6" maxlength="50"
             required>
           <button type="button" onclick="toggleNewPwd()"
             style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-medium);font-size:0.85rem;">Show</button>
@@ -297,6 +367,8 @@ if ($isAjax) {
       document.getElementById('tBio').value = '';
       document.getElementById('tEmail').value = '';
       document.getElementById('tEmail').readOnly = false;
+      document.getElementById('tStaffNumber').value = '';
+      document.getElementById('tStaffNumber').readOnly = false;
       document.getElementById('tPassword').value = '';
       document.getElementById('tPwdGroup').style.display = 'block';
       document.getElementById('teacherModalTitle').textContent = 'Add Teacher';
@@ -314,6 +386,8 @@ if ($isAjax) {
       document.getElementById('tBio').value = t.bio || '';
       document.getElementById('tEmail').value = t.email || '';
       document.getElementById('tEmail').readOnly = true;
+      document.getElementById('tStaffNumber').value = t.staffNumber || '';
+      document.getElementById('tStaffNumber').readOnly = true;
       document.getElementById('tPassword').value = t.password || '';
       document.getElementById('tPwdGroup').style.display = 'none';
       document.getElementById('teacherModalTitle').textContent = 'Edit Teacher';
@@ -326,11 +400,12 @@ if ($isAjax) {
       const role = document.getElementById('tRole').value;
       const subject = document.getElementById('tSubject').value.trim();
       const email = document.getElementById('tEmail').value.trim();
+      const staffNumber = document.getElementById('tStaffNumber').value.trim();
       const password = document.getElementById('tPassword').value.trim();
-      if (!name || !role || !subject || !email) { showToast('Please fill in Name, Role, Subject, and Email.', 'error'); return; }
+      if (!name || !role || !subject || !staffNumber) { showToast('Please fill in Name, Role, Subject, and Staff Number.', 'error'); return; }
       if (!editId && !password) { showToast('Please fill in Password for new teacher.', 'error'); return; }
 
-      const data = { name, role, subject, emoji: document.getElementById('tEmoji').value || '👤', bio: document.getElementById('tBio').value.trim(), email, password };
+      const data = { name, role, subject, emoji: document.getElementById('tEmoji').value || '👤', bio: document.getElementById('tBio').value.trim(), email, staffNumber, password };
 
       let res;
       if (editId) {
@@ -348,7 +423,13 @@ if ($isAjax) {
     async function deleteTeacher(id) {
       confirmDelete('Delete this teacher? This cannot be undone.', async () => {
         const res = await API.deleteTeacher(id);
-        if (res.success) showToast('Teacher deleted.', 'info');
+        if (res.success) {
+          DB.delete('teachers', id);
+          DB.delete('staff', id);
+          showToast('Teacher deleted.', 'info');
+        } else {
+          showToast(res.message || 'Failed to delete teacher.', 'error');
+        }
         await renderTable();
       });
     }

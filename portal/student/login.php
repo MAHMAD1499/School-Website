@@ -1,4 +1,5 @@
-﻿<?php
+<?php
+require_once __DIR__ . '/../auth.php';
 $_ksm = ['host' => 'localhost', 'user' => 'root', 'pass' => '', 'name' => 'ksm_database'];
 function ksm_db()
 {
@@ -38,13 +39,25 @@ $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strpos($_SERVER['CONTENT_T
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $body = json_decode(file_get_contents('php://input'), true) ?? [];
 if ($isAjax) {
-  $email = ksm_esc($body['email'] ?? '');
-  $pass = ksm_db()->real_escape_string(trim($body['password'] ?? ''));
-  $r = ksm_db()->query("SELECT id,name,email,phone,address,class,rollNo,parentName,profilePic FROM users_students WHERE email='$email' AND password='$pass' LIMIT 1");
-  if ($r && $r->num_rows > 0)
-    ksm_json($r->fetch_assoc(), 'Login successful.');
-  else
-    ksm_err('Invalid email or password.', 401);
+  $rollNo = ksm_esc($body['rollNo'] ?? '');
+  $pass = trim($body['password'] ?? '');
+  $r = ksm_db()->query("SELECT * FROM users_students WHERE rollNo='$rollNo' LIMIT 1");
+  if ($r && $r->num_rows > 0) {
+      $user = $r->fetch_assoc();
+      if ($pass === $user['password'] || password_verify($pass, $user['password'])) {
+          if ($pass === $user['password']) {
+              $hashed = password_hash($pass, PASSWORD_DEFAULT);
+              ksm_db()->query("UPDATE users_students SET password='$hashed' WHERE id={$user['id']}");
+          }
+          $_SESSION['ksm_student_auth'] = $user['id'];
+          unset($user['password']);
+          ksm_json($user, 'Login successful.');
+      } else {
+          ksm_err('Invalid roll number or password.', 401);
+      }
+  } else {
+      ksm_err('Invalid roll number or password.', 401);
+  }
 }
 ?>
 <!DOCTYPE html>
@@ -72,15 +85,12 @@ if ($isAjax) {
       <h1 class="auth-title">Sign In</h1>
       <p class="auth-subtitle">Access Your Personalized School Dashboard</p>
 
-      <div class="demo-creds">
-        <strong>Demo Account:</strong><br>
-        Email: <strong>ali@student.ksm</strong> &nbsp;|&nbsp; Password: <strong>student123</strong>
-      </div>
+
 
       <form id="loginForm" onsubmit="doLogin(event)">
         <div class="form-group">
-          <label class="form-label" for="email">Email Address</label>
-          <input type="email" id="email" class="form-control" placeholder="your@email.com" autocomplete="email"
+          <label class="form-label" for="rollNo">Roll Number</label>
+          <input type="text" id="rollNo" class="form-control" placeholder="e.g. KA-001" autocomplete="username"
             required>
         </div>
         <div class="form-group">
@@ -95,7 +105,7 @@ if ($isAjax) {
 
         <div id="loginError" class="hidden"
           style="background:#FEE2E2;color:#991B1B;padding:0.75rem;border-radius:var(--radius-sm);font-size:0.85rem;margin-bottom:1rem;text-align:center;">
-          Invalid email or password. Please try again.
+          Invalid roll number or password. Please try again.
         </div>
 
         <button type="submit" class="btn btn-accent w-full" style="margin-top:0.5rem;">🎓 Login to Portal</button>
@@ -103,7 +113,6 @@ if ($isAjax) {
 
       <div style="text-align:center;margin-top:1.5rem;display:flex;flex-direction:column;gap:0.5rem;">
         <a href="../index.php" style="font-size:0.85rem;color:var(--text-medium);">← Back to Portal</a>
-        <a href="../admin/login.php" style="font-size:0.82rem;color:var(--text-light);">Admin Login →</a>
       </div>
     </div>
   </div>
@@ -111,21 +120,32 @@ if ($isAjax) {
   <script src="../assets/portal.js"></script>
   <script src="../assets/api.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      if (sessionStorage.getItem('ksm_student_auth')) {
-        window.location.href = 'dashboard.php';
+    document.addEventListener('DOMContentLoaded', async () => {
+      const raw = sessionStorage.getItem('ksm_student_auth');
+      if (raw) {
+        try {
+          const student = JSON.parse(raw);
+          if (student && student.id) {
+            const res = await API.getStudentDashboard(student.id);
+            if (res && res.success) {
+              window.location.href = 'dashboard.php';
+              return;
+            }
+          }
+        } catch(e) {}
+        sessionStorage.removeItem('ksm_student_auth');
       }
     });
 
     async function doLogin(e) {
       e.preventDefault();
-      const email = document.getElementById('email').value.trim();
+      const rollNo = document.getElementById('rollNo').value.trim();
       const pass = document.getElementById('password').value;
       const btn = e.submitter;
       btn.disabled = true;
       btn.textContent = 'Signing in...';
       try {
-        const res = await API.studentLogin(email, pass);
+        const res = await API.studentLogin(rollNo, pass);
         if (res.success) {
           sessionStorage.setItem('ksm_student_auth', JSON.stringify(res.data));
           showToast('Welcome back, ' + res.data.name + '!', 'success');

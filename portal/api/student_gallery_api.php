@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../auth.php';
+check_student_auth();
 $_ksm = ['host' => 'localhost', 'user' => 'root', 'pass' => '', 'name' => 'ksm_database'];
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
@@ -13,6 +15,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];
 if($method==='GET'){
   $student_id = intval($_GET['student_id']??0);
   if(!$student_id) ksm_err('student_id required.');
+  if($student_id !== (int)$_SESSION['ksm_student_auth']) ksm_err('Access denied.', 403);
   $r = ksm_db()->query("SELECT * FROM student_gallery WHERE student_id=$student_id ORDER BY id ASC");
   $rows=[];
   while($row=$r->fetch_assoc()) $rows[]=$row;
@@ -23,13 +26,15 @@ if($method==='POST'){
   $url = ksm_esc($body['url']??'');
   $cap = ksm_esc($body['caption']??'');
   if(!$student_id || !$url) ksm_err('student_id and URL required.');
+  if($student_id !== (int)$_SESSION['ksm_student_auth']) ksm_err('Access denied.', 403);
   ksm_db()->query("INSERT INTO student_gallery(student_id, url, caption) VALUES($student_id, '$url', '$cap')");
   ksm_json(['id'=>ksm_db()->insert_id], 'Photo added to personal gallery.');
 }
 if($method==='DELETE'){
   $id = intval($_GET['id']??0);
   if(!$id) ksm_err('Invalid ID.');
-  ksm_db()->query("DELETE FROM student_gallery WHERE id=$id");
+  $sid = (int)$_SESSION['ksm_student_auth'];
+  ksm_db()->query("DELETE FROM student_gallery WHERE id=$id AND student_id=$sid");
   ksm_json(null,'Deleted.');
 }
 ?>

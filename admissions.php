@@ -11,6 +11,13 @@ $method=$_SERVER['REQUEST_METHOD']??'GET';
 $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $method==='POST'){
   $cn=ksm_esc($body['child_name']??'');$dob=ksm_esc($body['dob']??'');$pn=ksm_esc($body['parent_name']??'');$ph=ksm_esc($body['phone']??'');$em=ksm_esc($body['email']??'');$addr=ksm_esc($body['address']??'');$ps=ksm_esc($body['prior_school']??'');$ca=ksm_esc($body['program']??'');$msg=ksm_esc($body['notes']??'');
   if(!$cn||!$pn||!$ph)ksm_err('Child name, parent name and phone required.');
+  if(!preg_match('/^[A-Za-z\s]{2,50}$/', $cn)) ksm_err('Invalid child name format.');
+  if(!preg_match('/^[A-Za-z\s]{2,50}$/', $pn)) ksm_err('Invalid parent name format.');
+  if(!preg_match('/^(\+92|0)[0-9]{10}$/', $ph)) ksm_err('Invalid phone number format.');
+  if($em && (!filter_var($em, FILTER_VALIDATE_EMAIL) || strlen($em)>100)) ksm_err('Invalid email format.');
+  if($dob && (strtotime($dob) < strtotime('2010-01-01') || strtotime($dob) > strtotime('2024-01-01'))) ksm_err('Invalid date of birth.');
+  $msg = htmlspecialchars($msg, ENT_QUOTES, 'UTF-8');
+  $addr = htmlspecialchars($addr, ENT_QUOTES, 'UTF-8');
   ksm_db()->query("INSERT INTO admissions(child_name,dob,parent_name,phone,email,address,prior_school,class_applied,message,status)VALUES('$cn','$dob','$pn','$ph','$em','$addr','$ps','$ca','$msg','Pending')");
   $newId=ksm_db()->insert_id;
   ksm_json(['id'=>$newId,'refCode'=>'KSM-'.date('Ymd').'-'.$newId],'Application submitted.');

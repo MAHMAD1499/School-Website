@@ -188,7 +188,7 @@
     }
 
     .side-admin .side-tag { color: var(--accent-warm); }
-    .side-student .side-tag { color: var(--primary-deep); }
+    .side-student .side-tag { color: rgba(255,255,255,0.8); }
 
     .side-title {
       font-family: var(--font-heading);
@@ -200,7 +200,7 @@
     }
 
     .side-admin .side-title { color: white; }
-    .side-student .side-title { color: var(--primary-deep); }
+    .side-student .side-title { color: white; }
 
     .side-desc {
       font-size: 0.9rem;
@@ -210,7 +210,7 @@
     }
 
     .side-admin .side-desc { color: rgba(255,255,255,0.8); }
-    .side-student .side-desc { color: rgba(30,58,138,0.85); }
+    .side-student .side-desc { color: rgba(255,255,255,0.85); }
 
     /* ===== BUTTONS ===== */
     .side-btn {
@@ -306,7 +306,7 @@
     }
 
     .side-admin .feature-item { color: rgba(255,255,255,0.85); }
-    .side-student .feature-item { color: rgba(30,58,138,0.9); }
+    .side-student .feature-item { color: rgba(255,255,255,0.9); }
 
     .feature-dot {
       width: 6px;
@@ -316,7 +316,7 @@
     }
 
     .side-admin .feature-dot { background: var(--accent-warm); }
-    .side-student .feature-dot { background: var(--primary-deep); }
+    .side-student .feature-dot { background: white; }
 
     /* ===== HOVER HINT ===== */
     .hover-hint {
@@ -332,7 +332,7 @@
 
     .side:hover .hover-hint { opacity: 0.5; }
     .side-admin .hover-hint { color: white; }
-    .side-student .hover-hint { color: var(--primary-deep); }
+    .side-student .hover-hint { color: white; }
 
     /* ===== DIVIDER LINE ===== */
     .divider-line {
@@ -413,8 +413,8 @@
     <div class="side-content">
       <div class="side-icon">👨‍👩‍👧</div>
       <div class="side-tag">Students &amp; Parents</div>
-      <h1 class="side-title" style="color:var(--primary-deep);">Student<br>Portal</h1>
-      <p class="side-desc" style="color:rgba(30,58,138,0.85);">Access your personal dashboard, view announcements, check upcoming events, and explore classes.</p>
+      <h1 class="side-title">Student<br>Portal</h1>
+      <p class="side-desc">Access your personal dashboard, view announcements, check upcoming events, and explore classes.</p>
 
       <div class="feature-list">
         <div class="feature-item"><div class="feature-dot"></div>Personal student dashboard</div>

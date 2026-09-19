@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../auth.php';
+check_admin_auth();
 $_ksm = ['host' => 'localhost', 'user' => 'root', 'pass' => '', 'name' => 'ksm_database'];
 function ksm_db()
 {
@@ -40,7 +42,7 @@ $body = json_decode(file_get_contents('php://input'), true) ?? [];
 if ($isAjax) {
   $db = ksm_db();
   $stats = [
-    'teachers' => $db->query("SELECT COUNT(*) c FROM teachers")->fetch_assoc()['c'],
+    'teachers' => $db->query("SELECT COUNT(*) c FROM users_staff")->fetch_assoc()['c'],
     'gallery' => $db->query("SELECT COUNT(*) c FROM gallery")->fetch_assoc()['c'],
     'news' => $db->query("SELECT COUNT(*) c FROM news")->fetch_assoc()['c'],
     'events' => $db->query("SELECT COUNT(*) c FROM events")->fetch_assoc()['c'],

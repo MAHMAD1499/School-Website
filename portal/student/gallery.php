@@ -65,7 +65,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){$r=ksm_
     const student = Auth.getStudent();
     if (!student) { window.location.href = 'login.php'; return; }
     document.getElementById('studentNameLabel').textContent = student.name;
-    document.getElementById('studentAvatar').textContent = student.name.charAt(0).toUpperCase();
+    document.getElementById('studentAvatar').innerHTML = student.profilePic ? `<img src="${student.profilePic}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : student.name.charAt(0).toUpperCase();
     buildSidebar('student');
     renderGallery();
   });

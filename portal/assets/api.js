@@ -54,8 +54,8 @@ function makePageUrl(page, sub) {
 const API = {
   // AUTH - handled by each login page itself
   async adminLogin(u, p) { return apiCall(makePageUrl('login','admin'), 'POST', {action:'admin_login',username:u,password:p}); },
-  async studentLogin(e, p) { return apiCall(makePageUrl('login','student'), 'POST', {email:e,password:p}); },
-  async staffLogin(e, p) { return apiCall(makePageUrl('login','staff'), 'POST', {email:e,password:p}); },
+  async studentLogin(rollNo, p) { return apiCall(makePageUrl('login','student'), 'POST', {rollNo,password:p}); },
+  async staffLogin(staffNumber, p) { return apiCall(makePageUrl('login','staff'), 'POST', {staffNumber,password:p}); },
 
   // TEACHERS (admin/teachers.php or portal/teachers.php)
   async getTeachers() { return apiCall(makePageUrl('teachers','admin'), 'GET'); },
@@ -94,10 +94,24 @@ const API = {
   async deleteContact(id) { return apiCall(makePageUrl('contacts','admin') + '?id=' + id, 'DELETE'); },
 
   // HOMEWORK
-  async getHomework(cls) { const q = cls ? '?class=' + encodeURIComponent(cls) : ''; return apiCall(makePageUrl('homework','staff') + q, 'GET'); },
+  async getHomework(cls) { 
+    const q = cls ? '?class=' + encodeURIComponent(cls) : ''; 
+    const curr = window.location.pathname;
+    const sub = curr.includes('/student/') ? 'student' : 'staff';
+    return apiCall(makePageUrl('homework', sub) + q, 'GET'); 
+  },
   async addHomework(d) { return apiCall(makePageUrl('homework','staff'), 'POST', d); },
   async updateHomework(d) { return apiCall(makePageUrl('homework','staff'), 'PUT', d); },
   async deleteHomework(id) { return apiCall(makePageUrl('homework','staff') + '?id=' + id, 'DELETE'); },
+  async getHomeworkSubmissions(hwId, studentId) { 
+    const q = new URLSearchParams();
+    if(hwId) q.append('hwId', hwId);
+    if(studentId) q.append('studentId', studentId);
+    const curr = window.location.pathname;
+    const sub = curr.includes('/student/') ? 'student' : 'staff';
+    return apiCall(makePageUrl('homework', sub) + '?' + q.toString() + '&submissions=1', 'GET'); 
+  },
+  async submitHomeworkAnswer(d) { return apiCall(makePageUrl('homework','student'), 'POST', d); },
 
   // ATTENDANCE
   async getAttendance(params) { const q = params ? '?' + new URLSearchParams(params).toString() : ''; return apiCall(makePageUrl('attendance','staff') + q, 'GET'); },
@@ -113,7 +127,9 @@ const API = {
   async addStudentPersonalPhoto(d) { return apiCall('../api/student_gallery_api.php', 'POST', d); },
   async deleteStudentPersonalPhoto(id) { return apiCall('../api/student_gallery_api.php?id=' + id, 'DELETE'); },
 
-  // STAFF
+  // CREDENTIALS & STAFF
+  async getCredentials(type) { return apiCall(makePageUrl('credentials','admin') + '?_api&type=' + type, 'GET'); },
+  async resetCredentialsPassword(type, id, password) { return apiCall(makePageUrl('credentials','admin'), 'PUT', { type, id, password }); },
   async getStaff() { return apiCall(makePageUrl('credentials','admin') + '?_api&type=staff', 'GET'); },
   async getStaffMember(id) { return apiCall(makePageUrl('profile','staff') + '?id=' + id, 'GET'); },
   async updateStaff(d) { return apiCall(makePageUrl('profile','staff'), 'PUT', d); },
@@ -122,4 +138,7 @@ const API = {
   async getAdminDashboard() { return apiCall(makePageUrl('dashboard','admin'), 'GET'); },
   async getStudentDashboard(student_id) { return apiCall(makePageUrl('dashboard','student') + '?student_id=' + student_id, 'GET'); },
   async getStaffDashboard(staff_id) { return apiCall(makePageUrl('dashboard','staff') + '?staff_id=' + staff_id, 'GET'); },
+
+  // UPLOADS
+  async uploadProfilePic(base64Image) { return apiCall('../api/upload_profile_pic.php', 'POST', { image: base64Image }); }
 };

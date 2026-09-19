@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../auth.php';
+check_admin_auth();
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 header('Cache-Control: post-check=0, pre-check=0', false);
 header('Pragma: no-cache');
@@ -14,9 +16,59 @@ $isAjax=isset($_SERVER['HTTP_X_REQUESTED_WITH'])||strpos($_SERVER['CONTENT_TYPE'
 $method=$_SERVER['REQUEST_METHOD']??'GET';
 $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   if($method==='GET'){$r=ksm_db()->query("SELECT * FROM users_students ORDER BY id ASC");$rows=[];while($row=$r->fetch_assoc())$rows[]=$row;ksm_json($rows);}
-  if($method==='POST'){$name=ksm_esc($body['name']??'');$email=ksm_esc($body['email']??'');$password=ksm_esc($body['password']??'');$class=ksm_esc($body['class']??'');$rollNo=ksm_esc($body['rollNo']??'');$parentName=ksm_esc($body['parentName']??'');if(!$name||!$email||!$password)ksm_err('Name, Email, and Password required.');ksm_db()->query("INSERT INTO users_students(name,email,password,class,rollNo,parentName)VALUES('$name','$email','$password','$class','$rollNo','$parentName')");ksm_json(['id'=>ksm_db()->insert_id],'Student added.');}
-  if($method==='PUT'){$id=intval($body['id']??0);$name=ksm_esc($body['name']??'');$email=ksm_esc($body['email']??'');$password=ksm_esc($body['password']??'');$class=ksm_esc($body['class']??'');$rollNo=ksm_esc($body['rollNo']??'');$parentName=ksm_esc($body['parentName']??'');if(!$id)ksm_err('Invalid ID.');ksm_db()->query("UPDATE users_students SET name='$name',email='$email',password='$password',class='$class',rollNo='$rollNo',parentName='$parentName' WHERE id=$id");ksm_json(null,'Updated.');}
-  if($method==='DELETE'){$id=intval($_GET['id']??0);if(!$id)ksm_err('Invalid ID.');ksm_db()->query("DELETE FROM users_students WHERE id=$id");ksm_json(null,'Deleted.');}
+  if($method==='POST'){
+    $name=ksm_esc($body['name']??'');$email=ksm_esc($body['email']??'');$password=ksm_esc($body['password']??'');$class=ksm_esc($body['class']??'');$rollNo=ksm_esc($body['rollNo']??'');$parentName=ksm_esc($body['parentName']??'');
+    if(!$name||!$rollNo||!$password)ksm_err('Name, Roll No, and Password required.');
+    if(!preg_match('/^[A-Za-z\s]{2,50}$/', $name)) ksm_err('Invalid name format.');
+    if($parentName && !preg_match('/^[A-Za-z\s]{2,50}$/', $parentName)) ksm_err('Invalid parent name format.');
+    if(strlen($class)>50 || strlen($rollNo)>50) ksm_err('Class or Roll No too long.');
+    if(strlen($password)<6 || strlen($password)>50) ksm_err('Password must be between 6 and 50 characters.');
+    
+    $chk = ksm_db()->query("SELECT id FROM users_students WHERE rollNo='$rollNo' LIMIT 1");
+    if ($chk && $chk->num_rows > 0) ksm_err("Roll number '$rollNo' is already assigned to another student.");
+
+    $hashed_pass = password_hash($password, PASSWORD_DEFAULT);
+    ksm_db()->query("INSERT INTO users_students(name,email,password,class,rollNo,parentName)VALUES('$name','$email','$hashed_pass','$class','$rollNo','$parentName')");
+    ksm_json(['id'=>ksm_db()->insert_id],'Student added.');
+  }
+  if($method==='PUT'){
+    $id=intval($body['id']??0);
+    if(!$id)ksm_err('Invalid ID.');
+    $curr = ksm_db()->query("SELECT * FROM users_students WHERE id=$id")->fetch_assoc();
+    if(!$curr) ksm_err('Student not found.');
+    $name=isset($body['name']) ? ksm_esc($body['name']) : ksm_esc($curr['name']);
+    $email=isset($body['email']) ? ksm_esc($body['email']) : ksm_esc($curr['email']);
+    $password=trim($body['password'] ?? '');
+    $class=isset($body['class']) ? ksm_esc($body['class']) : ksm_esc($curr['class']);
+    $rollNo=isset($body['rollNo']) ? ksm_esc($body['rollNo']) : ksm_esc($curr['rollNo']);
+    $parentName=isset($body['parentName']) ? ksm_esc($body['parentName']) : ksm_esc($curr['parentName']);
+    
+    if(!preg_match('/^[A-Za-z\s]{2,50}$/', $name)) ksm_err('Invalid name format.');
+    if($parentName && !preg_match('/^[A-Za-z\s]{2,50}$/', $parentName)) ksm_err('Invalid parent name format.');
+    if(strlen($class)>50 || strlen($rollNo)>50) ksm_err('Class or Roll No too long.');
+
+    $password_update_sql = "";
+    if ($password !== '') {
+        if(strlen($password)<6 || strlen($password)>50) ksm_err('Password must be between 6 and 50 characters.');
+        $hashed = password_hash($password, PASSWORD_DEFAULT);
+        $password_update_sql = ",password='$hashed'";
+    }
+
+    if ($rollNo !== ($curr['rollNo'] ?? '')) {
+      $chk = ksm_db()->query("SELECT id FROM users_students WHERE rollNo='$rollNo' AND id != $id LIMIT 1");
+      if ($chk && $chk->num_rows > 0) ksm_err("Roll number '$rollNo' is already assigned to another student.");
+    }
+
+    ksm_db()->query("UPDATE users_students SET name='$name',email='$email',class='$class',rollNo='$rollNo',parentName='$parentName' $password_update_sql WHERE id=$id");
+    ksm_json(null,'Updated.');
+  }
+  if($method==='DELETE'){
+    $id=intval($_GET['id']??0);
+    if(!$id)ksm_err('Invalid ID.');
+    ksm_db()->query("DELETE FROM attendance WHERE student_id=$id");
+    ksm_db()->query("DELETE FROM users_students WHERE id=$id");
+    ksm_json(null,'Deleted.');
+  }
 }
 ?>
 <!DOCTYPE html>
@@ -82,22 +134,22 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     <div class="form-grid">
       <div class="form-group">
         <label class="form-label">Full Name *</label>
-        <input type="text" id="sName" class="form-control" placeholder="Student Name" required>
+        <input type="text" id="sName" class="form-control" placeholder="Student Name" pattern="[A-Za-z\s]{2,50}" maxlength="50" title="Only letters and spaces allowed" required>
       </div>
       <div class="form-group">
-        <label class="form-label">Roll No</label>
-        <input type="text" id="sRollNo" class="form-control" placeholder="e.g. KA-001">
+        <label class="form-label">Email Address *</label>
+        <input type="email" id="sEmail" class="form-control" placeholder="student@ksm.edu" required>
       </div>
     </div>
     
     <div class="form-grid">
       <div class="form-group">
         <label class="form-label">Class</label>
-        <input type="text" id="sClass" class="form-control" placeholder="e.g. Kindergarten A">
+        <input type="text" id="sClass" class="form-control" placeholder="e.g. Kindergarten A" maxlength="50">
       </div>
       <div class="form-group">
         <label class="form-label">Parent Name</label>
-        <input type="text" id="sParentName" class="form-control" placeholder="Parent Name">
+        <input type="text" id="sParentName" class="form-control" placeholder="Parent Name" pattern="[A-Za-z\s]{2,50}" maxlength="50" title="Only letters and spaces allowed">
       </div>
     </div>
 
@@ -106,12 +158,12 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
 
     <div class="form-grid">
       <div class="form-group">
-        <label class="form-label">Email Address *</label>
-        <input type="email" id="sEmail" class="form-control" placeholder="student@ksm.edu" required>
+        <label class="form-label">Roll No</label>
+        <input type="text" id="sRollNo" class="form-control" placeholder="e.g. KA-001" maxlength="50">
       </div>
       <div class="form-group" id="sPwdGroup">
         <label class="form-label">Password *</label>
-        <input type="text" id="sPassword" class="form-control" placeholder="student123" required>
+        <input type="text" id="sPassword" class="form-control" placeholder="student123" minlength="6" maxlength="50" required>
       </div>
     </div>
 
@@ -137,7 +189,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     <div class="form-group">
       <label class="form-label">New Password *</label>
       <div style="position:relative;">
-        <input type="password" id="newPassword" class="form-control" placeholder="Enter new password" minlength="4" required>
+        <input type="password" id="newPassword" class="form-control" placeholder="Enter new password" minlength="6" maxlength="50" required>
         <button type="button" onclick="toggleNewPwd()" style="position:absolute;right:0.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-medium);font-size:0.85rem;">Show</button>
       </div>
     </div>
@@ -201,6 +253,12 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     document.getElementById('gFile').addEventListener('change', function(e) {
       const file = e.target.files[0];
       if (file) {
+        if (file.size > 2 * 1024 * 1024) {
+          showToast('File is too large! Maximum 2MB allowed.', 'error');
+          e.target.value = '';
+          document.getElementById('gUrl').value = '';
+          return;
+        }
         const reader = new FileReader();
         reader.onload = function(evt) {
           document.getElementById('gUrl').value = evt.target.result;
@@ -281,9 +339,10 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     const editId = document.getElementById('editId').value;
     const name = document.getElementById('sName').value.trim();
     const email = document.getElementById('sEmail').value.trim();
+    const rollNo = document.getElementById('sRollNo').value.trim();
     const password = document.getElementById('sPassword').value.trim();
     
-    if (!name || !email) { showToast('Please fill in Name and Email.', 'error'); return; }
+    if (!name || !rollNo) { showToast('Please fill in Name and Roll No.', 'error'); return; }
     if (!editId && !password) { showToast('Please fill in Password for new student.', 'error'); return; }
 
     const data = { 

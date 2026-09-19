@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../auth.php';
+check_staff_auth();
 $_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
@@ -9,8 +11,21 @@ if(($_SERVER['REQUEST_METHOD']??'')==='OPTIONS')exit;
 $isAjax=isset($_SERVER['HTTP_X_REQUESTED_WITH'])||strpos($_SERVER['CONTENT_TYPE']??'','application/json')!==false||isset($_GET['_api']);
 $method=$_SERVER['REQUEST_METHOD']??'GET';
 $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
-  if($method==='GET'){$class=ksm_esc($_GET['class']??'');$where=$class?"WHERE us.class='$class'":'';$r=ksm_db()->query("SELECT a.*,us.name student_name,us.rollNo FROM attendance a JOIN users_students us ON a.student_id=us.id $where ORDER BY a.date DESC,us.name ASC");$rows=[];while($row=$r->fetch_assoc())$rows[]=$row;ksm_json($rows);}
-  if($method==='POST'){$records=$body['records']??[];if(empty($records))ksm_err('No records.');$ins=0;foreach($records as $rec){$sid=intval($rec['student_id']??0);$date=ksm_esc($rec['date']??date('Y-m-d'));$status=ksm_esc($rec['status']??'Present');$notes=ksm_esc($rec['notes']??'');if(!$sid)continue;ksm_db()->query("INSERT INTO attendance(student_id,date,status,notes)VALUES($sid,'$date','$status','$notes')ON DUPLICATE KEY UPDATE status='$status',notes='$notes'");$ins++;}ksm_json(['inserted'=>$ins],'Attendance saved.');}
+  if($method==='GET' && !isset($_GET['students'])){$class=ksm_esc($_GET['class']??'');$where=$class?"WHERE us.class='$class'":'';$r=ksm_db()->query("SELECT a.*,us.name student_name,us.rollNo FROM attendance a JOIN users_students us ON a.student_id=us.id $where ORDER BY a.date DESC,us.name ASC");$rows=[];while($row=$r->fetch_assoc())$rows[]=$row;ksm_json($rows);}
+  if($method==='POST'){
+    $records=$body['records']??[];if(empty($records))ksm_err('No records.');$ins=0;
+    foreach($records as $rec){
+      $sid=intval($rec['studentId']??0);
+      if(!$sid) $sid=intval($rec['student_id']??0);
+      $date=ksm_esc($rec['date']??date('Y-m-d'));
+      $status=ksm_esc($rec['status']??'present');
+      $notes=ksm_esc($rec['notes']??'');
+      if(!$sid)continue;
+      ksm_db()->query("INSERT INTO attendance(student_id,date,status,notes)VALUES($sid,'$date','$status','$notes')ON DUPLICATE KEY UPDATE status='$status',notes='$notes'");
+      $ins++;
+    }
+    ksm_json(['inserted'=>$ins],'Attendance saved.');
+  }
   if($method==='GET'&&isset($_GET['students'])){$class=ksm_esc($_GET['class']??'');$r=ksm_db()->query("SELECT id,name,rollNo FROM users_students WHERE class='$class' ORDER BY name ASC");$rows=[];while($row=$r->fetch_assoc())$rows[]=$row;ksm_json($rows);}
 }
 ?>
@@ -118,7 +133,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     if (!currentStaff) { window.location.href = 'login.php'; return; }
 
     document.getElementById('staffNameTopbar').textContent = currentStaff.name;
-    document.getElementById('staffAvatar').textContent = currentStaff.name.charAt(0).toUpperCase();
+    document.getElementById('staffAvatar').innerHTML = currentStaff.profilePic ? `<img src="${currentStaff.profilePic}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : currentStaff.name.charAt(0).toUpperCase();
 
     // Set default values
     document.getElementById('attClass').value = currentStaff.class || '';
@@ -128,7 +143,9 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     renderPastRecords();
   });
 
-  function loadStudents() {
+  let currentStudents = [];
+
+  async function loadStudents() {
     const cls = document.getElementById('attClass').value;
     const date = document.getElementById('attDate').value;
     const el = document.getElementById('studentsList');
@@ -142,22 +159,36 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
       return;
     }
 
-    const students = DB.get('students').filter(s => s.class === cls);
-    if (students.length === 0) {
+    el.innerHTML = '<div style="padding:2rem;text-align:center;">Loading...</div>';
+
+    // Fetch students from API
+    const resStudents = await API.getAttendance({ students: 1, class: cls });
+    if (!resStudents.success || !resStudents.data || resStudents.data.length === 0) {
       el.innerHTML = '<div class="empty-state" style="padding:2rem;"><div class="empty-state-icon">👤</div><p>No students found in this class.</p></div>';
       saveBtn.disabled = true;
       notice.classList.add('hidden');
       return;
     }
+    const students = resStudents.data;
+    currentStudents = students;
 
-    // Check for existing attendance record
-    const allAttendance = DB.get('attendance');
-    const existing = allAttendance.find(a => a.date === date && a.class === cls && a.staffId === currentStaff.id);
+    // Check for existing attendance record from API
+    const resAtt = await API.getAttendance({ class: cls });
+    let existing = null;
+    if (resAtt.success && resAtt.data) {
+      // resAtt.data contains all attendance records for this class
+      const recordsForDate = resAtt.data.filter(a => a.date === date);
+      if (recordsForDate.length > 0) {
+         existing = recordsForDate;
+      }
+    }
 
     attendanceData = {};
-    if (existing) {
+    if (existing && existing.length > 0) {
       notice.classList.remove('hidden');
-      existing.records.forEach(r => { attendanceData[r.studentId] = r.status; });
+      existing.forEach(r => { attendanceData[r.student_id] = r.status.toLowerCase(); });
+      // For any student without a record for this date, default to present
+      students.forEach(s => { if(!attendanceData[s.id]) attendanceData[s.id] = 'present'; });
     } else {
       notice.classList.add('hidden');
       students.forEach(s => { attendanceData[s.id] = 'present'; });
@@ -207,8 +238,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
       buttons[1].classList.add('absent');
     }
 
-    const students = DB.get('students').filter(s => s.class === document.getElementById('attClass').value);
-    updateSummary(students);
+    updateSummary(currentStudents);
   }
 
   function updateSummary(students) {
@@ -221,7 +251,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     `;
   }
 
-  function saveAttendance() {
+  async function saveAttendance() {
     const cls = document.getElementById('attClass').value;
     const date = document.getElementById('attDate').value;
 
@@ -230,61 +260,50 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
       return;
     }
 
-    const students = DB.get('students').filter(s => s.class === cls);
+    const students = currentStudents;
     const records = students.map(s => ({
       studentId: s.id,
-      studentName: s.name,
-      rollNo: s.rollNo,
+      date: date,
       status: attendanceData[s.id] || 'present'
     }));
 
-    const present = records.filter(r => r.status === 'present').length;
-    const absent = records.filter(r => r.status === 'absent').length;
-
-    const allAttendance = DB.get('attendance');
-    const existingIdx = allAttendance.findIndex(a => a.date === date && a.class === cls && a.staffId === currentStaff.id);
-
-    const entry = {
-      id: existingIdx >= 0 ? allAttendance[existingIdx].id : Date.now().toString(),
-      date, class: cls,
-      staffId: currentStaff.id,
-      staffName: currentStaff.name,
-      records,
-      presentCount: present,
-      absentCount: absent,
-      total: students.length,
-      savedAt: new Date().toISOString()
-    };
-
-    if (existingIdx >= 0) {
-      allAttendance[existingIdx] = entry;
-      DB.set('attendance', allAttendance);
-      showToast('Attendance updated!', 'success');
-    } else {
-      DB.push('attendance', entry);
+    const res = await API.saveAttendance(records);
+    if (res.success) {
       showToast('Attendance saved successfully!', 'success');
+      document.getElementById('existingNotice').classList.remove('hidden');
+      renderPastRecords();
+    } else {
+      showToast(res.message || 'Error saving attendance.', 'error');
     }
-
-    document.getElementById('existingNotice').classList.remove('hidden');
-    renderPastRecords();
   }
 
-  function renderPastRecords() {
-    const allAttendance = DB.get('attendance').filter(a => a.staffId === currentStaff.id);
+  async function renderPastRecords() {
     const tbody = document.getElementById('pastRecords');
-
-    if (allAttendance.length === 0) {
+    const res = await API.getAttendance();
+    
+    if (!res.success || !res.data || res.data.length === 0) {
       tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-medium);padding:2rem;">No attendance records yet.</td></tr>';
       return;
     }
 
-    const sorted = [...allAttendance].sort((a, b) => new Date(b.date) - new Date(a.date));
+    // Group records by date and class to calculate present/absent
+    const grouped = {};
+    res.data.forEach(r => {
+      const key = r.date + '_' + (r.class_name || document.getElementById('attClass').value || 'Class');
+      if(!grouped[key]) grouped[key] = { date: r.date, class: r.class_name || 'Class', present: 0, absent: 0, total: 0 };
+      grouped[key].total++;
+      if (r.status.toLowerCase() === 'present') grouped[key].present++;
+      else grouped[key].absent++;
+    });
+
+    const sorted = Object.values(grouped).sort((a, b) => new Date(b.date) - new Date(a.date));
+    
     tbody.innerHTML = sorted.map(a => `
       <tr>
         <td><strong>${formatDate(a.date)}</strong></td>
-        <td><span class="badge badge-blue">${a.class}</span></td>
-        <td><span style="color:#10B981;font-weight:600;">${a.presentCount}</span></td>
-        <td><span style="color:#EF4444;font-weight:600;">${a.absentCount}</span></td>
+        <td><span class="badge badge-blue">Recorded</span></td>
+        <td><span style="color:#10B981;font-weight:600;">${a.present}</span></td>
+        <td><span style="color:#EF4444;font-weight:600;">${a.absent}</span></td>
         <td>${a.total}</td>
       </tr>
     `).join('');

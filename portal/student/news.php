@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
@@ -78,12 +78,22 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){$r=ksm_
 <script src="../assets/api.js"></script>
 <script src="../assets/sidebar.js"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
+  let allNews = [];
+
+  document.addEventListener('DOMContentLoaded', async () => {
     const student = Auth.getStudent();
     if (!student) { window.location.href = 'login.php'; return; }
     document.getElementById('studentNameLabel').textContent = student.name;
-    document.getElementById('studentAvatar').textContent = student.name.charAt(0).toUpperCase();
+    document.getElementById('studentAvatar').innerHTML = student.profilePic ? `<img src="${student.profilePic}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : student.name.charAt(0).toUpperCase();
     buildSidebar('student');
+    
+    try {
+      const res = await API.getNews();
+      allNews = res.data || [];
+    } catch(e) {
+      console.error(e);
+    }
+
     renderNews();
     document.getElementById('searchInput').addEventListener('input', renderNews);
     document.getElementById('filterCategory').addEventListener('change', renderNews);
@@ -92,7 +102,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){$r=ksm_
   function renderNews() {
     const search = document.getElementById('searchInput').value.toLowerCase();
     const category = document.getElementById('filterCategory').value;
-    let news = DB.get('news');
+    let news = allNews;
     if (search) news = news.filter(n => n.title.toLowerCase().includes(search) || n.body.toLowerCase().includes(search));
     if (category) news = news.filter(n => n.category === category);
 
@@ -116,7 +126,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){$r=ksm_
   }
 
   function openNews(id) {
-    const news = DB.get('news').find(n => n.id === id);
+    const news = allNews.find(n => String(n.id) === String(id));
     if (!news) return;
     document.getElementById('newsModalTitle').textContent = news.title;
     document.getElementById('newsModalDate').textContent = formatDate(news.date);

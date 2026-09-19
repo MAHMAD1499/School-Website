@@ -9,16 +9,9 @@ function buildSidebar(role = 'portal') {
   const base = (isAdmin || isStudent || isStaff) ? '../' : '';
   const rootBase = (isAdmin || isStudent || isStaff) ? '../../' : '../';
 
-  const portalLinks = [
-    { href: base + 'index.php', icon: 'home', label: 'Home' },
-    { href: base + 'about.php', icon: 'info', label: 'About School' },
-    { href: base + 'teachers.php', icon: 'users', label: 'Teachers & Staff' },
-    { href: base + 'classes.php', icon: 'book-open', label: 'Classes & Subjects' },
-    { href: base + 'gallery.php', icon: 'image', label: 'Gallery' },
-    { href: base + 'news.php', icon: 'bell', label: 'News & Announcements' },
-    { href: base + 'events.php', icon: 'calendar', label: 'Events' },
-    { href: base + 'admissions.php', icon: 'file-text', label: 'Admissions' },
-    { href: base + 'contact.php', icon: 'phone', label: 'Contact' },
+  const guestLinks = [
+    { href: '../index.php', icon: 'home', label: 'Main Website' },
+    { href: 'index.php', icon: 'log-in', label: 'Portal Login' }
   ];
 
   const adminLinks = [
@@ -39,7 +32,6 @@ function buildSidebar(role = 'portal') {
     { href: 'attendance.php', icon: 'check-square', label: 'My Attendance' },
     { href: 'news.php', icon: 'bell', label: 'Announcements' },
     { href: 'events.php', icon: 'calendar', label: 'Events' },
-    { href: 'classes.php', icon: 'book-open', label: 'Classes' },
     { href: 'gallery.php', icon: 'image', label: 'School Gallery' },
     { href: 'my_gallery.php', icon: 'image', label: 'My Personal Photos' }
   ];

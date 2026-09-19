@@ -1,4 +1,6 @@
-﻿<?php
+<?php
+require_once __DIR__ . '/../auth.php';
+check_admin_auth();
 $_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
@@ -78,15 +80,25 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
 <script src="../assets/sidebar.js"></script>
 <script>
   buildSidebar('admin');
-  let currentMsgId = null;
+  let allContacts = [];
 
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
     if (!Auth.isAdminLoggedIn()) { window.location.href = 'login.php'; return; }
-    renderTable();
+    await fetchAndRender();
   });
 
+  async function fetchAndRender() {
+    try {
+      const res = await API.getContacts();
+      allContacts = res.data || [];
+      renderTable();
+    } catch (e) {
+      showToast('Error fetching contacts.', 'error');
+    }
+  }
+
   function renderTable() {
-    const contacts = DB.get('contacts').reverse();
+    const contacts = allContacts;
     const tbody = document.getElementById('contactsTbody');
     if (contacts.length === 0) {
       tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-medium);padding:2rem;">No messages yet.</td></tr>';
@@ -98,7 +110,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
         <td><a href="mailto:${c.email}" style="color:var(--primary-light);">${c.email}</a></td>
         <td>${c.subject}</td>
         <td><span class="badge ${c.status === 'Read' ? 'badge-green' : 'badge-gold'}">${c.status || 'Unread'}</span></td>
-        <td style="font-size:0.82rem;color:var(--text-medium);">${formatDate(c.sentAt)}</td>
+        <td style="font-size:0.82rem;color:var(--text-medium);">${formatDate(c.date || c.sentAt)}</td>
         <td>
           <div style="display:flex;gap:0.5rem;">
             <button class="btn btn-sm btn-outline" onclick="viewMsg('${c.id}')">👁️ View</button>
@@ -109,14 +121,16 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     `).join('');
   }
 
-  function viewMsg(id) {
-    const c = DB.get('contacts').find(c => c.id === id);
+  async function viewMsg(id) {
+    const c = allContacts.find(c => String(c.id) === String(id));
     if (!c) return;
     currentMsgId = id;
 
     // Mark as read
-    DB.update('contacts', id, { status: 'Read' });
-    renderTable();
+    if (c.status !== 'Read') {
+      await API.updateContactStatus(id, 'Read');
+      await fetchAndRender();
+    }
 
     document.getElementById('msgContent').innerHTML = `
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem;">
@@ -129,24 +143,24 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
         <p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.5rem;">Message</p>
         <p style="font-size:0.92rem;line-height:1.7;color:var(--text-dark);">${c.message}</p>
       </div>
-      <p style="font-size:0.78rem;color:var(--text-light);margin-top:0.75rem;">Received: ${formatDate(c.sentAt)}</p>
+      <p style="font-size:0.78rem;color:var(--text-light);margin-top:0.75rem;">Received: ${formatDate(c.date || c.sentAt)}</p>
     `;
     openModal('msgModal');
   }
 
-  function deleteMsg() {
+  async function deleteMsg() {
     if (!currentMsgId) return;
-    DB.delete('contacts', currentMsgId);
+    await API.deleteContact(currentMsgId);
     closeModal('msgModal');
     showToast('Message deleted.', 'info');
-    renderTable();
+    await fetchAndRender();
   }
 
   function deleteMsgById(id) {
-    confirmDelete('Delete this message?', () => {
-      DB.delete('contacts', id);
+    confirmDelete('Delete this message?', async () => {
+      await API.deleteContact(id);
       showToast('Message deleted.', 'info');
-      renderTable();
+      await fetchAndRender();
     });
   }
 </script>

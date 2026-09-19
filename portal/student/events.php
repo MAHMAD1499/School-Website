@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
@@ -84,12 +84,22 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){$r=ksm_
 <script>
   let activeCategory = '';
 
-  document.addEventListener('DOMContentLoaded', () => {
+  let allEvents = [];
+
+  document.addEventListener('DOMContentLoaded', async () => {
     const student = Auth.getStudent();
     if (!student) { window.location.href = 'login.php'; return; }
     document.getElementById('studentNameLabel').textContent = student.name;
-    document.getElementById('studentAvatar').textContent = student.name.charAt(0).toUpperCase();
+    document.getElementById('studentAvatar').innerHTML = student.profilePic ? `<img src="${student.profilePic}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : student.name.charAt(0).toUpperCase();
     buildSidebar('student');
+    
+    try {
+      const res = await API.getEvents();
+      allEvents = res.data || [];
+    } catch(e) {
+      console.error(e);
+    }
+    
     renderEvents();
 
     document.querySelectorAll('.filter-tab').forEach(btn => {
@@ -103,7 +113,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){$r=ksm_
   });
 
   function renderEvents() {
-    let events = DB.get('events');
+    let events = allEvents;
     if (activeCategory) events = events.filter(e => e.category === activeCategory);
 
     const list = document.getElementById('eventsList');
@@ -134,7 +144,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){$r=ksm_
   }
 
   function openEvent(id) {
-    const event = DB.get('events').find(e => e.id === id);
+    const event = allEvents.find(e => String(e.id) === String(id));
     if (!event) return;
     document.getElementById('eventModalTitle').textContent = event.title;
     document.getElementById('eventModalDate').textContent = formatDate(event.date);

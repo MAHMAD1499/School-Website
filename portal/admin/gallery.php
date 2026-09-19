@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../auth.php';
+check_admin_auth();
 $_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
@@ -10,8 +12,21 @@ $isAjax=isset($_SERVER['HTTP_X_REQUESTED_WITH'])||strpos($_SERVER['CONTENT_TYPE'
 $method=$_SERVER['REQUEST_METHOD']??'GET';
 $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   if($method==='GET'){$r=ksm_db()->query("SELECT * FROM gallery ORDER BY id ASC");$rows=[];while($row=$r->fetch_assoc())$rows[]=$row;ksm_json($rows);}
-  if($method==='POST'){$url=ksm_esc($body['url']??'');$cap=ksm_esc($body['caption']??'');if(!$url)ksm_err('URL required.');ksm_db()->query("INSERT INTO gallery(url,caption)VALUES('$url','$cap')");ksm_json(['id'=>ksm_db()->insert_id],'Image added.');}
-  if($method==='PUT'){$id=intval($body['id']??0);$url=ksm_esc($body['url']??'');$cap=ksm_esc($body['caption']??'');if(!$id)ksm_err('Invalid ID.');ksm_db()->query("UPDATE gallery SET url='$url',caption='$cap' WHERE id=$id");ksm_json(null,'Updated.');}
+  if($method==='POST'||$method==='PUT'){
+    $url=$body['url']??'';$cap=ksm_esc($body['caption']??'');
+    if(!$url)ksm_err('URL required.');
+    if(strlen($url) > 7000000) ksm_err('Image size too large. Maximum 5MB allowed.');
+    if(!preg_match('/^data:image\/(jpeg|png|gif|webp);base64,/', $url)) ksm_err('Invalid image format.');
+    if(strlen($cap)>200) ksm_err('Caption too long.');
+    $cap = htmlspecialchars($cap, ENT_QUOTES, 'UTF-8');
+    $url = ksm_esc($url);
+    if($method==='POST'){
+      ksm_db()->query("INSERT INTO gallery(url,caption)VALUES('$url','$cap')");ksm_json(['id'=>ksm_db()->insert_id],'Image added.');
+    }else{
+      $id=intval($body['id']??0);if(!$id)ksm_err('Invalid ID.');
+      ksm_db()->query("UPDATE gallery SET url='$url',caption='$cap' WHERE id=$id");ksm_json(null,'Updated.');
+    }
+  }
   if($method==='DELETE'){$id=intval($_GET['id']??0);if(!$id)ksm_err('Invalid ID.');ksm_db()->query("DELETE FROM gallery WHERE id=$id");ksm_json(null,'Deleted.');}
 }
 ?>
@@ -66,7 +81,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     </div>
     <div class="form-group">
       <label class="form-label">Caption</label>
-      <input type="text" id="gCaption" class="form-control" placeholder="Describe this photo...">
+      <input type="text" id="gCaption" class="form-control" placeholder="Describe this photo..." maxlength="200">
     </div>
 
     <!-- Preview -->
@@ -95,6 +110,13 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     document.getElementById('gFile').addEventListener('change', function(e) {
       const file = e.target.files[0];
       if (file) {
+        if (file.size > 5 * 1024 * 1024) {
+          showToast('File is too large! Maximum 5MB allowed.', 'error');
+          e.target.value = '';
+          document.getElementById('gUrl').value = '';
+          document.getElementById('imgPreview').style.display = 'none';
+          return;
+        }
         const reader = new FileReader();
         reader.onload = function(evt) {
           document.getElementById('gUrl').value = evt.target.result;

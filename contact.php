@@ -11,6 +11,10 @@ $method=$_SERVER['REQUEST_METHOD']??'GET';
 $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $method==='POST'){
   $name=ksm_esc($body['name']??'');$email=ksm_esc($body['email']??'');$sub=ksm_esc($body['subject']??'');$msg=ksm_esc($body['message']??'');
   if(!$name||!$email||!$msg)ksm_err('Name, email and message required.');
+  if(!preg_match('/^[A-Za-z\s]{2,50}$/', $name)) ksm_err('Invalid name format.');
+  if(!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email)>100) ksm_err('Invalid email format.');
+  if(strlen($msg)<10 || strlen($msg)>1000) ksm_err('Message must be between 10 and 1000 characters.');
+  $msg = htmlspecialchars($msg, ENT_QUOTES, 'UTF-8');
   ksm_db()->query("INSERT INTO contacts(name,email,subject,message,status)VALUES('$name','$email','$sub','$msg','Unread')");
   ksm_json(['id'=>ksm_db()->insert_id],'Message sent.');
 }
@@ -174,20 +178,20 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
           <div class="contact-form-row">
             <div class="form-group">
               <label for="contactName">Full Name *</label>
-              <input type="text" id="contactName" class="form-control" placeholder="Your full name" required>
+              <input type="text" id="contactName" name="name" class="form-control" placeholder="Your full name" pattern="[A-Za-z\s]{2,50}" maxlength="50" title="Only letters and spaces allowed" required>
             </div>
             <div class="form-group">
               <label for="contactPhone">Phone Number</label>
-              <input type="tel" id="contactPhone" class="form-control" placeholder="+92 300 0000000">
+              <input type="tel" id="contactPhone" name="phone" class="form-control" placeholder="+92 300 0000000" pattern="^(\+92|0)[0-9]{10}$" maxlength="13" title="Enter a valid 11-digit phone number">
             </div>
           </div>
           <div class="form-group">
             <label for="contactEmail">Email Address *</label>
-            <input type="email" id="contactEmail" class="form-control" placeholder="your@email.com" required>
+            <input type="email" id="contactEmail" name="email" class="form-control" placeholder="your@email.com" maxlength="100" required>
           </div>
           <div class="form-group">
             <label for="contactSubject">Subject *</label>
-            <select id="contactSubject" class="form-control" required>
+            <select id="contactSubject" name="subject" class="form-control" required>
               <option value="" disabled selected>Select a topic</option>
               <option value="admissions">Admissions Inquiry</option>
               <option value="tour">Schedule a Campus Tour</option>
@@ -198,8 +202,8 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
           </div>
           <div class="form-group">
             <label for="contactMessage">Message *</label>
-            <textarea id="contactMessage" class="form-control" rows="5" placeholder="How can we help you?"
-              required></textarea>
+            <textarea id="contactMessage" name="message" class="form-control" rows="5" placeholder="How can we help you?"
+              minlength="10" maxlength="1000" required></textarea>
           </div>
           <button type="submit" class="btn btn-primary" style="width:100%; justify-content: center;">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

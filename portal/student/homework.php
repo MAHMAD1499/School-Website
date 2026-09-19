@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../auth.php';
+check_student_auth();
 $_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
@@ -9,7 +11,31 @@ if(($_SERVER['REQUEST_METHOD']??'')==='OPTIONS')exit;
 $isAjax=isset($_SERVER['HTTP_X_REQUESTED_WITH'])||strpos($_SERVER['CONTENT_TYPE']??'','application/json')!==false||isset($_GET['_api']);
 $method=$_SERVER['REQUEST_METHOD']??'GET';
 $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
-  if($method==='GET'){$class=ksm_esc($_GET['class']??'');$where=$class?"WHERE class_name='$class'":'';$r=ksm_db()->query("SELECT h.*,us.name staff_name FROM homework h LEFT JOIN users_staff us ON h.staff_id=us.id $where ORDER BY h.date_assigned DESC");$rows=[];while($row=$r->fetch_assoc())$rows[]=$row;ksm_json($rows);}
+  if($method==='GET' && isset($_GET['submissions'])){
+    $hwId = intval($_GET['hwId']??0);
+    $studentId = (int)$_SESSION['ksm_student_auth']; // Force to logged-in student
+    $where = [];
+    if($hwId) $where[] = "homework_id=$hwId";
+    $where[] = "student_id=$studentId";
+    $w = count($where) ? "WHERE " . implode(" AND ", $where) : "";
+    $r=ksm_db()->query("SELECT s.*, us.name student_name FROM homework_submissions s JOIN users_students us ON s.student_id=us.id $w ORDER BY s.submitted_at DESC");
+    $rows=[];while($row=$r->fetch_assoc())$rows[]=$row;
+    ksm_json($rows);
+  }
+  if($method==='GET'){
+    $class=ksm_esc($_GET['class']??'');$where=$class?"WHERE class_name='$class'":'';
+    $r=ksm_db()->query("SELECT h.*,us.name staff_name FROM homework h LEFT JOIN users_staff us ON h.staff_id=us.id $where ORDER BY h.date_assigned DESC");
+    $rows=[];while($row=$r->fetch_assoc())$rows[]=$row;ksm_json($rows);
+  }
+  if($method==='POST'){
+    $hwId = intval($body['hwId']??0);
+    $studentId = intval($body['studentId']??0);
+    $answer = ksm_esc($body['answer']??'');
+    if(!$hwId || !$studentId) ksm_err('Invalid data.');
+    if($studentId !== (int)$_SESSION['ksm_student_auth']) ksm_err('Access denied.', 403);
+    ksm_db()->query("INSERT INTO homework_submissions(homework_id, student_id, answer) VALUES($hwId, $studentId, '$answer') ON DUPLICATE KEY UPDATE answer='$answer', submitted_at=CURRENT_TIMESTAMP");
+    ksm_json(null, 'Submitted.');
+  }
 }
 ?>
 <!DOCTYPE html>
@@ -75,40 +101,48 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     currentStudent = Auth.getStudent();
     if (!currentStudent) { window.location.href = 'login.php'; return; }
     document.getElementById('studentNameTopbar').textContent = currentStudent.name;
-    document.getElementById('studentAvatar').textContent = currentStudent.name.charAt(0).toUpperCase();
+    document.getElementById('studentAvatar').innerHTML = currentStudent.profilePic ? `<img src="${currentStudent.profilePic}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : currentStudent.name.charAt(0).toUpperCase();
 
     renderHomework();
   });
 
-  function renderHomework() {
-    const allHW = DB.get('homework');
-    const myHW = allHW.filter(h => h.class === currentStudent.class).sort((a,b) => new Date(b.dueDate) - new Date(a.dueDate));
-    const submissions = DB.get('homework_submissions');
-    
+  async function renderHomework() {
     const el = document.getElementById('homeworkList');
-    if (myHW.length === 0) {
-      el.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><div class="empty-state-icon">📋</div><p>No homework assigned yet.</p></div>';
-      return;
-    }
+    el.innerHTML = '<div style="grid-column:1/-1;padding:2rem;text-align:center;">Loading homework...</div>';
 
-    el.innerHTML = myHW.map(h => {
-      const sub = submissions.find(s => s.hwId === h.id && s.studentId === currentStudent.id);
-      const isPast = new Date(h.dueDate) < new Date();
-        return `
-      <div class="homework-card">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.5rem;">
-          <h3 class="homework-title">${h.title}</h3>
-          ${sub ? '<span class="badge badge-green">Submitted</span>' : isPast ? '<span class="badge badge-red">Past Due</span>' : '<span class="badge badge-blue">Pending</span>'}
-        </div>
-        <div class="homework-meta">
-          <span>📚 ${h.subject}</span>
-          <span>👨‍🏫 ${h.staffName}</span>
-          <span>📅 Due: ${formatDate(h.dueDate)}</span>
-        </div>
-        <p class="homework-desc">${h.description || 'No description provided.'}</p>
-        ${renderAssignment({ ...h, student_submitted: !!sub })}
-      </div>`;
-    }).join('');
+    try {
+      const res = await API.getHomework(currentStudent.class);
+      if (!res.success || !res.data || res.data.length === 0) {
+        el.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><div class="empty-state-icon">📋</div><p>No homework assigned yet.</p></div>';
+        return;
+      }
+      
+      const myHW = res.data;
+      
+      const subRes = await API.getHomeworkSubmissions(null, currentStudent.id);
+      const submissions = subRes.success && subRes.data ? subRes.data : [];
+      
+      el.innerHTML = myHW.map(h => {
+        const sub = submissions.find(s => s.homework_id == h.id && s.student_id == currentStudent.id);
+        const isPast = new Date(h.due_date) < new Date();
+          return `
+        <div class="homework-card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.5rem;">
+            <h3 class="homework-title">${h.title}</h3>
+            ${sub ? '<span class="badge badge-green">Submitted</span>' : isPast ? '<span class="badge badge-red">Past Due</span>' : '<span class="badge badge-blue">Pending</span>'}
+          </div>
+          <div class="homework-meta">
+            <span>📚 ${h.subject}</span>
+            <span>👨‍🏫 ${h.staff_name || 'Teacher'}</span>
+            <span>📅 Due: ${formatDate(h.due_date)}</span>
+          </div>
+          <p class="homework-desc">${h.description || 'No description provided.'}</p>
+          ${renderAssignment({ ...h, student_submitted: !!sub })}
+        </div>`;
+      }).join('');
+    } catch (e) {
+      el.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><p>Error loading homework.</p></div>';
+    }
   }
 
   function renderAssignment(h) {
@@ -132,21 +166,24 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     openModal('submitModal');
   }
 
-  function submitAnswer() {
+  async function submitAnswer() {
     const answer = document.getElementById('hwAnswer').value.trim();
     if (!answer) { showToast('Please enter your answer', 'error'); return; }
     const hwId = document.getElementById('hwId').value;
     const data = {
       hwId,
       studentId: currentStudent.id,
-      studentName: currentStudent.name,
-      answer,
-      submittedAt: new Date().toISOString()
+      answer
     };
-    DB.push('homework_submissions', data);
-    showToast('Homework answer submitted!', 'success');
-    closeModal('submitModal');
-    renderHomework();
+    
+    const res = await API.submitHomeworkAnswer(data);
+    if(res.success){
+      showToast('Homework answer submitted!', 'success');
+      closeModal('submitModal');
+      renderHomework();
+    } else {
+      showToast(res.message, 'error');
+    }
   }
 
   function doLogout() { Auth.logoutStudent(); window.location.href = 'login.php'; }
