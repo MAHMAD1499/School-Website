@@ -465,45 +465,50 @@ function changeLightboxImg(direction) {
   displayCurrentMedia();
 }
 
-function loadPortalEventsToWebsite() {
+async function loadPortalEventsToWebsite() {
   const eventContainer = document.getElementById('websiteEventList');
   if (!eventContainer) return;
 
-  // Retrieve events managed by Admin
-  const storedData = localStorage.getItem('ksm_events');
-  const events = storedData ? JSON.parse(storedData) : [];
+  try {
+    const response = await fetch('api_events.php');
+    const result = await response.json();
+    const events = result.data || [];
 
-  if (events.length === 0) {
+    if (events.length === 0) {
+      eventContainer.innerHTML = `
+        <div style="text-align:center; padding:2rem; color:var(--text-medium);">
+          <p>No upcoming events scheduled at this time.</p>
+        </div>`;
+      return;
+    }
+
+    // Render on homepage
+    eventContainer.innerHTML = events.map(e => {
+      const d = new Date(e.date);
+      const month = d.toLocaleString('en-US', { month: 'short' }).toUpperCase();
+      const day = String(d.getDate()).padStart(2, '0');
+
+      return `
+        <div class="event-item">
+          <div class="event-date-badge">
+            <span class="event-month">${month}</span>
+            <span class="event-day">${day}</span>
+          </div>
+          <div class="event-info">
+            <h4>${e.title}</h4>
+            <p>${e.description || 'Join us at KSM for this upcoming event.'}</p>
+            <span class="event-tag">${e.category || 'Event'}</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+  } catch (error) {
+    console.error('Failed to load events:', error);
     eventContainer.innerHTML = `
       <div style="text-align:center; padding:2rem; color:var(--text-medium);">
         <p>No upcoming events scheduled at this time.</p>
       </div>`;
-    return;
   }
-
-  // Sort events chronologically
-  events.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-  // Render on homepage
-  eventContainer.innerHTML = events.map(e => {
-    const d = new Date(e.date);
-    const month = d.toLocaleString('en-US', { month: 'short' }).toUpperCase();
-    const day = String(d.getDate()).padStart(2, '0');
-
-    return `
-      <div class="event-item">
-        <div class="event-date-badge">
-          <span class="event-month">${month}</span>
-          <span class="event-day">${day}</span>
-        </div>
-        <div class="event-info">
-          <h4>${e.title}</h4>
-          <p>${e.description || 'Join us at KSM for this upcoming event.'}</p>
-          <span class="event-tag">${e.category || 'Event'}</span>
-        </div>
-      </div>
-    `;
-  }).join('');
 }
 
 document.addEventListener('DOMContentLoaded', loadPortalEventsToWebsite);

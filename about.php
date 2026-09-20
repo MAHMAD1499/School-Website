@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -158,8 +158,7 @@
         <h2>Our Story</h2>
         <p>Kindergarten Saadia's Montessori School was founded in 2009 by a group of passionate educators and parents
           who believed deeply in the transformative power of the Montessori method. What began as a small classroom of
-          eight children in Haripur has grown into a thriving learning community serving over 150 students across Early
-          Toddler, Primary/Kindergarten, and Junior Level programs.</p>
+          eight children in Haripur has grown into a thriving learning community serving over 150 students across our Playgroup, Nursery, Prep, Grade One, Grade Two, and Grade Three classes.</p>
         <p style="margin-top:1rem;">Our school was built on the belief, echoed in the words of Dr. Maria Montessori
           herself: <em>"Free the child's potential and you will transform him into the world."</em> We bring this
           philosophy to life through beautifully prepared environments, trained AMI guides, and a deep respect for each
@@ -248,8 +247,8 @@
           </div>
           <div class="timeline-item">
             <div class="timeline-year">2022</div>
-            <h3>Junior Level Program Added</h3>
-            <p>We extend our offering to include the Junior Level program for ages 6–9, completing the full cycle.</p>
+            <h3>Primary & Elementary Grades Added</h3>
+            <p>We extend our offering to include classes up to Grade Three, completing the full cycle for our growing students.</p>
           </div>
           <div class="timeline-item">
             <div class="timeline-year">2026</div>
@@ -355,16 +354,7 @@
           </li>
         </ul>
       </div>
-      <div>
-        <h4>Newsletter</h4>
-        <div class="footer-newsletter">
-          <p>Get latest events updates and parent tips.</p>
-          <form class="newsletter-form" id="newsletterForm">
-            <input type="email" placeholder="Your Email" aria-label="Email Address" required>
-            <button type="submit">Join</button>
-          </form>
-        </div>
-      </div>
+
     </div>
     <div class="footer-bottom">
       <div class="container">

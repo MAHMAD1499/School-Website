@@ -168,9 +168,12 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
                             <label for="programSelect">Program Applying For *</label>
                             <select id="programSelect" name="program" class="form-control" required>
                                 <option value="" disabled selected>Select Program</option>
-                                <option value="Early Toddler (1.5 - 3 Yrs)">Early Toddler (1.5 - 3 Yrs)</option>
-                                <option value="Primary/Kindergarten (3 - 6 Yrs)">Primary/Kindergarten (3 - 6 Yrs)</option>
-                                <option value="Junior Level (6 - 9 Yrs)">Junior Level (6 - 9 Yrs)</option>
+                                <option value="Playgroup">Playgroup</option>
+                                <option value="Nursery">Nursery</option>
+                                <option value="Prep">Prep</option>
+                                <option value="Grade One">Grade One</option>
+                                <option value="Grade Two">Grade Two</option>
+                                <option value="Grade Three">Grade Three</option>
                             </select>
                         </div>
                     </div>
@@ -302,14 +305,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
                 </ul>
             </div>
             <div>
-                <h4>Newsletter</h4>
-                <div class="footer-newsletter">
-                    <p>Get latest events updates and parent tips.</p>
-                    <form class="newsletter-form" id="newsletterForm">
-                        <input type="email" placeholder="Your Email" aria-label="Email Address" required>
-                        <button type="submit">Join</button>
-                    </form>
-                </div>
+
             </div>
         </div>
         <div class="footer-bottom">

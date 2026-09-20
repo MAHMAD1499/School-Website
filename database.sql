@@ -15,12 +15,7 @@ CREATE TABLE IF NOT EXISTS `users_students` (
   `profilePic` VARCHAR(500)
 );
 
-INSERT IGNORE INTO `users_students` (`id`, `name`, `email`, `phone`, `address`, `password`, `class`, `rollNo`, `parentName`) VALUES
-(1, 'Ali Hassan', 'ali@student.ksm', '+92 300 1234567', '123 Main St, Karachi', 'student123', 'Kindergarten A', 'KA-001', 'Mr. Hassan Ali'),
-(2, 'Zara Ahmed', 'zara@student.ksm', '+92 321 7654321', '456 Elm St, Lahore', 'student123', 'Early Childhood B', 'ECB-002', 'Mrs. Sana Ahmed'),
-(3, 'Ibrahim Khan', 'ibrahim@student.ksm', '+92 333 9876543', '789 Oak Ave, Haripur', 'student123', 'Kindergarten A', 'KA-003', 'Mr. Imran Khan'),
-(4, 'Fatima Noor', 'fatima@student.ksm', '+92 345 1112233', '12 Pine Rd, Haripur', 'student123', 'Junior Level', 'JL-001', 'Mr. Noor Ahmed'),
-(5, 'Hamza Rauf', 'hamza@student.ksm', '+92 312 4445566', '56 Cedar Ln, Haripur', 'student123', 'Early Childhood B', 'ECB-003', 'Mr. Abdul Rauf');
+-- (Demo accounts removed, only live entries should be used)
 
 
 -- 2. users_staff (Unified Staff & Teachers)
@@ -39,9 +34,7 @@ CREATE TABLE IF NOT EXISTS `users_staff` (
   `profilePic` VARCHAR(500)
 );
 
-INSERT IGNORE INTO `users_staff` (`id`, `name`, `email`, `staffNumber`, `phone`, `password`, `role`, `subject`, `class`, `bio`, `emoji`) VALUES
-(2, 'Mr. Bilal Ahmed', 'bilal@staff.ksm', 'ST-002', '+92 300 2222222', 'staff123', 'Science teacher', 'Mathematics & Science', 'Early Childhood B', 'Passionate about making math fun for young learners.', '👨‍🏫'),
-(3, 'Ms. Fatima Malik', 'fatima@staff.ksm', 'ST-003', '+92 300 3333333', 'staff123', 'Montessori teacher', 'Art & Creativity', 'Junior Level', 'Art enthusiast promoting creative expression in children.', '👩‍🎨');
+-- (Demo accounts removed, only live entries should be used)
 
 
 -- 4. gallery

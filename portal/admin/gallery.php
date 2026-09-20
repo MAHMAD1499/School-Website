@@ -141,7 +141,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     }
     grid.innerHTML = gallery.map(item => `
       <div class="card" style="padding:0;overflow:hidden;">
-        <img src="${item.url}" alt="${item.caption || ''}" style="width:100%;height:140px;object-fit:cover;" onerror="this.src='https://via.placeholder.com/300x200/EFF6FF/1E3A8A?text=Error'">
+        <img src="${item.url}" alt="${item.caption || ''}" style="width:100%;height:200px;object-fit:contain;background:var(--primary-bg);" onerror="this.src='https://via.placeholder.com/300x200/EFF6FF/1E3A8A?text=Error'">
         <div style="padding:0.75rem;">
           <p style="font-size:0.82rem;color:var(--text-medium);margin-bottom:0.5rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${item.caption || 'No caption'}</p>
           <div style="display:flex;gap:0.5rem;">

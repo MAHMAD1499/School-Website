@@ -81,10 +81,13 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
         <!-- Filter bar -->
         <div class="search-bar">
           <select id="filterClass" class="form-control" style="max-width:200px;" onchange="renderHomework()">
-            <option value="all">All Classes</option>
-            <option value="Kindergarten A">Kindergarten A</option>
-            <option value="Early Childhood B">Early Childhood B</option>
-            <option value="Junior Level">Junior Level</option>
+            <option value="">-- All Classes --</option>
+            <option value="Playgroup">Playgroup</option>
+            <option value="Nursery">Nursery</option>
+            <option value="Prep">Prep</option>
+            <option value="Grade One">Grade One</option>
+            <option value="Grade Two">Grade Two</option>
+            <option value="Grade Three">Grade Three</option>
           </select>
           <input type="text" id="searchHomework" class="search-input" placeholder="Search homework..." oninput="renderHomework()">
         </div>
@@ -123,9 +126,12 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
         <label class="form-label">Class *</label>
         <select id="hwClass" class="form-control" required>
           <option value="">Select class</option>
-          <option>Kindergarten A</option>
-          <option>Early Childhood B</option>
-          <option>Junior Level</option>
+          <option>Playgroup</option>
+          <option>Nursery</option>
+          <option>Prep</option>
+          <option>Grade One</option>
+          <option>Grade Two</option>
+          <option>Grade Three</option>
         </select>
       </div>
       <div class="form-group">

@@ -287,8 +287,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
       <div class="faq-grid">
         <div class="faq-item">
           <h4>What age groups do you accept?</h4>
-          <p>We welcome children from 1.5 years to 9 years across our Early Toddler, Primary/Kindergarten, and Junior
-            Level programs.</p>
+          <p>We welcome children from 2 years to 8 years across our Playgroup, Nursery, Prep, Grade One, Grade Two, and Grade Three classes.</p>
         </div>
         <div class="faq-item">
           <h4>How do I schedule a campus tour?</h4>
@@ -297,8 +296,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
         </div>
         <div class="faq-item">
           <h4>What are the school hours?</h4>
-          <p>Hours vary by program: Toddler (8:30–12:30), Primary (8:30–1:30), and Junior Level (8:00–2:00). Extended
-            care options are available.</p>
+          <p>Hours vary by class: Playgroup to Prep (8:30-12:30), Grade One to Three (8:00-2:00). Extended day options available upon request.</p>
         </div>
         <div class="faq-item">
           <h4>Is there a sibling discount?</h4>
@@ -365,14 +363,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
         </ul>
       </div>
       <div>
-        <h4>Newsletter</h4>
-        <div class="footer-newsletter">
-          <p>Get latest events updates and parent tips.</p>
-          <form class="newsletter-form" id="newsletterForm">
-            <input type="email" placeholder="Your Email" aria-label="Email Address" required>
-            <button type="submit">Join</button>
-          </form>
-        </div>
+
       </div>
     </div>
     <div class="footer-bottom">

@@ -67,10 +67,13 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
           <div class="form-group" style="margin-bottom:0;flex:1;min-width:180px;">
             <label class="form-label">Class</label>
             <select id="attClass" class="form-control" onchange="loadStudents()">
-              <option value="">Select class</option>
-              <option>Kindergarten A</option>
-              <option>Early Childhood B</option>
-              <option>Junior Level</option>
+              <option value="">-- All Classes --</option>
+              <option>Playgroup</option>
+              <option>Nursery</option>
+              <option>Prep</option>
+              <option>Grade One</option>
+              <option>Grade Two</option>
+              <option>Grade Three</option>
             </select>
           </div>
           <div class="form-group" style="margin-bottom:0;flex:1;min-width:180px;">

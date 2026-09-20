@@ -61,8 +61,8 @@ $body=json_decode(file_get_contents('php://input'),true)??[];
       <div class="grid-3 mb-3">
         <div class="class-card">
           <div class="class-card-header" data-emoji="🌸">
-            <h3 class="class-card-title">Early Childhood Program</h3>
-            <p class="class-card-age">Ages 2.5 – 6 Years</p>
+            <h3 class="class-card-title">Playgroup</h3>
+            <p class="class-card-age">Ages 2 – 3 Years</p>
           </div>
           <div class="class-card-body">
             <p style="font-size:0.85rem;color:var(--text-medium);margin-bottom:1rem;">Foundation stage focusing on sensorial exploration, practical life skills, and language development.</p>
@@ -70,17 +70,14 @@ $body=json_decode(file_get_contents('php://input'),true)??[];
               <span class="subject-tag">Practical Life</span>
               <span class="subject-tag">Sensorial</span>
               <span class="subject-tag">Language</span>
-              <span class="subject-tag">Mathematics</span>
-              <span class="subject-tag">Cultural Studies</span>
-              <span class="subject-tag">Art & Music</span>
             </div>
           </div>
         </div>
 
         <div class="class-card">
           <div class="class-card-header" data-emoji="🌻" style="background:linear-gradient(135deg,var(--accent-hover),var(--accent-warm));">
-            <h3 class="class-card-title">Kindergarten Program</h3>
-            <p class="class-card-age">Ages 5 – 7 Years</p>
+            <h3 class="class-card-title">Nursery</h3>
+            <p class="class-card-age">Ages 3 – 4 Years</p>
           </div>
           <div class="class-card-body">
             <p style="font-size:0.85rem;color:var(--text-medium);margin-bottom:1rem;">Bridging early childhood to formal learning with reading, writing, and numeracy.</p>
@@ -88,17 +85,14 @@ $body=json_decode(file_get_contents('php://input'),true)??[];
               <span class="subject-tag">Reading & Writing</span>
               <span class="subject-tag">Mathematics</span>
               <span class="subject-tag">Science</span>
-              <span class="subject-tag">Geography</span>
-              <span class="subject-tag">Urdu</span>
-              <span class="subject-tag">Physical Ed</span>
             </div>
           </div>
         </div>
 
         <div class="class-card">
           <div class="class-card-header" data-emoji="🌿" style="background:linear-gradient(135deg,#10B981,#059669);">
-            <h3 class="class-card-title">Junior Level Program</h3>
-            <p class="class-card-age">Ages 6 – 9 Years</p>
+            <h3 class="class-card-title">Prep</h3>
+            <p class="class-card-age">Ages 4 – 5 Years</p>
           </div>
           <div class="class-card-body">
             <p style="font-size:0.85rem;color:var(--text-medium);margin-bottom:1rem;">Advanced Montessori learning with deeper academic subjects and critical thinking.</p>
@@ -106,9 +100,51 @@ $body=json_decode(file_get_contents('php://input'),true)??[];
               <span class="subject-tag">English Literature</span>
               <span class="subject-tag">Advanced Math</span>
               <span class="subject-tag">Life Science</span>
-              <span class="subject-tag">Islamic Studies</span>
-              <span class="subject-tag">Computer Basics</span>
-              <span class="subject-tag">Creative Writing</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="class-card">
+          <div class="class-card-header" data-emoji="✏️">
+            <h3 class="class-card-title">Grade One</h3>
+            <p class="class-card-age">Ages 5 – 6 Years</p>
+          </div>
+          <div class="class-card-body">
+            <p style="font-size:0.85rem;color:var(--text-medium);margin-bottom:1rem;">Focusing on foundational literacy, arithmetic, social collaboration, and engaging academic activities.</p>
+            <div>
+              <span class="subject-tag">English</span>
+              <span class="subject-tag">Math</span>
+              <span class="subject-tag">Science</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="class-card">
+          <div class="class-card-header" data-emoji="🔬" style="background:linear-gradient(135deg,var(--accent-hover),var(--accent-warm));">
+            <h3 class="class-card-title">Grade Two</h3>
+            <p class="class-card-age">Ages 6 – 7 Years</p>
+          </div>
+          <div class="class-card-body">
+            <p style="font-size:0.85rem;color:var(--text-medium);margin-bottom:1rem;">Expanding academic horizons with scientific inquiry, structured reading, and deeper mathematical understanding.</p>
+            <div>
+              <span class="subject-tag">Reading & Writing</span>
+              <span class="subject-tag">Mathematics</span>
+              <span class="subject-tag">Science</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="class-card">
+          <div class="class-card-header" data-emoji="🚀" style="background:linear-gradient(135deg,#10B981,#059669);">
+            <h3 class="class-card-title">Grade Three</h3>
+            <p class="class-card-age">Ages 7 – 8 Years</p>
+          </div>
+          <div class="class-card-body">
+            <p style="font-size:0.85rem;color:var(--text-medium);margin-bottom:1rem;">Encouraging project-based learning, independent study habits, advanced problem-solving, and team projects.</p>
+            <div>
+              <span class="subject-tag">English Literature</span>
+              <span class="subject-tag">Advanced Math</span>
+              <span class="subject-tag">Life Science</span>
             </div>
           </div>
         </div>

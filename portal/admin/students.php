@@ -145,7 +145,15 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     <div class="form-grid">
       <div class="form-group">
         <label class="form-label">Class</label>
-        <input type="text" id="sClass" class="form-control" placeholder="e.g. Kindergarten A" maxlength="50">
+        <select id="sClass" class="form-control">
+          <option value="" disabled selected>Select Class</option>
+          <option value="Playgroup">Playgroup</option>
+          <option value="Nursery">Nursery</option>
+          <option value="Prep">Prep</option>
+          <option value="Grade One">Grade One</option>
+          <option value="Grade Two">Grade Two</option>
+          <option value="Grade Three">Grade Three</option>
+        </select>
       </div>
       <div class="form-group">
         <label class="form-label">Parent Name</label>
@@ -446,7 +454,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     
     grid.innerHTML = photos.map(p => `
       <div class="card" style="padding:0;overflow:hidden;position:relative;">
-        <img src="${p.url}" alt="${ksmEscapeJs(p.caption)}" style="width:100%;height:100px;object-fit:cover;" onerror="this.src='https://via.placeholder.com/300x200/EFF6FF/1E3A8A?text=Error'">
+        <img src="${p.url}" alt="${ksmEscapeJs(p.caption)}" style="width:100%;height:150px;object-fit:contain;background:var(--primary-bg);" onerror="this.src='https://via.placeholder.com/300x200/EFF6FF/1E3A8A?text=Error'">
         <button class="btn btn-danger" style="position:absolute;top:0.25rem;right:0.25rem;padding:0.25rem 0.5rem;font-size:0.75rem;" onclick="deleteStudentPhoto('${p.id}')">✕</button>
         <div style="padding:0.5rem;font-size:0.75rem;color:var(--text-medium);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
           ${p.caption || 'No caption'}

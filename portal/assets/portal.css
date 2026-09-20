@@ -165,6 +165,7 @@ button, input, select, textarea { font-family: inherit; font-size: inherit; }
   flex-direction: column;
   min-height: 100vh;
   transition: margin-left var(--transition);
+  min-width: 0;
 }
 
 body.sidebar-closed .portal-sidebar {
@@ -869,10 +870,22 @@ tbody tr:hover { background: var(--primary-bg); }
 }
 
 @media (max-width: 600px) {
-  .portal-content { padding: 1.25rem 1rem; }
+  .portal-topbar {
+    padding: 0.5rem 1rem;
+    height: auto;
+    min-height: var(--header-height);
+  }
+  .topbar-right span {
+    display: none;
+  }
+  .portal-content { 
+    padding: 1.25rem 1rem;
+    min-width: 0;
+  }
   .gallery-grid { columns: 1; }
   .stats-grid { grid-template-columns: 1fr 1fr; }
-  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .grid-4 { grid-template-columns: 1fr 1fr; }
   .steps-bar { flex-wrap: wrap; gap: 0.5rem; }
   .steps-bar::before { display: none; }
 }

@@ -49,7 +49,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   <div class="portal-main">
     <div class="portal-topbar">
       <div class="topbar-left">
-        <button class="menu-toggle" id="menuToggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <button class="menu-toggle" id="menuToggle"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
         <span class="topbar-title">Teacher Dashboard</span>
       </div>
       <div class="topbar-right">
@@ -136,7 +136,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
       <a href="homework.php" class="stat-card" style="text-decoration:none;color:inherit;"><div class="stat-icon green"><svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg></div><div class="stat-info"><div class="stat-number">${stats.hw}</div><div class="stat-label">Homework Assigned</div></div></a>
       <a href="attendance.php" class="stat-card" style="text-decoration:none;color:inherit;"><div class="stat-icon blue"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><div class="stat-info"><div class="stat-number">${stats.att}</div><div class="stat-label">Attendance Records</div></div></a>
       <div class="stat-card" style="cursor:default;"><div class="stat-icon gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div><div class="stat-info"><div class="stat-number">${stats.news}</div><div class="stat-label">Announcements</div></div></div>
-      <a href="profile.php" class="stat-card" style="text-decoration:none;color:inherit;"><div class="stat-icon purple"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><div class="stat-info"><div style="font-size:1.15rem;font-weight:700;line-height:1.2;color:var(--text-dark);margin-bottom:0.25rem;">${staff.subject}</div><div class="stat-label">Subject</div></div></a>
+      <a href="profile.php" class="stat-card" style="text-decoration:none;color:inherit;"><div class="stat-icon purple"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><div class="stat-info" style="min-width:0;"><div style="font-size:1.15rem;font-weight:700;line-height:1.2;color:var(--text-dark);margin-bottom:0.25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${staff.subject}">${staff.subject}</div><div class="stat-label">Subject</div></div></a>
     `;
 
     // Announcements
