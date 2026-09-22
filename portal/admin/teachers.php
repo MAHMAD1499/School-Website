@@ -1,11 +1,12 @@
 <?php
+require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../auth.php';
 check_admin_auth();
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 header('Cache-Control: post-check=0, pre-check=0', false);
 header('Pragma: no-cache');
 
-$_ksm = ['host' => 'localhost', 'user' => 'root', 'pass' => '', 'name' => 'ksm_database'];
+
 function ksm_db()
 {
   global $_ksm;

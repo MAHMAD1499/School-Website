@@ -1,8 +1,9 @@
 <?php
+require_once __DIR__ . '/config/database.php';
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 
-$_ksm = ['host'=>'localhost', 'user'=>'root', 'pass'=>'', 'name'=>'ksm_database'];
+
 
 function ksm_db() {
     global $_ksm;

@@ -1,6 +1,7 @@
 <?php
+require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../auth.php';
-$ksm_db_config = ['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
+
 function ksm_db() { global $ksm_db_config; static $c=null; if($c)return $c; $c=new mysqli($ksm_db_config['host'],$ksm_db_config['user'],$ksm_db_config['pass'],$ksm_db_config['name']); if($c->connect_error){http_response_code(500);echo json_encode(['error'=>$c->connect_error]);exit;} $c->set_charset('utf8mb4'); return $c; }
 function ksm_json($data,$msg='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$msg,'data'=>$data]);exit;}
 function ksm_escape($v){return ksm_db()->real_escape_string(trim($v??''));}

@@ -1,11 +1,12 @@
 <?php
+require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../auth.php';
 check_admin_auth();
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 header('Cache-Control: post-check=0, pre-check=0', false);
 header('Pragma: no-cache');
 
-$_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
+
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
 function ksm_err($m,$code=400){ksm_json(null,$m,$code);}
@@ -42,6 +43,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     $class=isset($body['class']) ? ksm_esc($body['class']) : ksm_esc($curr['class']);
     $rollNo=isset($body['rollNo']) ? ksm_esc($body['rollNo']) : ksm_esc($curr['rollNo']);
     $parentName=isset($body['parentName']) ? ksm_esc($body['parentName']) : ksm_esc($curr['parentName']);
+    $status=isset($body['status']) ? ksm_esc($body['status']) : ksm_esc($curr['status'] ?? 'Active');
     
     if(!preg_match('/^[A-Za-z\s]{2,50}$/', $name)) ksm_err('Invalid name format.');
     if($parentName && !preg_match('/^[A-Za-z\s]{2,50}$/', $parentName)) ksm_err('Invalid parent name format.');
@@ -59,7 +61,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
       if ($chk && $chk->num_rows > 0) ksm_err("Roll number '$rollNo' is already assigned to another student.");
     }
 
-    ksm_db()->query("UPDATE users_students SET name='$name',email='$email',class='$class',rollNo='$rollNo',parentName='$parentName' $password_update_sql WHERE id=$id");
+    ksm_db()->query("UPDATE users_students SET name='$name',email='$email',class='$class',rollNo='$rollNo',parentName='$parentName',status='$status' $password_update_sql WHERE id=$id");
     ksm_json(null,'Updated.');
   }
   if($method==='DELETE'){
@@ -109,6 +111,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
                 <th>Name</th>
                 <th>Email</th>
                 <th>Class</th>
+                <th>Status</th>
                 <th>Roll No</th>
                 <th>Actions</th>
               </tr>
@@ -287,25 +290,40 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
       
       const tbody = document.getElementById('studentsTbody');
       if (students.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-medium);padding:2rem;">No students added yet.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-medium);padding:2rem;">No students added yet.</td></tr>';
         return;
       }
-      tbody.innerHTML = students.map(s => `
+      tbody.innerHTML = students.map(s => {
+        let statusBadge = '';
+        if (s.status === 'Active' || !s.status) {
+          statusBadge = '<span class="badge" style="background:#dcfce7;color:#166534;">Active</span>';
+        } else if (s.status === 'Failed') {
+          statusBadge = '<span class="badge" style="background:#fee2e2;color:#991b1b;">Failed</span>';
+        } else if (s.status === 'Graduated') {
+          statusBadge = '<span class="badge badge-blue">Graduated</span>';
+        } else {
+          statusBadge = `<span class="badge badge-gray">${s.status}</span>`;
+        }
+
+        return `
       <tr>
         <td><strong>${s.name}</strong></td>
         <td>${s.email}</td>
         <td><span class="badge badge-blue">${s.class}</span></td>
+        <td>${statusBadge}</td>
         <td>${s.rollNo}</td>
         <td>
-          <div style="display:flex;gap:0.5rem;">
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
             <button class="btn btn-sm btn-outline" onclick="editStudent('${s.id}')">✏️ Edit</button>
+            <button class="btn btn-sm btn-outline" style="color:#16a34a;border-color:#16a34a;" onclick="promoteStudent('${s.id}', '${ksmEscapeJs(s.class)}')">🟢 Promote</button>
+            <button class="btn btn-sm btn-outline" style="color:#dc2626;border-color:#dc2626;" onclick="failStudent('${s.id}')">🔴 Fail</button>
             <button class="btn btn-sm btn-outline" onclick="openStudentGalleryModal('${s.id}', '${ksmEscapeJs(s.name)}')">🖼️ Photos</button>
             <button class="btn btn-sm btn-accent" onclick="openResetModal('${s.id}', '${ksmEscapeJs(s.name)}', '${ksmEscapeJs(s.email)}')">🔑 Reset</button>
             <button class="btn btn-sm btn-danger" onclick="deleteStudent('${s.id}')">🗑️</button>
           </div>
         </td>
       </tr>
-    `).join('');
+      `}).join('');
     } catch(err) {
       console.error('Error rendering table:', err);
       const tbody = document.getElementById('studentsTbody');
@@ -389,6 +407,48 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
           DB.delete('students', id);
       }
       await renderTable();
+    });
+  }
+
+  async function promoteStudent(id, currentClass) {
+    const classHierarchy = ['Playgroup', 'Nursery', 'Prep', 'Grade One', 'Grade Two', 'Grade Three'];
+    let nextClass = currentClass;
+    let newStatus = 'Active';
+
+    const index = classHierarchy.indexOf(currentClass);
+    if (index !== -1 && index < classHierarchy.length - 1) {
+      nextClass = classHierarchy[index + 1];
+    } else if (index === classHierarchy.length - 1) {
+      // Already in the highest class
+      newStatus = 'Graduated';
+    }
+
+    const msg = newStatus === 'Graduated' 
+      ? 'Promote this student? They are in Grade Three and will be marked as Graduated.' 
+      : `Promote this student to ${nextClass}?`;
+
+    confirmDelete(msg, async () => {
+      const res = await API.updateStudent({ id: id, class: nextClass, status: newStatus });
+      if (res.success) {
+        showToast('Student promoted successfully!', 'success');
+        DB.update('students', id, { class: nextClass, status: newStatus });
+        await renderTable();
+      } else {
+        showToast(res.message || 'Error promoting student', 'error');
+      }
+    });
+  }
+
+  async function failStudent(id) {
+    confirmDelete('Mark this student as Failed? They will remain in their current class.', async () => {
+      const res = await API.updateStudent({ id: id, status: 'Failed' });
+      if (res.success) {
+        showToast('Student marked as Failed.', 'info');
+        DB.update('students', id, { status: 'Failed' });
+        await renderTable();
+      } else {
+        showToast(res.message || 'Error failing student', 'error');
+      }
     });
   }
 

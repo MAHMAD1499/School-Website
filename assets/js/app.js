@@ -50,6 +50,42 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Toggle Extra Program Cards
+  const toggleProgramBtn = document.getElementById('toggleProgramBtn');
+  const hiddenProgramItems = document.querySelectorAll('.program-card.program-hidden');
+
+  if (toggleProgramBtn) {
+    let isProgramExpanded = false;
+
+    toggleProgramBtn.addEventListener('click', () => {
+      isProgramExpanded = !isProgramExpanded;
+
+      hiddenProgramItems.forEach(item => {
+        if (isProgramExpanded) {
+          item.classList.remove('program-hidden');
+          item.style.opacity = '0';
+          item.style.transform = 'scale(0.95)';
+          setTimeout(() => {
+            item.style.opacity = '1';
+            item.style.transform = 'scale(1)';
+          }, 50);
+        } else {
+          item.classList.add('program-hidden');
+        }
+      });
+
+      // Update button text and icon orientation
+      const btnText = toggleProgramBtn.querySelector('span');
+      if (isProgramExpanded) {
+        btnText.textContent = 'Show Less';
+        toggleProgramBtn.classList.add('expanded');
+      } else {
+        btnText.textContent = 'View More';
+        toggleProgramBtn.classList.remove('expanded');
+      }
+    });
+  }
+
   // 0. Targeted Preloader Logic
   const preloader = document.getElementById('preloader');
 

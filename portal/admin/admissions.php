@@ -1,7 +1,8 @@
 <?php
+require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../auth.php';
 check_admin_auth();
-$_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
+
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
 function ksm_err($m,$code=400){ksm_json(null,$m,$code);}
@@ -82,7 +83,8 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
       <button class="btn btn-accent" onclick="updateStatus('Approved')">✅ Approve</button>
       <button class="btn btn-outline" onclick="updateStatus('Under Review')">🔍 Under Review</button>
       <button class="btn btn-danger" onclick="updateStatus('Rejected')">❌ Reject</button>
-      <button class="btn btn-outline" data-modal-close style="margin-left:auto;">Close</button>
+      <button class="btn btn-primary" onclick="printApplication()" style="margin-left:auto;">🖨️ Download / Print</button>
+      <button class="btn btn-outline" data-modal-close>Close</button>
     </div>
   </div>
 </div>
@@ -146,20 +148,36 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
 
     const fields = [
       ['Student Name', a.child_name || a.studentName], ['Date of Birth', a.dob],
-      ['Gender', a.gender], ['Nationality', a.nationality],
-      ['Parent Name', a.parent_name || a.parentName], ['Relation', a.relation],
+      ['Blood Group', a.blood_group || '—'], ['Medical History', a.medical_history || a.medical || 'None'],
+      ['Parent Name', a.parent_name || a.parentName], ['Occupation', a.occupation || '—'],
       ['Phone', a.phone], ['Email', a.email],
-      ['Occupation', a.occupation || '—'], ['Program', a.program],
-      ['Academic Year', a.academic_year || a.academicYear], ['Previous School', a.previous_school || a.previousSchool || '—'],
-      ['Medical Info', a.medical || 'None'], ['Status', a.status],
+      ['Program', a.program || a.class_applied], ['Previous School', a.prior_school || a.previous_school || '—'],
+      ['Digital Signature', a.digital_signature || '—'], ['Status', a.status],
     ];
 
-    document.getElementById('viewContent').innerHTML = fields.map(([label, val]) => `
+    let html = fields.map(([label, val]) => `
       <div style="background:var(--primary-bg);padding:0.75rem;border-radius:var(--radius-sm);">
         <p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.2rem;text-transform:uppercase;letter-spacing:0.5px;">${label}</p>
         <p style="font-weight:600;font-size:0.9rem;">${val || '—'}</p>
       </div>
-    `).join('') + (a.additional_info || a.additionalInfo ? `<div style="grid-column:1/-1;background:var(--accent-light);padding:0.75rem;border-radius:var(--radius-sm);"><p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.2rem;">Additional Info</p><p style="font-size:0.88rem;">${a.additional_info || a.additionalInfo}</p></div>` : '');
+    `).join('');
+
+    // Documents Section
+    let docsHtml = '';
+    if(a.passport_photo_url) docsHtml += `<a href="../../${a.passport_photo_url}" target="_blank" class="btn btn-sm btn-outline">Passport Photo</a> `;
+    if(a.id_card_url) docsHtml += `<a href="../../${a.id_card_url}" target="_blank" class="btn btn-sm btn-outline">ID Card</a> `;
+    if(a.birth_cert_url) docsHtml += `<a href="../../${a.birth_cert_url}" target="_blank" class="btn btn-sm btn-outline">Birth Cert</a> `;
+    if(a.photos_url) docsHtml += `<a href="../../${a.photos_url}" target="_blank" class="btn btn-sm btn-outline">Photos</a> `;
+    
+    if(docsHtml !== '') {
+        html += `<div style="grid-column:1/-1;background:var(--accent-light);padding:0.75rem;border-radius:var(--radius-sm);"><p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.4rem;">Uploaded Documents</p><div>${docsHtml}</div></div>`;
+    }
+
+    if (a.message || a.additional_info) {
+        html += `<div style="grid-column:1/-1;background:var(--accent-light);padding:0.75rem;border-radius:var(--radius-sm);"><p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.2rem;">Additional Notes</p><p style="font-size:0.88rem;">${a.message || a.additional_info}</p></div>`;
+    }
+    
+    document.getElementById('viewContent').innerHTML = html;
 
     openModal('viewModal');
   }
@@ -174,6 +192,11 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     } else {
       showToast('Error updating status.', 'error');
     }
+  }
+
+  function printApplication() {
+    if (!currentViewId) return;
+    window.open('print_admission.php?id=' + currentViewId, '_blank');
   }
 </script>
 </body>

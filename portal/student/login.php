@@ -1,6 +1,7 @@
 <?php
+require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../auth.php';
-$_ksm = ['host' => 'localhost', 'user' => 'root', 'pass' => '', 'name' => 'ksm_database'];
+
 function ksm_db()
 {
   global $_ksm;

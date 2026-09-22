@@ -1,7 +1,8 @@
 <?php
+require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../auth.php';
 check_admin_auth();
-$_ksm = ['host' => 'localhost', 'user' => 'root', 'pass' => '', 'name' => 'ksm_database'];
+
 function ksm_db()
 {
   global $_ksm;

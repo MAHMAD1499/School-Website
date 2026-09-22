@@ -9,7 +9,7 @@
   <meta name="description"
     content="Nurturing independent, confident, and lifelong learners using the authentic Montessori method. Explore our Playgroup, Nursery, Prep, Grade One, Grade Two, and Grade Three classes.">
   <title>Kindergarten Saadia's Montessori School</title>
-  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/style.css?v=2">
 </head>
 
 <body>
@@ -380,7 +380,7 @@
           </div>
         </div>
 
-        <div class="program-card">
+        <div class="program-card program-hidden">
           <div class="program-img-wrapper">
             <img src="assets/images/program/program-4/program-image.jpeg" alt="Grade One" class="program-img">
             <span class="program-age">6 Years</span>
@@ -391,7 +391,7 @@
           </div>
         </div>
 
-        <div class="program-card">
+        <div class="program-card program-hidden">
           <div class="program-img-wrapper">
             <img src="assets/images/program/program-5/program-image.jpeg" alt="Grade Two" class="program-img">
             <span class="program-age">7 Years</span>
@@ -402,7 +402,7 @@
           </div>
         </div>
 
-        <div class="program-card">
+        <div class="program-card program-hidden">
           <div class="program-img-wrapper">
             <img src="assets/images/program/program-6/program-image.jpeg" alt="Grade Three" class="program-img">
             <span class="program-age">8 Years</span>
@@ -412,6 +412,15 @@
             <p>Encouraging project-based learning, independent study habits, advanced problem-solving, and team projects.</p>
           </div>
         </div>
+      </div>
+
+      <div class="programs-cta-wrapper" style="text-align: center; margin-top: 2rem;">
+        <button type="button" id="toggleProgramBtn" class="btn btn-outline gallery-cta-btn">
+          <span>View More</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
       </div>
     </div>
   </section>
@@ -784,7 +793,7 @@
     </div>
   </div>
 
-  <script src="assets/js/app.js"></script>
+  <script src="assets/js/app.js?v=2"></script>
 </body>
 
 </html>

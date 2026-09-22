@@ -1210,6 +1210,25 @@ header.scrolled {
   gap: 2.5rem;
 }
 
+.program-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+}
+
+.program-card.program-hidden {
+  display: none !important;
+}
+
+.program-card:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--shadow-premium);
+}
+
 .mission-card {
   background: var(--bg-card);
   border-radius: var(--radius-lg);
