@@ -1,11 +1,11 @@
-﻿<?php
+<?php
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="KSM School Portal — Staff and Student access for Kindergarten Saadia's Montessori School.">
+  <meta name="description" content="KSM School Portal — Teacher and Student access for Kindergarten Saadia's Montessori School.">
   <title>Portal — Kindergarten Saadia's Montessori School</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -188,7 +188,7 @@
     }
 
     .side-admin .side-tag { color: var(--accent-warm); }
-    .side-student .side-tag { color: var(--primary-deep); }
+    .side-student .side-tag { color: rgba(255,255,255,0.8); }
 
     .side-title {
       font-family: var(--font-heading);
@@ -200,7 +200,7 @@
     }
 
     .side-admin .side-title { color: white; }
-    .side-student .side-title { color: var(--primary-deep); }
+    .side-student .side-title { color: white; }
 
     .side-desc {
       font-size: 0.9rem;
@@ -210,7 +210,7 @@
     }
 
     .side-admin .side-desc { color: rgba(255,255,255,0.8); }
-    .side-student .side-desc { color: rgba(30,58,138,0.85); }
+    .side-student .side-desc { color: rgba(255,255,255,0.85); }
 
     /* ===== BUTTONS ===== */
     .side-btn {
@@ -306,7 +306,7 @@
     }
 
     .side-admin .feature-item { color: rgba(255,255,255,0.85); }
-    .side-student .feature-item { color: rgba(30,58,138,0.9); }
+    .side-student .feature-item { color: rgba(255,255,255,0.9); }
 
     .feature-dot {
       width: 6px;
@@ -316,7 +316,7 @@
     }
 
     .side-admin .feature-dot { background: var(--accent-warm); }
-    .side-student .feature-dot { background: var(--primary-deep); }
+    .side-student .feature-dot { background: white; }
 
     /* ===== HOVER HINT ===== */
     .hover-hint {
@@ -332,7 +332,7 @@
 
     .side:hover .hover-hint { opacity: 0.5; }
     .side-admin .hover-hint { color: white; }
-    .side-student .hover-hint { color: var(--primary-deep); }
+    .side-student .hover-hint { color: white; }
 
     /* ===== DIVIDER LINE ===== */
     .divider-line {
@@ -348,17 +348,108 @@
 
     /* ===== RESPONSIVE ===== */
     @media (max-width: 768px) {
-      html, body { overflow: auto; }
-      .landing { flex-direction: column; height: auto; min-height: 100vh; }
-      .side { flex: none !important; padding: 4rem 2rem; min-height: 50vh; }
-      .side:hover { flex: none !important; }
-      .center-badge { display: none; }
+      html, body { overflow-y: auto; overflow-x: hidden; background-color: #0f172a; }
+      .landing { 
+        flex-direction: column; 
+        height: auto; 
+        min-height: 100vh; 
+        width: 100%;
+        padding: 5rem 1.25rem 2.5rem; 
+        gap: 1.5rem;
+        justify-content: flex-start;
+      }
+      .side { 
+        flex: none !important; 
+        padding: 2.25rem 1.5rem; 
+        min-height: auto;
+        border-radius: 1.5rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        overflow: hidden; 
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+      }
+      .side:hover { flex: none !important; transform: translateY(-3px); }
+      
+      .center-badge { 
+        display: flex; 
+        position: relative;
+        top: 0; left: 0;
+        transform: none;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        z-index: 10;
+        margin-bottom: 0.5rem;
+      }
+      .center-logo {
+        width: 55px;
+        height: 55px;
+        border: 2px solid rgba(255,255,255,0.9);
+      }
+      .center-logo img {
+        width: 34px !important;
+        height: 34px !important;
+      }
+      .center-school-name {
+        font-size: 0.9rem;
+        padding: 0.35rem 0.9rem;
+        color: white;
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+      }
+      
       .divider-line { display: none; }
-      .side-title { font-size: 1.7rem; }
-    }
+      
+      .side-icon {
+        width: 65px;
+        height: 65px;
+        font-size: 2rem;
+        margin-bottom: 1rem;
+      }
+      .side-title { font-size: 1.8rem; margin-bottom: 0.5rem; }
+      .side-desc { font-size: 0.85rem; margin-bottom: 1.25rem; }
+      .feature-list { margin-bottom: 1.5rem; }
+      .feature-item { font-size: 0.8rem; margin-bottom: 0.4rem; }
+      
+      .side-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 0.9rem;
+        font-size: 0.95rem;
+      }
+      
+      .hover-hint { display: none; } 
 
+      .back-link {
+        top: 1rem;
+        left: 1rem;
+        padding: 0.5rem;
+        border-radius: 50%;
+        width: 38px;
+        height: 38px;
+        justify-content: center;
+      }
+      .back-link span { display: none; } 
+      
+      /* Orbs on mobile */
+      .side-admin::before { width: 250px; height: 250px; top: -60px; left: -60px; }
+      .side-admin::after { width: 180px; height: 180px; bottom: -40px; right: -40px; }
+      .side-student::before { width: 220px; height: 220px; top: -50px; right: -50px; }
+      .side-student::after { width: 150px; height: 150px; bottom: -30px; left: -30px; }
+    }
+    
     @media (max-width: 480px) {
-      .side { padding: 3rem 1.5rem; }
+      .landing { padding: 4.5rem 1rem 2rem; }
+      .side { padding: 2rem 1.25rem; }
+      .center-badge { flex-direction: column; gap: 0.4rem; }
+      .center-logo { width: 48px; height: 48px; }
+      .center-logo img { width: 28px !important; height: 28px !important; }
+      .center-school-name { font-size: 0.75rem; padding: 0.25rem 0.7rem; }
+      .back-link { top: 0.75rem; left: 0.75rem; width: 34px; height: 34px; padding: 0.4rem; }
+      .side-title { font-size: 1.6rem; }
     }
   </style>
 </head>
@@ -367,17 +458,17 @@
 <!-- Back to Website -->
 <a href="../index.php" class="back-link">
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-  Back to Website
+  <span>Back to Website</span>
 </a>
 
 <div class="landing">
 
-  <!-- ===== LEFT: STAFF ===== -->
-  <a href="staff/login.php" class="side side-admin" id="staffSide">
+  <!-- ===== LEFT: TEACHER ===== -->
+  <a href="staff/login.php" class="side side-admin" id="teacherSide">
     <div class="side-content">
       <div class="side-icon">👨‍🏫</div>
-      <div class="side-tag">Teaching Staff</div>
-      <h1 class="side-title">Staff<br>Portal</h1>
+      <div class="side-tag">Teachers</div>
+      <h1 class="side-title">Teacher<br>Portal</h1>
       <p class="side-desc">Assign homework, mark student attendance, manage class records, and update your profile.</p>
 
       <div class="feature-list">
@@ -388,7 +479,7 @@
       </div>
 
       <span class="side-btn">
-        Staff Login
+        Teacher Login
         <span class="btn-arrow">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </span>
@@ -413,8 +504,8 @@
     <div class="side-content">
       <div class="side-icon">👨‍👩‍👧</div>
       <div class="side-tag">Students &amp; Parents</div>
-      <h1 class="side-title" style="color:var(--primary-deep);">Student<br>Portal</h1>
-      <p class="side-desc" style="color:rgba(30,58,138,0.85);">Access your personal dashboard, view announcements, check upcoming events, and explore classes.</p>
+      <h1 class="side-title">Student<br>Portal</h1>
+      <p class="side-desc">Access your personal dashboard, view announcements, check upcoming events, and explore classes.</p>
 
       <div class="feature-list">
         <div class="feature-item"><div class="feature-dot"></div>Personal student dashboard</div>

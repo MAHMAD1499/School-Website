@@ -1,5 +1,8 @@
-﻿<?php
-$_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
+<?php
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../auth.php';
+check_staff_auth();
+
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
 function ksm_err($m,$code=400){ksm_json(null,$m,$code);}
@@ -9,7 +12,27 @@ if(($_SERVER['REQUEST_METHOD']??'')==='OPTIONS')exit;
 $isAjax=isset($_SERVER['HTTP_X_REQUESTED_WITH'])||strpos($_SERVER['CONTENT_TYPE']??'','application/json')!==false||isset($_GET['_api']);
 $method=$_SERVER['REQUEST_METHOD']??'GET';
 $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
-  if($method==='GET'){$sid=intval($_GET['staff_id']??0);$where=$sid?"WHERE h.staff_id=$sid":'';$r=ksm_db()->query("SELECT h.*,us.name staff_name FROM homework h LEFT JOIN users_staff us ON h.staff_id=us.id $where ORDER BY h.date_assigned DESC");$rows=[];while($row=$r->fetch_assoc())$rows[]=$row;ksm_json($rows);}
+  if($method==='GET' && isset($_GET['submissions'])){
+    $hwId = intval($_GET['hwId']??0);
+    $sid = (int)$_SESSION['ksm_staff_auth'];
+    // Staff can see all submissions for a given homework ID ONLY if they authored it
+    $where = ["h.staff_id=$sid"];
+    if($hwId) $where[] = "s.homework_id=$hwId";
+    $w = "WHERE " . implode(" AND ", $where);
+    $r=ksm_db()->query("SELECT s.*, us.name student_name FROM homework_submissions s JOIN users_students us ON s.student_id=us.id JOIN homework h ON s.homework_id = h.id $w ORDER BY s.submitted_at DESC");
+    $rows=[];while($row=$r->fetch_assoc())$rows[]=$row;
+    ksm_json($rows);
+  }
+  if($method==='GET'){
+    $sid = (int)$_SESSION['ksm_staff_auth'];
+    $cls = ksm_esc($_GET['class']??'');
+    $where = "WHERE h.staff_id=$sid";
+    if($cls) $where .= " AND h.class_name='$cls'";
+    $r=ksm_db()->query("SELECT h.*,us.name staff_name FROM homework h LEFT JOIN users_staff us ON h.staff_id=us.id $where ORDER BY h.date_assigned DESC");
+    $rows=[];
+    while($row=$r->fetch_assoc())$rows[]=$row;
+    ksm_json($rows);
+  }
   if($method==='POST'){$t=ksm_esc($body['title']??'');$cl=ksm_esc($body['class_name']??$body['class']??'');$sub=ksm_esc($body['subject']??'');$desc=ksm_esc($body['description']??'');$due=ksm_esc($body['due_date']??'');$sid=intval($body['staff_id']??0);if(!$t||!$cl||!$sub)ksm_err('Title, class and subject required.');ksm_db()->query("INSERT INTO homework(title,class_name,subject,description,due_date,staff_id)VALUES('$t','$cl','$sub','$desc','$due',".($sid?$sid:'NULL').")");ksm_json(['id'=>ksm_db()->insert_id],'Homework assigned.');}
   if($method==='PUT'){$id=intval($body['id']??0);$t=ksm_esc($body['title']??'');$cl=ksm_esc($body['class_name']??'');$sub=ksm_esc($body['subject']??'');$desc=ksm_esc($body['description']??'');$due=ksm_esc($body['due_date']??'');if(!$id)ksm_err('Invalid ID.');ksm_db()->query("UPDATE homework SET title='$t',class_name='$cl',subject='$sub',description='$desc',due_date='$due' WHERE id=$id");ksm_json(null,'Updated.');}
   if($method==='DELETE'){$id=intval($_GET['id']??0);if(!$id)ksm_err('Invalid ID.');ksm_db()->query("DELETE FROM homework WHERE id=$id");ksm_json(null,'Deleted.');}
@@ -20,8 +43,8 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Assign Homework — KSM Staff Portal">
-  <title>Assign Homework — KSM Staff Portal</title>
+  <meta name="description" content="Assign Homework - KSM Teacher Portal">
+  <title>Assign Homework - KSM Teacher Portal</title>
   <link rel="stylesheet" href="../assets/portal.css">
 </head>
 <body>
@@ -48,19 +71,44 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
         <button class="btn btn-primary" onclick="openModal('homeworkModal'); clearForm()">+ New Homework</button>
       </div>
 
-      <!-- Filter bar -->
-      <div class="search-bar">
-        <select id="filterClass" class="form-control" style="max-width:200px;" onchange="renderHomework()">
-          <option value="all">All Classes</option>
-          <option value="Kindergarten A">Kindergarten A</option>
-          <option value="Early Childhood B">Early Childhood B</option>
-          <option value="Junior Level">Junior Level</option>
-        </select>
-        <input type="text" id="searchHomework" class="search-input" placeholder="Search homework..." oninput="renderHomework()">
+      <!-- NEW TABS -->
+      <div style="display:flex; gap:1.5rem; border-bottom:1px solid var(--border); margin-bottom:1.5rem; padding-bottom:0.5rem;">
+        <div id="tabBtnManage" onclick="switchTab('manage')" style="cursor:pointer; font-weight:600; color:var(--primary); border-bottom:2px solid var(--primary); padding:0.5rem; user-select:none;">Manage Homework</div>
+        <div id="tabBtnSubmissions" onclick="switchTab('submissions')" style="cursor:pointer; font-weight:600; color:var(--text-medium); padding:0.5rem; user-select:none;">Check Submissions</div>
       </div>
 
-      <!-- Homework list -->
-      <div id="homeworkList" class="grid-2"></div>
+      <!-- MANAGE VIEW -->
+      <div id="viewManage">
+        <!-- Filter bar -->
+        <div class="search-bar">
+          <select id="filterClass" class="form-control" style="max-width:200px;" onchange="renderHomework()">
+            <option value="">-- All Classes --</option>
+            <option value="Playgroup">Playgroup</option>
+            <option value="Nursery">Nursery</option>
+            <option value="Prep">Prep</option>
+            <option value="Grade One">Grade One</option>
+            <option value="Grade Two">Grade Two</option>
+            <option value="Grade Three">Grade Three</option>
+          </select>
+          <input type="text" id="searchHomework" class="search-input" placeholder="Search homework..." oninput="renderHomework()">
+        </div>
+
+        <!-- Homework list -->
+        <div id="homeworkList" class="grid-2"></div>
+      </div>
+
+      <!-- SUBMISSIONS VIEW -->
+      <div id="viewSubmissions" style="display:none;">
+        <div class="form-group" style="max-width: 400px; margin-bottom: 1.5rem;">
+          <label class="form-label">Select Homework Assignment</label>
+          <select id="selectHomeworkSubmission" class="form-control" onchange="renderSubmissionsTab()">
+            <option value="">-- Choose Homework --</option>
+          </select>
+        </div>
+        <div id="submissionsTabList" style="display: flex; flex-direction: column; gap: 0.75rem;">
+          <div class="empty-state"><p>Please select a homework assignment above.</p></div>
+        </div>
+      </div>
     </div>
     <div class="portal-footer">© 2026 Kindergarten Saadia's Montessori School. All rights reserved.</div>
   </div>
@@ -79,9 +127,12 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
         <label class="form-label">Class *</label>
         <select id="hwClass" class="form-control" required>
           <option value="">Select class</option>
-          <option>Kindergarten A</option>
-          <option>Early Childhood B</option>
-          <option>Junior Level</option>
+          <option>Playgroup</option>
+          <option>Nursery</option>
+          <option>Prep</option>
+          <option>Grade One</option>
+          <option>Grade Two</option>
+          <option>Grade Three</option>
         </select>
       </div>
       <div class="form-group">
@@ -108,19 +159,22 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   </div>
 </div>
 
+
+
+
 <script src="../assets/portal.js"></script>
 <script src="../assets/api.js"></script>
 <script src="../assets/sidebar.js"></script>
 <script>
   buildSidebar('staff');
-  let currentStaff = null;
+  let currentHomeworkList = [];
 
   document.addEventListener('DOMContentLoaded', () => {
     currentStaff = Auth.getStaff();
     if (!currentStaff) { window.location.href = 'login.php'; return; }
 
     document.getElementById('staffNameTopbar').textContent = currentStaff.name;
-    document.getElementById('staffAvatar').textContent = currentStaff.name.charAt(0).toUpperCase();
+    document.getElementById('staffAvatar').innerHTML = currentStaff.profilePic ? `<img src="${currentStaff.profilePic}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : currentStaff.name.charAt(0).toUpperCase();
 
     // Default the class filter to teacher's class
     document.getElementById('filterClass').value = currentStaff.class || 'all';
@@ -131,16 +185,17 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     renderHomework();
   });
 
-  function renderHomework() {
-    const allHW = DB.get('homework');
+  async function renderHomework() {
     const filterClass = document.getElementById('filterClass').value;
     const search = document.getElementById('searchHomework').value.toLowerCase();
 
-    let filtered = allHW.filter(h => h.staffId === currentStaff.id);
-    if (filterClass !== 'all') filtered = filtered.filter(h => h.class === filterClass);
-    if (search) filtered = filtered.filter(h => h.title.toLowerCase().includes(search) || h.subject.toLowerCase().includes(search));
+    const res = await API.getHomework(filterClass === 'all' ? '' : filterClass);
+    if (!res.success) return;
+    
+    let filtered = res.data;
+    currentHomeworkList = filtered; // Store for submissions tab
 
-    filtered.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate));
+    if (search) filtered = filtered.filter(h => h.title.toLowerCase().includes(search) || h.subject.toLowerCase().includes(search));
 
     const el = document.getElementById('homeworkList');
     if (filtered.length === 0) {
@@ -149,7 +204,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     }
 
     el.innerHTML = filtered.map(h => {
-      const isPast = new Date(h.dueDate) < new Date();
+      const isPast = new Date(h.due_date) < new Date();
       const statusBadge = isPast ? '<span class="badge badge-red">Past Due</span>' : '<span class="badge badge-green">Active</span>';
       return `
       <div class="homework-card">
@@ -159,8 +214,8 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
         </div>
         <div class="homework-meta">
           <span>📚 ${h.subject}</span>
-          <span>🏫 ${h.class}</span>
-          <span>📅 Due: ${formatDate(h.dueDate)}</span>
+          <span>🏫 ${h.class_name}</span>
+          <span>📅 Due: ${formatDate(h.due_date)}</span>
         </div>
         <p class="homework-desc">${h.description || 'No description provided.'}</p>
         <div style="display:flex;gap:0.5rem;margin-top:0.75rem;">
@@ -181,7 +236,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     document.getElementById('modalTitle').textContent = 'New Homework';
   }
 
-  function saveHomework() {
+  async function saveHomework() {
     const cls = document.getElementById('hwClass').value;
     const subject = document.getElementById('hwSubject').value.trim();
     const title = document.getElementById('hwTitle').value.trim();
@@ -193,15 +248,18 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
       return;
     }
 
-    const data = { class: cls, subject, title, description, dueDate, staffId: currentStaff.id, staffName: currentStaff.name, createdAt: new Date().toISOString() };
+    const data = { class_name: cls, subject, title, description, due_date: dueDate, staff_id: currentStaff.id };
     const editId = document.getElementById('editId').value;
 
     if (editId) {
-      DB.update('homework', editId, data);
-      showToast('Homework updated!', 'success');
+      data.id = editId;
+      const res = await API.updateHomework(data);
+      if (res.success) showToast('Homework updated!', 'success');
+      else showToast(res.message, 'error');
     } else {
-      DB.push('homework', data);
-      showToast('Homework assigned successfully!', 'success');
+      const res = await API.addHomework(data);
+      if (res.success) showToast('Homework assigned successfully!', 'success');
+      else showToast(res.message, 'error');
     }
 
     closeModal('homeworkModal');
@@ -209,27 +267,103 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   }
 
   function editHomework(id) {
-    const h = DB.get('homework').find(h => h.id === id);
+    const h = currentHomeworkList.find(h => h.id == id);
     if (!h) return;
     document.getElementById('editId').value = h.id;
-    document.getElementById('hwClass').value = h.class;
+    document.getElementById('hwClass').value = h.class_name;
     document.getElementById('hwSubject').value = h.subject;
     document.getElementById('hwTitle').value = h.title;
     document.getElementById('hwDesc').value = h.description || '';
-    document.getElementById('hwDue').value = h.dueDate;
+    document.getElementById('hwDue').value = h.due_date;
     document.getElementById('modalTitle').textContent = 'Edit Homework';
     openModal('homeworkModal');
   }
 
   function deleteHomework(id) {
-    confirmDelete('Delete this homework assignment?', () => {
-      DB.delete('homework', id);
-      showToast('Homework deleted.', 'info');
-      renderHomework();
+    confirmDelete('Delete this homework assignment?', async () => {
+      const res = await API.deleteHomework(id);
+      if (res.success) {
+        showToast('Homework deleted.', 'info');
+        renderHomework();
+      } else {
+        showToast(res.message, 'error');
+      }
     });
   }
 
+  function switchTab(tab) {
+    if (tab === 'manage') {
+      document.getElementById('tabBtnManage').style.color = 'var(--primary)';
+      document.getElementById('tabBtnManage').style.borderBottom = '2px solid var(--primary)';
+      document.getElementById('tabBtnSubmissions').style.color = 'var(--text-medium)';
+      document.getElementById('tabBtnSubmissions').style.borderBottom = 'none';
+      document.getElementById('viewManage').style.display = 'block';
+      document.getElementById('viewSubmissions').style.display = 'none';
+      renderHomework();
+    } else {
+      document.getElementById('tabBtnSubmissions').style.color = 'var(--primary)';
+      document.getElementById('tabBtnSubmissions').style.borderBottom = '2px solid var(--primary)';
+      document.getElementById('tabBtnManage').style.color = 'var(--text-medium)';
+      document.getElementById('tabBtnManage').style.borderBottom = 'none';
+      document.getElementById('viewManage').style.display = 'none';
+      document.getElementById('viewSubmissions').style.display = 'block';
+      
+      const sel = document.getElementById('selectHomeworkSubmission');
+      sel.innerHTML = '<option value="">-- Choose Homework --</option>' + currentHomeworkList.map(h => `<option value="${h.id}">${h.title} (${h.class_name})</option>`).join('');
+      renderSubmissionsTab();
+    }
+  }
+
+  async function renderSubmissionsTab() {
+    const hwId = document.getElementById('selectHomeworkSubmission').value;
+    const listEl = document.getElementById('submissionsTabList');
+    if (!hwId) {
+      listEl.innerHTML = '<div class="empty-state"><p>Please select a homework assignment above.</p></div>';
+      return;
+    }
+    const hw = currentHomeworkList.find(h => h.id == hwId);
+    if (!hw) return;
+
+    listEl.innerHTML = '<div style="padding:2rem;text-align:center;">Loading students...</div>';
+
+    // Fetch students using API.getAttendance trick or API.getStudents if available
+    const resStudents = await API.getAttendance({ students: 1, class: hw.class_name });
+    if (!resStudents.success || !resStudents.data || resStudents.data.length === 0) {
+      listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🚸</div><h3 class="empty-state-title">No students found</h3><p class="empty-state-text">No students are currently assigned to this class.</p></div>';
+      return;
+    }
+    const allStudents = resStudents.data;
+    
+    // Fetch submissions from API
+    const subRes = await API.getHomeworkSubmissions(hwId);
+    const submissions = subRes.success && subRes.data ? subRes.data : [];
+
+    listEl.innerHTML = allStudents.map(student => {
+      const sub = submissions.find(s => s.student_id == student.id);
+      if (sub) {
+        return `
+          <div style="background:var(--primary-bg); padding:0.75rem; border-radius:var(--radius-sm); border-left:4px solid var(--success);">
+            <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem;">
+              <strong>${student.name} <span style="color:var(--text-medium);font-size:0.8rem;">(${student.rollNo})</span></strong>
+              <span class="badge badge-green">Submitted</span>
+            </div>
+            <p style="font-size:0.85rem; color:var(--text-dark); margin:0.5rem 0; background:white; padding:0.5rem; border-radius:4px;">${sub.answer}</p>
+            <div style="font-size:0.75rem; color:var(--text-light);">Submitted: ${formatDate(sub.submitted_at)}</div>
+          </div>`;
+      } else {
+        return `
+          <div style="background:var(--bg-light); padding:0.75rem; border-radius:var(--radius-sm); border-left:4px solid var(--danger); opacity:0.8;">
+            <div style="display:flex; justify-content:space-between;">
+              <strong>${student.name} <span style="color:var(--text-medium);font-size:0.8rem;">(${student.rollNo})</span></strong>
+              <span class="badge badge-red">Not Submitted</span>
+            </div>
+          </div>`;
+      }
+    }).join('');
+  }
+
   function doLogout() {
+
     Auth.logoutStaff();
     window.location.href = 'login.php';
   }

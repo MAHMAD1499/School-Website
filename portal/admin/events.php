@@ -1,5 +1,8 @@
-﻿<?php
-$_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
+<?php
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../auth.php';
+check_admin_auth();
+
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
 function ksm_err($m,$code=400){ksm_json(null,$m,$code);}
@@ -10,8 +13,21 @@ $isAjax=isset($_SERVER['HTTP_X_REQUESTED_WITH'])||strpos($_SERVER['CONTENT_TYPE'
 $method=$_SERVER['REQUEST_METHOD']??'GET';
 $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   if($method==='GET'){$r=ksm_db()->query("SELECT * FROM events ORDER BY date ASC");$rows=[];while($row=$r->fetch_assoc())$rows[]=$row;ksm_json($rows);}
-  if($method==='POST'){$t=ksm_esc($body['title']??'');$d=ksm_esc($body['date']??'');$ti=ksm_esc($body['time']??'');$loc=ksm_esc($body['location']??'');$desc=ksm_esc($body['description']??'');$cat=ksm_esc($body['category']??'General');if(!$t||!$d)ksm_err('Title and date required.');ksm_db()->query("INSERT INTO events(title,date,time,location,description,category)VALUES('$t','$d','$ti','$loc','$desc','$cat')");ksm_json(['id'=>ksm_db()->insert_id],'Event added.');}
-  if($method==='PUT'){$id=intval($body['id']??0);$t=ksm_esc($body['title']??'');$d=ksm_esc($body['date']??'');$ti=ksm_esc($body['time']??'');$loc=ksm_esc($body['location']??'');$desc=ksm_esc($body['description']??'');$cat=ksm_esc($body['category']??'General');if(!$id)ksm_err('Invalid ID.');ksm_db()->query("UPDATE events SET title='$t',date='$d',time='$ti',location='$loc',description='$desc',category='$cat' WHERE id=$id");ksm_json(null,'Updated.');}
+  if($method==='POST'||$method==='PUT'){
+    $t=ksm_esc($body['title']??'');$d=ksm_esc($body['date']??'');$ti=ksm_esc($body['time']??'');$loc=ksm_esc($body['location']??'');$desc=ksm_esc($body['description']??'');$cat=ksm_esc($body['category']??'General');
+    if(!$t||!$d)ksm_err('Title and date required.');
+    if(strlen($t)>100) ksm_err('Title too long.');
+    if(strlen($loc)>100) ksm_err('Location too long.');
+    if(strlen($desc)>1000) ksm_err('Description too long.');
+    if(!strtotime($d)) ksm_err('Invalid date format.');
+    $desc = htmlspecialchars($desc, ENT_QUOTES, 'UTF-8');
+    if($method==='POST'){
+      ksm_db()->query("INSERT INTO events(title,date,time,location,description,category)VALUES('$t','$d','$ti','$loc','$desc','$cat')");ksm_json(['id'=>ksm_db()->insert_id],'Event added.');
+    }else{
+      $id=intval($body['id']??0);if(!$id)ksm_err('Invalid ID.');
+      ksm_db()->query("UPDATE events SET title='$t',date='$d',time='$ti',location='$loc',description='$desc',category='$cat' WHERE id=$id");ksm_json(null,'Updated.');
+    }
+  }
   if($method==='DELETE'){$id=intval($_GET['id']??0);if(!$id)ksm_err('Invalid ID.');ksm_db()->query("DELETE FROM events WHERE id=$id");ksm_json(null,'Deleted.');}
 }
 ?>
@@ -70,7 +86,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     <input type="hidden" id="editId">
     <div class="form-group">
       <label class="form-label">Event Title *</label>
-      <input type="text" id="eTitle" class="form-control" placeholder="e.g. Annual Sports Day" required>
+      <input type="text" id="eTitle" class="form-control" placeholder="e.g. Annual Sports Day" maxlength="100" required>
     </div>
     <div class="form-grid">
       <div class="form-group">
@@ -79,13 +95,13 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
       </div>
       <div class="form-group">
         <label class="form-label">Time</label>
-        <input type="text" id="eTime" class="form-control" placeholder="e.g. 9:00 AM">
+        <input type="time" id="eTime" class="form-control" required>
       </div>
     </div>
     <div class="form-grid">
       <div class="form-group">
         <label class="form-label">Location</label>
-        <input type="text" id="eLocation" class="form-control" placeholder="e.g. School Grounds">
+        <input type="text" id="eLocation" class="form-control" placeholder="e.g. School Grounds" maxlength="100">
       </div>
       <div class="form-group">
         <label class="form-label">Category</label>
@@ -100,7 +116,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     </div>
     <div class="form-group">
       <label class="form-label">Description</label>
-      <textarea id="eDescription" class="form-control" rows="3" placeholder="Describe the event..."></textarea>
+      <textarea id="eDescription" class="form-control" rows="3" placeholder="Describe the event..." maxlength="1000"></textarea>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:1rem;">
       <button class="btn btn-outline" data-modal-close>Cancel</button>
@@ -117,13 +133,25 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
 
   const catColors = { Sports:'badge-green', Academic:'badge-blue', Meeting:'badge-purple', Cultural:'badge-gold', Other:'badge-red' };
 
-  document.addEventListener('DOMContentLoaded', () => {
+  let allEvents = [];
+
+  document.addEventListener('DOMContentLoaded', async () => {
     if (!Auth.isAdminLoggedIn()) { window.location.href = 'login.php'; return; }
-    renderTable();
+    await fetchAndRender();
   });
 
+  async function fetchAndRender() {
+    try {
+      const res = await API.getEvents();
+      allEvents = res.data || [];
+      renderTable();
+    } catch (e) {
+      showToast('Error fetching events.', 'error');
+    }
+  }
+
   function renderTable() {
-    const events = DB.get('events');
+    const events = allEvents;
     const tbody = document.getElementById('eventsTbody');
     if (events.length === 0) {
       tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-medium);padding:2rem;">No events yet.</td></tr>';
@@ -150,6 +178,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     document.getElementById('editId').value = '';
     document.getElementById('eTitle').value = '';
     document.getElementById('eDate').value = '';
+    document.getElementById('eDate').min = new Date().toISOString().split("T")[0];
     document.getElementById('eTime').value = '';
     document.getElementById('eLocation').value = '';
     document.getElementById('eCategory').value = 'Sports';
@@ -158,7 +187,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   }
 
   function editEvent(id) {
-    const e = DB.get('events').find(e => e.id === id);
+    const e = allEvents.find(e => String(e.id) === String(id));
     if (!e) return;
     document.getElementById('editId').value = e.id;
     document.getElementById('eTitle').value = e.title;
@@ -171,29 +200,45 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     openModal('eventModal');
   }
 
-  function saveEvent() {
+  async function saveEvent() {
     const title = document.getElementById('eTitle').value.trim();
     const date = document.getElementById('eDate').value;
-    if (!title || !date) { showToast('Please fill in Title and Date.', 'error'); return; }
+    const time = document.getElementById('eTime').value;
+    if (!title || !date || !time) { showToast('Please fill in Title, Date, and Time.', 'error'); return; }
     const data = {
       title, date,
-      time: document.getElementById('eTime').value.trim(),
+      time: time.trim(),
       location: document.getElementById('eLocation').value.trim(),
       category: document.getElementById('eCategory').value,
       description: document.getElementById('eDescription').value.trim()
     };
     const editId = document.getElementById('editId').value;
-    if (editId) { DB.update('events', editId, data); showToast('Event updated!', 'success'); }
-    else { DB.push('events', data); showToast('Event created!', 'success'); }
-    closeModal('eventModal');
-    renderTable();
+    
+    let res;
+    if (editId) { 
+      res = await API.updateEvent({id: editId, ...data});
+    } else { 
+      res = await API.addEvent(data);
+    }
+    
+    if (res && res.success) {
+      showToast(editId ? 'Event updated!' : 'Event created!', 'success');
+      closeModal('eventModal');
+      await fetchAndRender();
+    } else {
+      showToast('Error saving event.', 'error');
+    }
   }
 
   function deleteEvent(id) {
-    confirmDelete('Delete this event?', () => {
-      DB.delete('events', id);
-      showToast('Event deleted.', 'info');
-      renderTable();
+    confirmDelete('Delete this event?', async () => {
+      const res = await API.deleteEvent(id);
+      if (res && res.success) {
+        showToast('Event deleted.', 'info');
+        await fetchAndRender();
+      } else {
+        showToast('Error deleting event.', 'error');
+      }
     });
   }
 </script>

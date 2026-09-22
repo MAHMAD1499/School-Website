@@ -40,17 +40,14 @@ const DB = {
 // SEED DEFAULT DATA (only if first visit)
 // ============================================================
 function seedData() {
-  if (DB.get('seeded_v2', false)) return;
+  if (DB.get('seeded_v4', false)) return;
+  
+  DB.set('students', []);
+  DB.set('staff', []);
+  DB.set('teachers', []);
 
-  // Teachers
-  DB.set('teachers', [
-    { id: '1', name: 'Ms. Saadia Khan', role: 'Principal', subject: 'Administration', emoji: '👩‍💼', bio: 'Certified Montessori educator with 15+ years of experience.' },
-    { id: '2', name: 'Ms. Ayesha Raza', role: 'Junior/senior teacher', subject: 'Language & Literacy', emoji: '👩‍🏫', bio: 'Specializes in early childhood language development.' },
-    { id: '3', name: 'Mr. Bilal Ahmed', role: 'Science teacher', subject: 'Mathematics & Science', emoji: '👨‍🏫', bio: 'Passionate about making math fun for young learners.' },
-    { id: '4', name: 'Ms. Fatima Malik', role: 'Montessori teacher', subject: 'Art & Creativity', emoji: '👩‍🎨', bio: 'Art enthusiast promoting creative expression in children.' },
-    { id: '5', name: 'Ms. Hira Yousuf', role: 'P.E teacher\'s', subject: 'Physical Education', emoji: '🏃‍♀️', bio: 'Focused on gross motor development and healthy habits.' },
-    { id: '6', name: 'Mr. Usman Tariq', role: 'Computer teacher', subject: 'General Support', emoji: '👨‍🎓', bio: 'Dedicated assistant supporting classroom activities.' },
-  ]);
+  // Teachers (demo accounts removed)
+  DB.set('teachers', []);
 
   // Gallery
   DB.set('gallery', [
@@ -83,21 +80,11 @@ function seedData() {
   // Contact Messages (empty)
   DB.set('contacts', []);
 
-  // Students (demo accounts)
-  DB.set('students', [
-    { id: '1', name: 'Ali Hassan', email: 'ali@student.ksm', phone: '+92 300 1234567', address: '123 Main St, Karachi', password: 'student123', class: 'Kindergarten A', rollNo: 'KA-001', parentName: 'Mr. Hassan Ali' },
-    { id: '2', name: 'Zara Ahmed', email: 'zara@student.ksm', phone: '+92 321 7654321', address: '456 Elm St, Lahore', password: 'student123', class: 'Early Childhood B', rollNo: 'ECB-002', parentName: 'Mrs. Sana Ahmed' },
-    { id: '3', name: 'Ibrahim Khan', email: 'ibrahim@student.ksm', phone: '+92 333 9876543', address: '789 Oak Ave, Haripur', password: 'student123', class: 'Kindergarten A', rollNo: 'KA-003', parentName: 'Mr. Imran Khan' },
-    { id: '4', name: 'Fatima Noor', email: 'fatima@student.ksm', phone: '+92 345 1112233', address: '12 Pine Rd, Haripur', password: 'student123', class: 'Junior Level', rollNo: 'JL-001', parentName: 'Mr. Noor Ahmed' },
-    { id: '5', name: 'Hamza Rauf', email: 'hamza@student.ksm', phone: '+92 312 4445566', address: '56 Cedar Ln, Haripur', password: 'student123', class: 'Early Childhood B', rollNo: 'ECB-003', parentName: 'Mr. Abdul Rauf' },
-  ]);
+  // Students (demo accounts removed)
+  DB.set('students', []);
 
-  // Staff (teacher login accounts)
-  DB.set('staff', [
-    { id: 's1', name: 'Ms. Ayesha Raza', email: 'ayesha@staff.ksm', phone: '+92 300 1111111', password: 'staff123', subject: 'Language & Literacy', class: 'Kindergarten A', bio: 'Specializes in early childhood language development.', emoji: '👩‍🏫' },
-    { id: 's2', name: 'Mr. Bilal Ahmed', email: 'bilal@staff.ksm', phone: '+92 300 2222222', password: 'staff123', subject: 'Mathematics & Science', class: 'Early Childhood B', bio: 'Passionate about making math fun for young learners.', emoji: '👨‍🏫' },
-    { id: 's3', name: 'Ms. Fatima Malik', email: 'fatima@staff.ksm', phone: '+92 300 3333333', password: 'staff123', subject: 'Art & Creativity', class: 'Junior Level', bio: 'Art enthusiast promoting creative expression in children.', emoji: '👩‍🎨' },
-  ]);
+  // Staff (teacher login accounts removed)
+  DB.set('staff', []);
 
   // Homework (empty — filled by staff)
   DB.set('homework', []);
@@ -105,7 +92,7 @@ function seedData() {
   // Attendance (empty — filled by staff)
   DB.set('attendance', []);
 
-  DB.set('seeded_v2', true);
+  DB.set('seeded_v4', true);
 }
 
 // ============================================================
@@ -129,11 +116,12 @@ const Auth = {
 
   logoutAdmin() {
     sessionStorage.removeItem('ksm_admin_auth');
+    navigator.sendBeacon('../logout_api.php');
   },
 
-  loginStudent(email, pass) {
+  loginStudent(rollNo, pass) {
     const students = DB.get('students');
-    const student = students.find(s => s.email === email && s.password === pass);
+    const student = students.find(s => s.rollNo === rollNo && s.password === pass);
     if (student) {
       sessionStorage.setItem('ksm_student_auth', JSON.stringify(student));
       return student;
@@ -147,12 +135,17 @@ const Auth = {
 
   isStudentLoggedIn() { return !!this.getStudent(); },
 
-  logoutStudent() { sessionStorage.removeItem('ksm_student_auth'); },
+  logoutStudent() {
+    sessionStorage.removeItem('ksm_student_auth');
+    navigator.sendBeacon('../logout_api.php');
+  },
 
-  // Staff auth
-  loginStaff(email, pass) {
+  loginStaff(staffNumber, pass) {
+    // Check both teachers and staff for legacy compatibility
+    const teachers = DB.get('teachers');
     const staff = DB.get('staff');
-    const member = staff.find(s => s.email === email && s.password === pass);
+    const allStaff = [...teachers, ...staff];
+    const member = allStaff.find(s => s.staffNumber === staffNumber && s.password === pass);
     if (member) {
       sessionStorage.setItem('ksm_staff_auth', JSON.stringify(member));
       return member;
@@ -166,7 +159,10 @@ const Auth = {
 
   isStaffLoggedIn() { return !!this.getStaff(); },
 
-  logoutStaff() { sessionStorage.removeItem('ksm_staff_auth'); }
+  logoutStaff() {
+    sessionStorage.removeItem('ksm_staff_auth');
+    navigator.sendBeacon('../logout_api.php');
+  }
 };
 
 // ============================================================

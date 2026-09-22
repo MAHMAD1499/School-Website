@@ -1,5 +1,6 @@
-﻿<?php
-$_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
+<?php
+require_once __DIR__ . '/../../config/database.php';
+
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
 function ksm_err($m,$code=400){ksm_json(null,$m,$code);}
@@ -65,13 +66,14 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){$r=ksm_
     const student = Auth.getStudent();
     if (!student) { window.location.href = 'login.php'; return; }
     document.getElementById('studentNameLabel').textContent = student.name;
-    document.getElementById('studentAvatar').textContent = student.name.charAt(0).toUpperCase();
+    document.getElementById('studentAvatar').innerHTML = student.profilePic ? `<img src="${student.profilePic}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : student.name.charAt(0).toUpperCase();
     buildSidebar('student');
     renderGallery();
   });
 
-  function renderGallery() {
-    const gallery = DB.get('gallery');
+  async function renderGallery() {
+    const res = await API.getGallery();
+    const gallery = res.data || [];
     const grid = document.getElementById('galleryGrid');
     if (gallery.length === 0) {
       grid.innerHTML = `<div class="empty-state" style="column-span:all"><div class="empty-state-icon">🖼️</div><div class="empty-state-title">No photos yet</div><p class="empty-state-text">Gallery photos will appear here once added.</p></div>`;
@@ -85,8 +87,9 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){$r=ksm_
     `).join('');
   }
 
-  function openLightbox(index) {
-    const gallery = DB.get('gallery');
+  async function openLightbox(index) {
+    const res = await API.getGallery();
+    const gallery = res.data || [];
     const item = gallery[index];
     if (!item) return;
     document.getElementById('lightboxImg').src = item.url;

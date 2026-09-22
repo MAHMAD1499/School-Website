@@ -1,5 +1,6 @@
 <?php
-$_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
+require_once __DIR__ . '/config/database.php';
+
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
 function ksm_err($m,$code=400){ksm_json(null,$m,$code);}
@@ -11,6 +12,10 @@ $method=$_SERVER['REQUEST_METHOD']??'GET';
 $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $method==='POST'){
   $name=ksm_esc($body['name']??'');$email=ksm_esc($body['email']??'');$sub=ksm_esc($body['subject']??'');$msg=ksm_esc($body['message']??'');
   if(!$name||!$email||!$msg)ksm_err('Name, email and message required.');
+  if(!preg_match('/^[A-Za-z\s]{2,50}$/', $name)) ksm_err('Invalid name format.');
+  if(!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email)>100) ksm_err('Invalid email format.');
+  if(strlen($msg)<10 || strlen($msg)>1000) ksm_err('Message must be between 10 and 1000 characters.');
+  $msg = htmlspecialchars($msg, ENT_QUOTES, 'UTF-8');
   ksm_db()->query("INSERT INTO contacts(name,email,subject,message,status)VALUES('$name','$email','$sub','$msg','Unread')");
   ksm_json(['id'=>ksm_db()->insert_id],'Message sent.');
 }
@@ -174,20 +179,20 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
           <div class="contact-form-row">
             <div class="form-group">
               <label for="contactName">Full Name *</label>
-              <input type="text" id="contactName" class="form-control" placeholder="Your full name" required>
+              <input type="text" id="contactName" name="name" class="form-control" placeholder="Your full name" pattern="[A-Za-z\s]{2,50}" maxlength="50" title="Only letters and spaces allowed" required>
             </div>
             <div class="form-group">
               <label for="contactPhone">Phone Number</label>
-              <input type="tel" id="contactPhone" class="form-control" placeholder="+92 300 0000000">
+              <input type="tel" id="contactPhone" name="phone" class="form-control" placeholder="+92 300 0000000" pattern="^(\+92|0)[0-9]{10}$" maxlength="13" title="Enter a valid 11-digit phone number">
             </div>
           </div>
           <div class="form-group">
             <label for="contactEmail">Email Address *</label>
-            <input type="email" id="contactEmail" class="form-control" placeholder="your@email.com" required>
+            <input type="email" id="contactEmail" name="email" class="form-control" placeholder="your@email.com" maxlength="100" required>
           </div>
           <div class="form-group">
             <label for="contactSubject">Subject *</label>
-            <select id="contactSubject" class="form-control" required>
+            <select id="contactSubject" name="subject" class="form-control" required>
               <option value="" disabled selected>Select a topic</option>
               <option value="admissions">Admissions Inquiry</option>
               <option value="tour">Schedule a Campus Tour</option>
@@ -198,8 +203,8 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
           </div>
           <div class="form-group">
             <label for="contactMessage">Message *</label>
-            <textarea id="contactMessage" class="form-control" rows="5" placeholder="How can we help you?"
-              required></textarea>
+            <textarea id="contactMessage" name="message" class="form-control" rows="5" placeholder="How can we help you?"
+              minlength="10" maxlength="1000" required></textarea>
           </div>
           <button type="submit" class="btn btn-primary" style="width:100%; justify-content: center;">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -283,8 +288,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
       <div class="faq-grid">
         <div class="faq-item">
           <h4>What age groups do you accept?</h4>
-          <p>We welcome children from 1.5 years to 9 years across our Early Toddler, Primary/Kindergarten, and Junior
-            Level programs.</p>
+          <p>We welcome children from 2 years to 8 years across our Playgroup, Nursery, Prep, Grade One, Grade Two, and Grade Three classes.</p>
         </div>
         <div class="faq-item">
           <h4>How do I schedule a campus tour?</h4>
@@ -293,8 +297,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
         </div>
         <div class="faq-item">
           <h4>What are the school hours?</h4>
-          <p>Hours vary by program: Toddler (8:30–12:30), Primary (8:30–1:30), and Junior Level (8:00–2:00). Extended
-            care options are available.</p>
+          <p>Hours vary by class: Playgroup to Prep (8:30-12:30), Grade One to Three (8:00-2:00). Extended day options available upon request.</p>
         </div>
         <div class="faq-item">
           <h4>Is there a sibling discount?</h4>
@@ -361,14 +364,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
         </ul>
       </div>
       <div>
-        <h4>Newsletter</h4>
-        <div class="footer-newsletter">
-          <p>Get latest events updates and parent tips.</p>
-          <form class="newsletter-form" id="newsletterForm">
-            <input type="email" placeholder="Your Email" aria-label="Email Address" required>
-            <button type="submit">Join</button>
-          </form>
-        </div>
+
       </div>
     </div>
     <div class="footer-bottom">

@@ -1,5 +1,8 @@
-﻿<?php
-$_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
+<?php
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../auth.php';
+check_student_auth();
+
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
 function ksm_err($m,$code=400){ksm_json(null,$m,$code);}
@@ -11,13 +14,20 @@ $method=$_SERVER['REQUEST_METHOD']??'GET';
 $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   $student_id=intval($_GET['student_id']??0);
   if(!$student_id)ksm_err('No student ID.');
-  $hw=[];$r=ksm_db()->query("SELECT h.*,us.name staff_name FROM homework h LEFT JOIN users_staff us ON h.staff_id=us.id WHERE h.class_name=(SELECT class FROM users_students WHERE id=$student_id) ORDER BY h.date_assigned DESC LIMIT 5");
+  if($student_id !== (int)$_SESSION['ksm_student_auth']) ksm_err('Access denied.', 403);
+  $db2=ksm_db();
+  $student=$db2->query("SELECT id,name,email,class,rollNo,parentName,profilePic FROM users_students WHERE id=$student_id LIMIT 1")->fetch_assoc();
+  if(!$student) ksm_err('Student not found or account was removed.', 404);
+  $class=ksm_esc($student['class']??'');
+  $hw=[];$r=$db2->query("SELECT h.*,us.name staff_name FROM homework h LEFT JOIN users_staff us ON h.staff_id=us.id WHERE h.class_name='$class' ORDER BY h.date_assigned DESC LIMIT 5");
   while($row=$r->fetch_assoc())$hw[]=$row;
-  $att=[];$r2=ksm_db()->query("SELECT * FROM attendance WHERE student_id=$student_id ORDER BY date DESC LIMIT 30");
+  $att=[];$r2=$db2->query("SELECT * FROM attendance WHERE student_id=$student_id ORDER BY date DESC LIMIT 30");
   while($row=$r2->fetch_assoc())$att[]=$row;
-  $news=[];$r3=ksm_db()->query("SELECT * FROM news ORDER BY date DESC LIMIT 3");
+  $news=[];$r3=$db2->query("SELECT * FROM news ORDER BY date DESC LIMIT 3");
   while($row=$r3->fetch_assoc())$news[]=$row;
-  ksm_json(['homework'=>$hw,'attendance'=>$att,'news'=>$news]);
+  $events=[];$r4=$db2->query("SELECT * FROM events ORDER BY date ASC LIMIT 3");
+  while($row=$r4->fetch_assoc())$events[]=$row;
+  ksm_json(['student'=>$student,'homework'=>$hw,'attendance'=>$att,'news'=>$news,'events'=>$events]);
 }
 ?>
 <!DOCTYPE html>
@@ -110,13 +120,32 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
 <script>
   buildSidebar('student');
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const student = Auth.getStudent();
-    if (!student) { window.location.href = 'login.php'; return; }
+  document.addEventListener('DOMContentLoaded', async () => {
+    let student = Auth.getStudent();
+    if (!student || !student.id) { window.location.href = 'login.php'; return; }
+
+    // Live verification from database
+    let res;
+    try {
+      res = await API.getStudentDashboard(student.id);
+      if (!res || !res.success || !res.data) {
+        Auth.logoutStudent();
+        window.location.href = 'login.php';
+        return;
+      }
+      if (res.data.student) {
+        student = { ...student, ...res.data.student };
+        sessionStorage.setItem('ksm_student_auth', JSON.stringify(student));
+      }
+    } catch(e) {
+      Auth.logoutStudent();
+      window.location.href = 'login.php';
+      return;
+    }
 
     // Set student info in topbar
     document.getElementById('studentNameTopbar').textContent = student.name;
-    document.getElementById('studentAvatar').textContent = student.name.charAt(0).toUpperCase();
+    document.getElementById('studentAvatar').innerHTML = student.profilePic ? `<img src="${student.profilePic}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : student.name.charAt(0).toUpperCase();
 
     // Welcome banner
     document.getElementById('welcomeMsg').textContent = 'Welcome back, ' + student.name + '! 👋';
@@ -126,7 +155,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
 
 
     // News
-    const news = DB.get('news').slice(0, 3);
+    const news = res.data.news || [];
     const newsEl = document.getElementById('studentNews');
     if (news.length === 0) {
       newsEl.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--text-medium);font-size:0.88rem;">No announcements yet.</div>';
@@ -141,7 +170,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     }
 
     // Events
-    const events = DB.get('events').slice(0, 3);
+    const events = res.data.events || [];
     const eventsEl = document.getElementById('studentEvents');
     if (events.length === 0) {
       eventsEl.innerHTML = '<div style="text-align:center;padding:1.5rem;color:var(--text-medium);font-size:0.88rem;">No events yet.</div>';

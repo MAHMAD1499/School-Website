@@ -1,5 +1,6 @@
-﻿<?php
-$_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
+<?php
+require_once __DIR__ . '/../../config/database.php';
+
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
 function ksm_err($m,$code=400){ksm_json(null,$m,$code);}
@@ -53,36 +54,37 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
 <script src="../assets/sidebar.js"></script>
 <script>
   buildSidebar('student');
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
     const student = Auth.getStudent();
     if (!student) { window.location.href = 'login.php'; return; }
     document.getElementById('studentNameTopbar').textContent = student.name;
-    document.getElementById('studentAvatar').textContent = student.name.charAt(0).toUpperCase();
-
-    const allAtt = DB.get('attendance');
-    const myAtt = allAtt.map(a => {
-      const rec = a.records.find(r => r.studentId === student.id);
-      if (rec) return { date: a.date, class: a.class, status: rec.status, staff: a.staffName };
-      return null;
-    }).filter(x => x).sort((a,b) => new Date(b.date) - new Date(a.date));
+    document.getElementById('studentAvatar').innerHTML = student.profilePic ? `<img src="${student.profilePic}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : student.name.charAt(0).toUpperCase();
 
     const el = document.getElementById('attendanceList');
-    if (myAtt.length === 0) {
-      el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📅</div><p>No attendance records found.</p></div>';
-      return;
-    }
+    el.innerHTML = '<div style="padding:2rem;text-align:center;">Loading...</div>';
 
-    el.innerHTML = myAtt.map(a => `
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:1rem;border-bottom:1px solid var(--border-color);">
-        <div>
-          <p style="font-weight:600;font-size:0.95rem;">${formatDate(a.date)}</p>
-          <p style="font-size:0.8rem;color:var(--text-medium);">Marked by ${a.staff}</p>
+    try {
+      const res = await apiCall(ksm_self_url() + '?student_id=' + student.id, 'GET');
+      if (!res.success || !res.data || res.data.length === 0) {
+        el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📅</div><p>No attendance records found.</p></div>';
+        return;
+      }
+      
+      const myAtt = res.data;
+      el.innerHTML = myAtt.map(a => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:1rem;border-bottom:1px solid var(--border-color);">
+          <div>
+            <p style="font-weight:600;font-size:0.95rem;">${formatDate(a.date)}</p>
+            ${a.notes ? `<p style="font-size:0.8rem;color:var(--text-medium);">${a.notes}</p>` : ''}
+          </div>
+          <div>
+            ${a.status.toLowerCase() === 'present' ? '<span class="badge badge-green">Present</span>' : '<span class="badge badge-red">Absent</span>'}
+          </div>
         </div>
-        <div>
-          ${a.status === 'Present' ? '<span class="badge badge-green">Present</span>' : '<span class="badge badge-red">Absent</span>'}
-        </div>
-      </div>
-    `).join('');
+      `).join('');
+    } catch (e) {
+      el.innerHTML = '<div class="empty-state"><p>Error loading attendance.</p></div>';
+    }
   });
   function doLogout() { Auth.logoutStudent(); window.location.href = 'login.php'; }
 </script>

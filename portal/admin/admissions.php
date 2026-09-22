@@ -1,5 +1,8 @@
-﻿<?php
-$_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
+<?php
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../auth.php';
+check_admin_auth();
+
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
 function ksm_err($m,$code=400){ksm_json(null,$m,$code);}
@@ -80,7 +83,8 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
       <button class="btn btn-accent" onclick="updateStatus('Approved')">✅ Approve</button>
       <button class="btn btn-outline" onclick="updateStatus('Under Review')">🔍 Under Review</button>
       <button class="btn btn-danger" onclick="updateStatus('Rejected')">❌ Reject</button>
-      <button class="btn btn-outline" data-modal-close style="margin-left:auto;">Close</button>
+      <button class="btn btn-primary" onclick="printApplication()" style="margin-left:auto;">🖨️ Download / Print</button>
+      <button class="btn btn-outline" data-modal-close>Close</button>
     </div>
   </div>
 </div>
@@ -94,15 +98,27 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
 
   const statusColors = { Pending:'badge-gold', Approved:'badge-green', Rejected:'badge-red', 'Under Review':'badge-purple' };
 
-  document.addEventListener('DOMContentLoaded', () => {
+  let allAdmissions = [];
+
+  document.addEventListener('DOMContentLoaded', async () => {
     if (!Auth.isAdminLoggedIn()) { window.location.href = 'login.php'; return; }
-    renderTable();
+    await fetchAndRender();
     document.getElementById('filterStatus').addEventListener('change', renderTable);
   });
 
+  async function fetchAndRender() {
+    try {
+      const res = await API.getAdmissions();
+      allAdmissions = res.data || [];
+      renderTable();
+    } catch (e) {
+      showToast('Error fetching admissions.', 'error');
+    }
+  }
+
   function renderTable() {
     const statusFilter = document.getElementById('filterStatus').value;
-    let apps = DB.get('admissions');
+    let apps = allAdmissions;
     if (statusFilter) apps = apps.filter(a => a.status === statusFilter);
 
     const tbody = document.getElementById('admissionsTbody');
@@ -112,11 +128,11 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     }
     tbody.innerHTML = apps.map(a => `
       <tr>
-        <td><strong>${a.studentName}</strong></td>
+        <td><strong>${a.child_name || a.studentName}</strong></td>
         <td>${a.program}</td>
-        <td>${a.parentName}</td>
+        <td>${a.parent_name || a.parentName}</td>
         <td>${a.phone}</td>
-        <td style="font-size:0.82rem;color:var(--text-medium);">${formatDate(a.submittedAt)}</td>
+        <td style="font-size:0.82rem;color:var(--text-medium);">${formatDate(a.submitted_at || a.submittedAt)}</td>
         <td><span class="badge ${statusColors[a.status] || 'badge-blue'}">${a.status}</span></td>
         <td>
           <button class="btn btn-sm btn-outline" onclick="viewApplication('${a.id}')">👁️ View</button>
@@ -126,36 +142,61 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   }
 
   function viewApplication(id) {
-    const a = DB.get('admissions').find(a => a.id === id);
+    const a = allAdmissions.find(a => String(a.id) === String(id));
     if (!a) return;
     currentViewId = id;
 
     const fields = [
-      ['Student Name', a.studentName], ['Date of Birth', a.dob],
-      ['Gender', a.gender], ['Nationality', a.nationality],
-      ['Parent Name', a.parentName], ['Relation', a.relation],
+      ['Student Name', a.child_name], ['Date of Birth', a.dob],
+      ['Blood Group', a.blood_group || '—'], ['Medical History', a.message || 'None'],
+      ['Parent Name', a.parent_name], ['Occupation', a.address || '—'],
       ['Phone', a.phone], ['Email', a.email],
-      ['Occupation', a.occupation || '—'], ['Program', a.program],
-      ['Academic Year', a.academicYear], ['Previous School', a.previousSchool || '—'],
-      ['Medical Info', a.medical || 'None'], ['Status', a.status],
+      ['Program', a.class_applied], ['Signature', a.prior_school || '—'],
+      ['Status', a.status],
     ];
 
-    document.getElementById('viewContent').innerHTML = fields.map(([label, val]) => `
+    let html = fields.map(([label, val]) => `
       <div style="background:var(--primary-bg);padding:0.75rem;border-radius:var(--radius-sm);">
         <p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.2rem;text-transform:uppercase;letter-spacing:0.5px;">${label}</p>
         <p style="font-weight:600;font-size:0.9rem;">${val || '—'}</p>
       </div>
-    `).join('') + (a.additionalInfo ? `<div style="grid-column:1/-1;background:var(--accent-light);padding:0.75rem;border-radius:var(--radius-sm);"><p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.2rem;">Additional Info</p><p style="font-size:0.88rem;">${a.additionalInfo}</p></div>` : '');
+    `).join('');
+
+    // Documents Section
+    let docsHtml = '';
+    if(a.passport_photo_url) docsHtml += `<a href="../../${a.passport_photo_url}" target="_blank" class="btn btn-sm btn-outline">Passport Photo</a> `;
+    if(a.id_card_url) docsHtml += `<a href="../../${a.id_card_url}" target="_blank" class="btn btn-sm btn-outline">ID Card</a> `;
+    if(a.birth_cert_url) docsHtml += `<a href="../../${a.birth_cert_url}" target="_blank" class="btn btn-sm btn-outline">Birth Cert</a> `;
+    if(a.photos_url) docsHtml += `<a href="../../${a.photos_url}" target="_blank" class="btn btn-sm btn-outline">Photos</a> `;
+    
+    if(docsHtml !== '') {
+        html += `<div style="grid-column:1/-1;background:var(--accent-light);padding:0.75rem;border-radius:var(--radius-sm);"><p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.4rem;">Uploaded Documents</p><div>${docsHtml}</div></div>`;
+    }
+
+    if (a.message || a.additional_info) {
+        html += `<div style="grid-column:1/-1;background:var(--accent-light);padding:0.75rem;border-radius:var(--radius-sm);"><p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.2rem;">Additional Notes</p><p style="font-size:0.88rem;">${a.message || a.additional_info}</p></div>`;
+    }
+    
+    document.getElementById('viewContent').innerHTML = html;
 
     openModal('viewModal');
   }
 
-  function updateStatus(newStatus) {
+  async function updateStatus(newStatus) {
     if (!currentViewId) return;
-    DB.update('admissions', currentViewId, { status: newStatus });
-    showToast(`Application marked as ${newStatus}.`, 'success');
-    closeModal('viewModal');
-    renderTable();
+    const res = await API.updateAdmissionStatus(currentViewId, newStatus);
+    if(res && res.success){
+      showToast(`Application marked as ${newStatus}.`, 'success');
+      closeModal('viewModal');
+      await fetchAndRender();
+    } else {
+      showToast('Error updating status.', 'error');
+    }
+  }
+
+  function printApplication() {
+    if (!currentViewId) return;
+    window.open('print_admission.php?id=' + currentViewId, '_blank');
   }
 </script>
 </body>

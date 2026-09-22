@@ -1,17 +1,35 @@
 <?php
-$_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
+require_once __DIR__ . '/config/database.php';
+
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
 function ksm_err($m,$code=400){ksm_json(null,$m,$code);}
 function ksm_esc($v){return ksm_db()->real_escape_string(trim($v??''));}
 header('Access-Control-Allow-Origin: *');header('Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS');header('Access-Control-Allow-Headers: Content-Type,X-Requested-With');
 if(($_SERVER['REQUEST_METHOD']??'')==='OPTIONS')exit;
-$isAjax=isset($_SERVER['HTTP_X_REQUESTED_WITH'])||strpos($_SERVER['CONTENT_TYPE']??'','application/json')!==false||isset($_GET['_api']);
+$isAjax=isset($_SERVER['HTTP_X_REQUESTED_WITH'])||isset($_GET['_api']);
 $method=$_SERVER['REQUEST_METHOD']??'GET';
-$body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $method==='POST'){
-  $cn=ksm_esc($body['child_name']??'');$dob=ksm_esc($body['dob']??'');$pn=ksm_esc($body['parent_name']??'');$ph=ksm_esc($body['phone']??'');$em=ksm_esc($body['email']??'');$addr=ksm_esc($body['address']??'');$ps=ksm_esc($body['prior_school']??'');$ca=ksm_esc($body['program']??'');$msg=ksm_esc($body['notes']??'');
+if($method==='POST'){
+  $isJson = strpos($_SERVER['CONTENT_TYPE']??'','application/json')!==false;
+  $body = $isJson ? json_decode(file_get_contents('php://input'),true)??[] : $_POST;
+  $cn=ksm_esc($body['child_name']??'');$dob=ksm_esc($body['dob']??'');$bg=ksm_esc($body['blood_group']??'');$pn=ksm_esc($body['parent_name']??'');$ph=ksm_esc($body['phone']??'');$em=ksm_esc($body['email']??'');$occ=ksm_esc($body['address']??'');$sig=ksm_esc($body['prior_school']??'');$ca=ksm_esc($body['program']??'');$med=ksm_esc($body['notes']??'');
   if(!$cn||!$pn||!$ph)ksm_err('Child name, parent name and phone required.');
-  ksm_db()->query("INSERT INTO admissions(child_name,dob,parent_name,phone,email,address,prior_school,class_applied,message,status)VALUES('$cn','$dob','$pn','$ph','$em','$addr','$ps','$ca','$msg','Pending')");
+  
+  function up_file($k){
+    if(!isset($_FILES[$k])||$_FILES[$k]['error']!==UPLOAD_ERR_OK)return '';
+    $n=uniqid().'_'.basename($_FILES[$k]['name']);
+    $d='uploads/admissions/';
+    if(!is_dir($d))mkdir($d,0777,true);
+    if(move_uploaded_file($_FILES[$k]['tmp_name'],$d.$n))return $d.$n;
+    return '';
+  }
+  
+  $id_url=ksm_esc(up_file('id_card_upload'));
+  $bc_url=ksm_esc(up_file('birth_cert_upload'));
+  $ph_url=ksm_esc(up_file('photos_upload'));
+  $pass_url=ksm_esc(up_file('passport_photo'));
+
+  ksm_db()->query("INSERT INTO admissions(child_name,dob,blood_group,parent_name,phone,email,address,prior_school,class_applied,message,status,id_card_url,birth_cert_url,photos_url,passport_photo_url)VALUES('$cn','$dob','$bg','$pn','$ph','$em','$occ','$sig','$ca','$med','Pending','$id_url','$bc_url','$ph_url','$pass_url')");
   $newId=ksm_db()->insert_id;
   ksm_json(['id'=>$newId,'refCode'=>'KSM-'.date('Ymd').'-'.$newId],'Application submitted.');
 }
@@ -51,6 +69,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
 
     <!-- Top Bar -->
     <div class="top-bar">
+
         <div class="container">
             <div class="top-bar-info">
                 <span>
@@ -92,11 +111,13 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
 
                 <div class="mobile-menu-buttons">
                     <a href="portal/index.php" class="btn btn-accent">Portal</a>
+                    <a href="portal/admin/login.php" class="btn btn-outline" style="border-color:rgba(30,58,140,0.3);font-size:0.85rem;">Admin Portal</a>
                     <a href="admissions.php" class="btn btn-primary">Apply Now</a>
                 </div>
             </nav>
 
             <div class="header-buttons">
+                <a href="portal/admin/login.php" class="btn btn-outline" id="adminPortalBtn" style="padding:0.5rem 1rem;font-size:0.8rem;border-color:rgba(30,58,138,0.3);">Admin Portal</a>
                 <a href="portal/index.php" class="btn btn-accent" id="portalBtn">Portal</a>
                 <a href="admissions.php" class="btn btn-primary">Apply Now</a>
             </div>
@@ -121,385 +142,389 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
     </section>
 
     <!-- Admissions Main Section -->
-    <style>
-        #admissions-page {
-            background-image: url('assets/images/bg-building.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            padding: 4rem 1rem;
-            position: relative;
-        }
-        #admissions-page::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-        }
-        .paper-form-card {
-            position: relative;
-            z-index: 1;
-            background: #e8ebf0; /* Light grayish-blue background */
-            max-width: 850px;
-            margin: 0 auto;
-            border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            overflow: hidden;
-            font-family: 'Arial', sans-serif;
-            color: #333;
-        }
-        .paper-header {
-            background: #d84545; /* Red header */
-            color: #fff;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem 2rem;
-        }
-        .paper-logo-area {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .paper-logo-area img {
-            width: 60px;
-            height: 60px;
-            background: #fff;
-            border-radius: 50%;
-            padding: 5px;
-        }
-        .paper-logo-text {
-            display: flex;
-            flex-direction: column;
-        }
-        .paper-logo-text .title {
-            font-size: 1.6rem;
-            font-weight: 600;
-            letter-spacing: 1px;
-            margin: 0;
-        }
-        .paper-logo-text .subtitle {
-            font-size: 1.2rem;
-            font-weight: 400;
-            margin: 0;
-        }
-        .paper-badge {
-            background: #fff;
-            color: #d84545;
-            padding: 8px 20px;
-            font-weight: bold;
-            font-size: 1.1rem;
-            border-radius: 4px;
-        }
-        .paper-sub-header {
-            padding: 1.5rem 2rem;
-            display: flex;
-            justify-content: space-between;
-        }
-        .paper-sub-title {
-            color: #d84545;
-            font-size: 1.2rem;
-            font-weight: 600;
-            max-width: 70%;
-            text-transform: uppercase;
-        }
-        .paper-address {
-            color: #d84545;
-            font-size: 0.9rem;
-            margin-top: 10px;
-        }
-        .passport-photo-box {
-            width: 120px;
-            height: 150px;
-            border: 1px solid #999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            font-size: 0.85rem;
-            color: #666;
-            background: #fff;
-        }
-        .paper-instruction-bar {
-            background: #d84545;
-            color: #fff;
-            text-align: center;
-            padding: 8px;
-            font-weight: 500;
-            font-size: 1.1rem;
-        }
-        .paper-body {
-            padding: 2rem;
-        }
-        .paper-instruction-text {
-            font-size: 0.9rem;
-            margin-bottom: 20px;
-            font-weight: 500;
-        }
-        .paper-form-group {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .paper-form-group label {
-            width: 30%;
-            font-size: 0.95rem;
-            color: #444;
-            font-weight: 500;
-        }
-        .paper-form-group input[type="text"],
-        .paper-form-group input[type="date"],
-        .paper-form-group input[type="tel"],
-        .paper-form-group input[type="email"],
-        .paper-form-group select {
-            width: 70%;
-            padding: 8px 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background: #fff;
-            font-size: 0.95rem;
-            outline: none;
-        }
-        .paper-form-group textarea {
-            width: 70%;
-            padding: 8px 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background: #fff;
-            font-size: 0.95rem;
-            outline: none;
-            resize: vertical;
-        }
-        .paper-checkbox-group {
-            margin-top: 30px;
-        }
-        .paper-check-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-            font-size: 0.95rem;
-        }
-        .paper-check-item input[type="checkbox"] {
-            margin-right: 10px;
-            width: 16px;
-            height: 16px;
-        }
-        .paper-check-item input[type="text"] {
-            margin-left: 10px;
-            padding: 4px 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            background: #fff;
-            flex-grow: 1;
-            max-width: 300px;
-        }
-        .paper-declaration {
-            margin-top: 40px;
-            font-size: 0.9rem;
-            line-height: 1.5;
-            color: #444;
-        }
-        .paper-signature-row {
-            margin-top: 40px;
-            display: flex;
-            justify-content: flex-end;
-        }
-        .paper-signature-box {
-            width: 300px;
-            text-align: center;
-        }
-        .paper-signature-box input {
-            width: 100%;
-            border: none;
-            border-bottom: 1px solid #d84545;
-            background: transparent;
-            text-align: center;
-            font-family: 'Brush Script MT', cursive;
-            font-size: 1.5rem;
-            padding-bottom: 5px;
-            outline: none;
-        }
-        .paper-signature-box .signature-label {
-            color: #d84545;
-            font-size: 0.85rem;
-            margin-top: 5px;
-        }
-        .paper-submit {
-            margin-top: 40px;
-            text-align: center;
-        }
-        .paper-submit button {
-            background: #d84545;
-            color: #fff;
-            border: none;
-            padding: 12px 30px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .paper-submit button:hover {
-            background: #c03535;
-        }
-        @media (max-width: 768px) {
-            .paper-header {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
+    <section id="admissions-page" style="position: relative; padding: 4rem 1rem; overflow: hidden; width: 100%; max-width: 100%; margin: 0; box-sizing: border-box;">
+        <div style="position: absolute; top: -30px; left: -30px; right: -30px; bottom: -30px; background: url('assets/images/class-image.jpg') center/cover fixed no-repeat; filter: blur(4px); z-index: -1;"></div>
+        <style>
+            .paper-form-container {
+                max-width: 850px;
+                margin: 0 auto;
+                background: #e2e6ec;
+                font-family: Arial, Helvetica, sans-serif;
+                color: #5c6b8c;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             }
-            .paper-sub-header {
-                flex-direction: column;
+            .pf-header {
+                background: #df5349;
+                color: #fff;
+                padding: 1.2rem 2rem;
+                display: flex;
+                justify-content: space-between;
                 align-items: center;
-                text-align: center;
-                gap: 20px;
             }
-            .paper-sub-title {
-                max-width: 100%;
+            .pf-header-left {
+                display: flex;
+                align-items: center;
+                gap: 1.5rem;
             }
-            .paper-form-group {
+            .pf-logo {
+                width: 70px;
+                height: 70px;
+                border: 2px solid #fff;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #fff;
+                font-weight: bold;
+                font-style: italic;
+                font-size: 1.8rem;
+            }
+            .pf-logo-text {
+                display: flex;
                 flex-direction: column;
+            }
+            .pf-logo-text h1 {
+                margin: 0;
+                font-size: 2.2rem;
+                font-weight: normal;
+                color: #fff;
+            }
+            .pf-logo-text h2 {
+                margin: 0;
+                font-size: 1.4rem;
+                font-weight: normal;
+                color: #fff;
+            }
+            .pf-header-right {
+                background: #fff;
+                color: #606e89;
+                padding: 0.4rem 1.2rem;
+                font-weight: bold;
+                font-size: 1.2rem;
+                border-radius: 2px;
+            }
+            .pf-sub-header {
+                background: #fff;
+                padding: 1.5rem 2rem;
+                display: flex;
+                justify-content: space-between;
                 align-items: flex-start;
             }
-            .paper-form-group label {
-                width: 100%;
-                margin-bottom: 5px;
+            .pf-sub-text h3 {
+                color: #df5349;
+                font-size: 1.4rem;
+                margin: 0 0 1.5rem 0;
+                font-weight: normal;
+                text-transform: uppercase;
+                max-width: 500px;
+                line-height: 1.3;
             }
-            .paper-form-group input[type="text"],
-            .paper-form-group input[type="date"],
-            .paper-form-group input[type="tel"],
-            .paper-form-group input[type="email"],
-            .paper-form-group select,
-            .paper-form-group textarea {
-                width: 100%;
+            .pf-sub-text p {
+                color: #df5349;
+                margin: 0;
+                font-size: 1rem;
             }
-        }
-    </style>
+            .pf-photo-box {
+                width: 100px;
+                height: 120px;
+                border: 1px solid #5c6b8c;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                color: #df5349;
+                font-size: 0.9rem;
+                background: #fff;
+            }
+            .pf-red-band {
+                background: #df5349;
+                color: #fff;
+                text-align: center;
+                padding: 0.5rem;
+                font-size: 1.2rem;
+                font-weight: bold;
+            }
+            .pf-body {
+                padding: 2rem;
+            }
+            .pf-instruction {
+                font-size: 1.1rem;
+                margin-bottom: 2rem;
+                font-weight: bold;
+            }
+            .pf-row {
+                display: flex;
+                margin-bottom: 1rem;
+                align-items: center;
+            }
+            .pf-label {
+                width: 250px;
+                font-size: 1.1rem;
+                font-weight: bold;
+                color: #5c6b8c;
+            }
+            .pf-input {
+                flex: 1;
+                border: 1px solid #5c6b8c;
+                padding: 0.5rem;
+                background: #fff;
+                font-size: 1rem;
+                color: #333;
+                border-radius: 0;
+                box-shadow: none;
+                outline: none;
+            }
+            select.pf-input {
+                cursor: pointer;
+            }
+            textarea.pf-input {
+                resize: vertical;
+            }
+            .pf-checkbox-group {
+                margin-top: 2rem;
+            }
+            .pf-checkbox-row {
+                display: flex;
+                align-items: center;
+                margin-bottom: 1rem;
+                font-size: 1.1rem;
+                font-weight: bold;
+                color: #5c6b8c;
+                gap: 1rem;
+            }
+            .pf-checkbox {
+                width: 20px;
+                height: 20px;
+                border: 1px solid #5c6b8c;
+                background: #fff;
+                cursor: pointer;
+                appearance: none;
+                -webkit-appearance: none;
+                outline: none;
+                position: relative;
+            }
+            .pf-checkbox:checked::after {
+                content: '✓';
+                position: absolute;
+                color: #df5349;
+                font-size: 16px;
+                left: 3px;
+                top: -1px;
+            }
+            .pf-declaration {
+                margin-top: 3rem;
+                font-size: 1rem;
+                line-height: 1.5;
+                font-weight: bold;
+                color: #5c6b8c;
+            }
+            .pf-signature-area {
+                margin-top: 4rem;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+                margin-bottom: 2rem;
+            }
+            .pf-signature-input {
+                width: 300px;
+                border: none;
+                border-bottom: 1px solid #df5349;
+                background: transparent;
+                font-size: 1.2rem;
+                color: #333;
+                outline: none;
+                text-align: center;
+                margin-bottom: 0.5rem;
+                font-family: 'Brush Script MT', cursive, sans-serif;
+            }
+            .pf-signature-label {
+                color: #df5349;
+                font-size: 1rem;
+                margin-right: 40px;
+            }
+            .pf-submit-row {
+                padding: 2rem;
+                background: #fff;
+                text-align: center;
+                border-top: 1px solid #dcdcdc;
+            }
+            .pf-submit-btn {
+                background: #df5349;
+                color: #fff;
+                border: none;
+                padding: 1rem 3rem;
+                font-size: 1.2rem;
+                font-weight: bold;
+                cursor: pointer;
+                border-radius: 5px;
+                transition: background 0.3s;
+            }
+            .pf-submit-btn:hover {
+                background: #c9463e;
+            }
+        </style>
 
-    <section id="admissions-page">
-        <div class="container">
-            <div class="paper-form-card">
-                
-                <div class="paper-header">
-                    <div class="paper-logo-area">
-                        <img src="assets/images/logo.svg" alt="KSM Logo">
-                        <div class="paper-logo-text">
-                            <span class="title">Kindergarten</span>
-                            <span class="subtitle">Saadia's Montessori</span>
+        <div class="paper-form-container">
+            <form id="admissionForm" novalidate>
+                <div class="pf-header">
+                    <div class="pf-header-left">
+                        <img src="assets/images/logo-white-wreath.svg" alt="KSM Logo" style="width: 80px; height: 80px; display: block;">
+                        <div class="pf-logo-text">
+                            <h1>Kindergarten</h1>
+                            <h2>Saadia's Montessori</h2>
                         </div>
                     </div>
-                    <div class="paper-badge">
+                    <div class="pf-header-right">
                         Admission Form
                     </div>
                 </div>
-
-                <div class="paper-sub-header">
-                    <div>
-                        <div class="paper-sub-title">FORM FOR THE ADMISSION IN KINDERGARTEN SAADIA'S MONTESSORI</div>
-                        <div class="paper-address">Circular Road, 1st Floor of the Micro Finance Bank</div>
+                
+                <div class="pf-sub-header">
+                    <div class="pf-sub-text">
+                        <h3>FORM FOR THE ADMISSION IN KINDERGARTEN SAADIA'S MONTESSORI</h3>
+                        <p>Circular Road, 1st Floor of the Micro Finance Bank</p>
                     </div>
-                    <div class="passport-photo-box">
-                        Passport<br>Size<br>Photo
+                    <div class="pf-photo-box" id="passportPhotoBox" onclick="document.getElementById('passportUpload').click()" style="position:relative; overflow:hidden; border-style:dashed;">
+                        <span id="passportPhotoText">Passport<br>Size<br>Photo</span>
+                        <input type="file" id="passportUpload" name="passport_photo" accept="image/*" style="display:none;" onchange="previewPassportPhoto(event)">
                     </div>
                 </div>
-
-                <div class="paper-instruction-bar">
+                
+                <script>
+                function previewPassportPhoto(e) {
+                    const file = e.target.files[0];
+                    if(file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const box = document.getElementById('passportPhotoBox');
+                            box.style.backgroundImage = 'url(' + e.target.result + ')';
+                            box.style.backgroundSize = 'cover';
+                            box.style.backgroundPosition = 'center';
+                            document.getElementById('passportPhotoText').style.display = 'none';
+                        }
+                        reader.readAsDataURL(file);
+                    }
+                }
+                </script>
+                
+                <div class="pf-red-band">
                     Provide the correct information below.
                 </div>
-
-                <div class="paper-body">
-                    <form id="admissionForm" novalidate>
-                        <div class="paper-instruction-text">Parents or Guardian must fill out and sign the form</div>
-
-                        <div class="paper-form-group">
-                            <label for="studentName">Name of Student:</label>
-                            <input type="text" id="studentName" name="child_name" required>
-                        </div>
-                        <div class="paper-form-group">
-                            <label for="studentDOB">Date of Birth:</label>
-                            <input type="date" id="studentDOB" name="dob" required>
-                        </div>
-                        <div class="paper-form-group">
-                            <label for="parentName">Name of Parent/Guardian:</label>
-                            <input type="text" id="parentName" name="parent_name" required>
-                        </div>
-                        <div class="paper-form-group">
-                            <label for="parentContact">Contact No.:</label>
-                            <input type="tel" id="parentContact" name="phone" required>
-                        </div>
-                        <div class="paper-form-group">
-                            <label for="parentEmail">E-mail:</label>
-                            <input type="email" id="parentEmail" name="email" required>
-                        </div>
-
-                        <div class="paper-form-group" style="margin-top: 20px;">
-                            <label for="bloodGroup">Blood Group:</label>
-                            <select id="bloodGroup" name="blood_group">
-                                <option value="" disabled selected>Select</option>
-                                <option value="A+">A+</option>
-                                <option value="A-">A-</option>
-                                <option value="B+">B+</option>
-                                <option value="B-">B-</option>
-                                <option value="O+">O+</option>
-                                <option value="O-">O-</option>
-                                <option value="AB+">AB+</option>
-                                <option value="AB-">AB-</option>
-                            </select>
+                
+                <div class="pf-body">
+                    <div class="pf-instruction">
+                        Parents or Guardian must fill out and sign the form
+                    </div>
+                    
+                    <div class="pf-row">
+                        <div class="pf-label">Name of Student: *</div>
+                        <input type="text" name="child_name" class="pf-input" placeholder="e.g. Sarah Doe" required>
+                    </div>
+                    
+                    <div class="pf-row">
+                        <div class="pf-label">Date of Birth: *</div>
+                        <input type="date" name="dob" class="pf-input" required>
+                    </div>
+                    
+                    <div class="pf-row">
+                        <div class="pf-label">Blood Group:</div>
+                        <select name="blood_group" class="pf-input">
+                            <option value="" disabled selected>Select</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                        </select>
+                    </div>
+                    
+                    <div class="pf-row">
+                        <div class="pf-label">Program Applying For: *</div>
+                        <select name="program" class="pf-input" required>
+                            <option value="" disabled selected>Select Program</option>
+                            <option value="Early Toddler (1.5 - 3 Yrs)">Early Toddler (1.5 - 3 Yrs)</option>
+                            <option value="Primary/Kindergarten (3 - 6 Yrs)">Primary/Kindergarten (3 - 6 Yrs)</option>
+                            <option value="Junior Level (6 - 9 Yrs)">Junior Level (6 - 9 Yrs)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="pf-row">
+                        <div class="pf-label" style="align-self:flex-start; margin-top:10px;">Medical History:</div>
+                        <textarea name="notes" class="pf-input" rows="3" placeholder="Disease / Medical Records / Inherited Condition / Medications / Autistic / ADHD"></textarea>
+                    </div>
+                    
+                    <div class="pf-row">
+                        <div class="pf-label">Name of Parent/ Guardian: *</div>
+                        <input type="text" name="parent_name" class="pf-input" placeholder="e.g. John Doe" required>
+                    </div>
+                    
+                    <div class="pf-row">
+                        <div class="pf-label">Contact No. *</div>
+                        <input type="tel" name="phone" class="pf-input" placeholder="+92 300 0000000" required>
+                    </div>
+                    
+                    <div class="pf-row">
+                        <div class="pf-label">E-mail: *</div>
+                        <input type="email" name="email" class="pf-input" placeholder="example@domain.com" required>
+                    </div>
+                    
+                    <div class="pf-checkbox-group">
+                        <div class="pf-checkbox-row" style="flex-wrap: wrap;">
+                            <input type="checkbox" class="pf-checkbox" id="checkIdCard" required>
+                            <label for="checkIdCard" style="cursor:pointer; flex: 1;">Attach copy of Father/ Mother/ Guardian ID Card.</label>
+                            <input type="file" name="id_card_upload" accept="image/*,.pdf" style="font-size:0.9rem;" onchange="document.getElementById('checkIdCard').checked = true;">
                         </div>
                         
-                        <div class="paper-form-group">
-                            <label for="medicalHistory">Medical Records/ADHD:</label>
-                            <input type="text" id="medicalHistory" name="notes" placeholder="Any disease, inherited condition, medications...">
+                        <div class="pf-checkbox-row" style="flex-wrap: wrap;">
+                            <input type="checkbox" class="pf-checkbox" id="checkBirthCert" required>
+                            <label for="checkBirthCert" style="cursor:pointer; flex: 1;">Attach copy of Birth Certificate of Child.</label>
+                            <input type="file" name="birth_cert_upload" accept="image/*,.pdf" style="font-size:0.9rem;" onchange="document.getElementById('checkBirthCert').checked = true;">
+                        </div>
+
+                        <div class="pf-checkbox-row" style="flex-wrap: wrap;">
+                            <input type="checkbox" class="pf-checkbox" id="checkPhotos" required>
+                            <label for="checkPhotos" style="cursor:pointer; flex: 1;">Attach 4 Passport Size Pictures.</label>
+                            <input type="file" name="photos_upload" accept="image/*" multiple style="font-size:0.9rem;" onchange="document.getElementById('checkPhotos').checked = true;">
                         </div>
                         
-                        <div class="paper-form-group">
-                            <label for="programSelect">Program Applying For:</label>
-                            <select id="programSelect" name="program" required>
-                                <option value="" disabled selected>Select Program</option>
-                                <option value="Early Toddler (1.5 - 3 Yrs)">Early Toddler (1.5 - 3 Yrs)</option>
-                                <option value="Primary/Kindergarten (3 - 6 Yrs)">Primary/Kindergarten (3 - 6 Yrs)</option>
-                                <option value="Junior Level (6 - 9 Yrs)">Junior Level (6 - 9 Yrs)</option>
-                            </select>
+                        <div class="pf-checkbox-row">
+                            <input type="checkbox" class="pf-checkbox">
+                            <label style="white-space: nowrap;">Father/ Mother/ Guardian Occupation.</label>
+                            <input type="text" name="address" class="pf-input" placeholder="Occupation">
                         </div>
-
-                        <div class="paper-checkbox-group">
-                            <label class="paper-check-item">
-                                <input type="checkbox" id="checkIdCard" required>
-                                Attach copy of Father/Mother/Guardian ID Card, Birth Certificate, 4 Passport Size Pictures.
-                            </label>
-                            <label class="paper-check-item">
-                                <input type="checkbox" id="checkOccupation">
-                                Father/Mother/Guardian Occupation.
-                                <input type="text" id="parentOccupation" name="address" placeholder="Occupation">
-                            </label>
-                            <label class="paper-check-item">
-                                <input type="checkbox" id="termsCheck" required>
-                                I have read and understand the terms & conditions of this form.
-                            </label>
+                        
+                        <div class="pf-checkbox-row">
+                            <input type="checkbox" class="pf-checkbox" id="termsCheck" required>
+                            <label for="termsCheck" style="cursor:pointer;">I have read and understand the terms & conditions of this form.</label>
                         </div>
-
-                        <div class="paper-declaration">
-                            I agree with the rules & regulations of institution & shall conform to them. I certify that the above information is correct please admit my Son/ Daughter in this institution.
-                        </div>
-
-                        <div class="paper-signature-row">
-                            <div class="paper-signature-box">
-                                <input type="text" id="digitalSignature" name="prior_school" placeholder="Type name" required>
-                                <div class="signature-label">Signature of Parents or Guardian</div>
-                            </div>
-                        </div>
-
-                        <div class="paper-submit">
-                            <button type="submit">Submit Application Form</button>
-                        </div>
-                    </form>
-
-                    <div id="formSuccess" class="form-success-msg" style="display: none; text-align:center; margin-top:30px; color: #28a745;">
-                        <h3>Application Received!</h3>
-                        <p>Thank you for submitting your application. Our admissions office will contact you shortly.</p>
+                    </div>
+                    
+                    <div class="pf-declaration">
+                        I agree with the rules & regulations of institution & shall confirm to them. I certify that<br>
+                        the above information is correct please admit my Son/ Daughter in this institution.
+                    </div>
+                    
+                    <div class="pf-signature-area">
+                        <input type="text" name="prior_school" class="pf-signature-input" placeholder="Type your full name as signature" required>
+                        <div class="pf-signature-label">Signature of Parents or Guardian</div>
                     </div>
                 </div>
-
+                
+                <div class="pf-submit-row">
+                    <button type="submit" class="pf-submit-btn">Submit Application</button>
+                </div>
+            </form>
+            
+            <div id="formSuccess" class="form-success-msg" style="display: none; padding: 3rem; text-align: center; background: #fff;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#df5349" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:64px;height:64px;margin-bottom:1rem;display:inline-block;">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                    <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+                <h3 style="color:#df5349;font-size:1.8rem;margin-bottom:1rem;">Application Received!</h3>
+                <p style="color:#5c6b8c;font-size:1.1rem;">Thank you for submitting your application. Our admissions office will contact you shortly regarding the next steps.</p>
             </div>
         </div>
     </section>
@@ -581,26 +606,14 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
                     btn.textContent = 'Submitting...';
 
                     const formData = new FormData(form);
-                    const data = {
-                        parent_name: formData.get('parent_name'),
-                        email: formData.get('email'),
-                        phone: formData.get('phone'),
-                        child_name: formData.get('child_name'),
-                        dob: formData.get('dob'),
-                        address: formData.get('address'),
-                        prior_school: formData.get('prior_school'),
-                        program: formData.get('program'),
-                        notes: formData.get('notes')
-                    };
 
                     try {
                         const res = await fetch('admissions.php', {
                             method: 'POST',
                             headers: {
-                                'Content-Type': 'application/json',
                                 'X-Requested-With': 'XMLHttpRequest'
                             },
-                            body: JSON.stringify(data)
+                            body: formData
                         });
                         const result = await res.json();
                         

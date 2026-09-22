@@ -7,9 +7,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description"
-    content="Nurturing independent, confident, and lifelong learners using the authentic Montessori method. Explore our early childhood, kindergarten, and junior level programs.">
+    content="Nurturing independent, confident, and lifelong learners using the authentic Montessori method. Explore our Playgroup, Nursery, Prep, Grade One, Grade Two, and Grade Three classes.">
   <title>Kindergarten Saadia's Montessori School</title>
-  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/style.css?v=2">
 </head>
 
 <body>
@@ -87,6 +87,13 @@
 
       <nav class="nav-menu" id="navMenu">
         <a href="index.php" class="nav-link active">Home</a>
+        <div class="nav-dropdown">
+          <a href="#" class="nav-link">Campuses ▾</a>
+          <div class="dropdown-content">
+            <a href="#">Campus 1 (Main)</a>
+            <a href="#">Campus 2</a>
+          </div>
+        </div>
         <a href="#programs" class="nav-link">Programs</a>
         <a href="admissions.php" class="nav-link">Admissions</a>
         <a href="#gallery" class="nav-link">Gallery & Events</a>
@@ -95,13 +102,15 @@
 
         <div class="mobile-menu-buttons">
           <a href="portal/index.php" class="btn btn-accent">Portal</a>
-          <a href="portal/admin/login.php" class="btn btn-outline" style="border-color:rgba(30,58,140,0.3);font-size:0.85rem;">Admin Portal</a>
+          <a href="portal/admin/login.php" class="btn btn-outline"
+            style="border-color:rgba(30,58,140,0.3);font-size:0.85rem;">Admin Portal</a>
           <a href="admissions.php" class="btn btn-primary">Apply Now</a>
         </div>
       </nav>
 
       <div class="header-buttons">
-        <a href="portal/admin/login.php" class="btn btn-outline" id="adminPortalBtn" style="padding:0.5rem 1rem;font-size:0.8rem;border-color:rgba(30,58,138,0.3);">Admin Portal</a>
+        <a href="portal/admin/login.php" class="btn btn-outline" id="adminPortalBtn"
+          style="padding:0.5rem 1rem;font-size:0.8rem;border-color:rgba(30,58,138,0.3);">Admin Portal</a>
         <a href="portal/index.php" class="btn btn-accent" id="portalBtn">Portal</a>
         <a href="admissions.php" class="btn btn-primary" id="headerCTA">Apply Now</a>
       </div>
@@ -112,12 +121,14 @@
     </div>
   </header>
 
+
   <!-- Full Width Marquee Headline -->
   <div class="headline-ticker"
     style="background: rgba(30, 58, 138, 0.75); color: white; padding: 5px 0; overflow: hidden; white-space: nowrap; border-bottom: 2px solid var(--accent-warm);">
     <div
       style="display: inline-block; animation: marquee 20s linear infinite; font-family: var(--font-heading); font-weight: 600; font-size: 0.9rem; letter-spacing: 1px;">
-      "Free The Child's Potential and You Will Transform Him Into The World."
+      "Free The Child's Potential and You Will Transform Him Into The World." &nbsp;||&nbsp; "Excellence Since 2024 |
+      PSRA Certified"
     </div>
   </div>
 
@@ -338,70 +349,85 @@
       <div class="programs-grid">
         <div class="program-card">
           <div class="program-img-wrapper">
-            <img src="assets/images/program/program-1/program-image.jpg" alt="Early Toddler Years" class="program-img">
-            <span class="program-age">1.5 - 3 Years</span>
+            <img src="assets/images/program/program-1/program-image.jpeg" alt="Playgroup" class="program-img">
+            <span class="program-age">2.5 - 3.5 Years</span>
           </div>
           <div class="program-info">
-            <h3>Early Toddler Years</h3>
-            <p>Nurturing sensory exploration, fine/gross motor skills, language development, and foundational
-              independence within a warm community.</p>
-            <div class="program-details">
-              <span>08:30 AM - 12:30 PM</span>
-              <span>Ratio: 1:5</span>
-            </div>
+            <h3>Playgroup</h3>
+            <p>Nurturing sensory exploration, fine/gross motor skills, language development, and foundational independence within a warm community.</p>
           </div>
         </div>
 
         <div class="program-card">
           <div class="program-img-wrapper">
-            <img src="assets/images/program/program-2/program-image.jpg" alt="Primary Kindergarten" class="program-img">
-            <span class="program-age">3 - 6 Years</span>
+            <img src="assets/images/program/program-2/program-image.jpeg" alt="Nursery" class="program-img">
+            <span class="program-age">3.5 - 4.5 Years</span>
           </div>
           <div class="program-info">
-            <h3>Primary/Kindergarten</h3>
-            <p>Introducing early mathematics, phonics, practical life refinement, culture, and science under
-              self-directed workspace habits.</p>
-            <div class="program-details">
-              <span>08:30 AM - 01:30 PM</span>
-              <span>Ratio: 1:10</span>
-            </div>
+            <h3>Nursery</h3>
+            <p>Introducing early mathematics, phonics, practical life refinement, and sensory activities under self-directed workspace habits.</p>
           </div>
         </div>
 
         <div class="program-card">
           <div class="program-img-wrapper">
-            <img src="assets/images/program/program-3/program-image.jpg" alt="Montessori Junior Level"
-              class="program-img">
-            <span class="program-age">6 - 9 Years</span>
+            <img src="assets/images/program/program-3/program-image.jpeg" alt="Prep" class="program-img">
+            <span class="program-age">4.5 - 5.5 Years</span>
           </div>
           <div class="program-info">
-            <h3>Montessori Junior Level</h3>
-            <p>Advancing abstract concepts, scientific inquiry, complex arithmetic, writing, and environmental
-              exploration in collaborative peer circles.</p>
-            <div class="program-details">
-              <span>08:00 AM - 02:00 PM</span>
-              <span>Ratio: 1:12</span>
-            </div>
+            <h3>Prep</h3>
+            <p>Advancing foundational concepts, collaborative play, early reading, writing, and environmental awareness.</p>
           </div>
         </div>
+
+        <div class="program-card program-hidden">
+          <div class="program-img-wrapper">
+            <img src="assets/images/program/program-4/program-image.jpeg" alt="Grade One" class="program-img">
+            <span class="program-age">6 Years</span>
+          </div>
+          <div class="program-info">
+            <h3>Grade One</h3>
+            <p>Focusing on foundational literacy, arithmetic, social collaboration, and engaging academic activities in a modern setting.</p>
+          </div>
+        </div>
+
+        <div class="program-card program-hidden">
+          <div class="program-img-wrapper">
+            <img src="assets/images/program/program-5/program-image.jpeg" alt="Grade Two" class="program-img">
+            <span class="program-age">7 Years</span>
+          </div>
+          <div class="program-info">
+            <h3>Grade Two</h3>
+            <p>Expanding academic horizons with scientific inquiry, structured reading, and deeper mathematical understanding.</p>
+          </div>
+        </div>
+
+        <div class="program-card program-hidden">
+          <div class="program-img-wrapper">
+            <img src="assets/images/program/program-6/program-image.jpeg" alt="Grade Three" class="program-img">
+            <span class="program-age">8 Years</span>
+          </div>
+          <div class="program-info">
+            <h3>Grade Three</h3>
+            <p>Encouraging project-based learning, independent study habits, advanced problem-solving, and team projects.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="programs-cta-wrapper" style="text-align: center; margin-top: 2rem;">
+        <button type="button" id="toggleProgramBtn" class="btn btn-outline gallery-cta-btn">
+          <span>View More</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
       </div>
     </div>
   </section>
 
-  <!-- Key Highlights -->
-  <section class="stats">
-    <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); text-align: center;">
-      <div class="stat-item" style="display: flex; justify-content: center; align-items: center; min-height: 80px;">
-        <h3 style="font-size: 1.5rem; color: #f59e0b; margin: 0;">Excellence Since 2024</h3>
-      </div>
-      <div class="stat-item" style="display: flex; justify-content: center; align-items: center; min-height: 80px;">
-        <h3 style="font-size: 1.5rem; color: #f59e0b; margin: 0;">Verified by PESRA</h3>
-      </div>
-      <div class="stat-item" style="display: flex; justify-content: center; align-items: center; min-height: 80px;">
-        <h3 style="font-size: 1.5rem; color: #f59e0b; margin: 0;">Extracurricular Events</h3>
-      </div>
-    </div>
-  </section>
+
+
+
 
   <!-- News, Events & Gallery Grid Section -->
   <section class="gallery-bg" id="gallery">
@@ -419,9 +445,10 @@
 
       <div class="gallery-grid" id="galleryGrid">
         <div class="gallery-item" data-category="classroom" onclick="openEventLightbox(this)">
-          <img src="assets/images/gallery/item-1/sensory-area.jpg" alt="Sensory Shelves">
+          <img src="assets/images/gallery/Sensory Shelves/sensory-shelves-0.jpeg" alt="Sensory Shelves">
           <div class="event-photos-data" style="display:none;"
-            data-photos="assets/images/gallery/item-1/sensory-area.jpg"></div>
+            data-photos="assets/images/gallery/Sensory Shelves/sensory-shelves-0.jpeg,assets/images/gallery/Sensory Shelves/sensory-shelves-1.jpeg,assets/images/gallery/Sensory Shelves/sensory-shelves-2.jpeg,assets/images/gallery/Sensory Shelves/sensory-shelves-3.jpeg,assets/images/gallery/Sensory Shelves/sensory-shelves-4.jpeg,assets/images/gallery/Sensory Shelves/sensory-shelves-5.jpeg,assets/images/gallery/Sensory Shelves/sensory-shelves-6.jpeg">
+          </div>
           <div class="gallery-overlay">
             <h4>Sensory Shelves</h4>
             <p>Classroom environments built with child-accessible wooden shapes.</p>
@@ -429,9 +456,9 @@
         </div>
 
         <div class="gallery-item" data-category="events" onclick="openEventLightbox(this)">
-          <img src="assets/images/gallery/sports-day/photo-1.jpg" alt="Annual Sports Day">
+          <img src="assets/images/gallery/Annual sports day/annual-sports-day-1.jpg" alt="Annual Sports Day">
           <div class="event-photos-data" style="display:none;"
-            data-photos="assets/images/gallery/sports-day/photo-1.jpg"></div>
+            data-photos="assets/images/gallery/Annual sports day/annual-sports-day-1.jpg"></div>
           <div class="gallery-overlay">
             <h4>Annual Sports Day</h4>
             <p>Building teamwork, confidence and physical agility through games.</p>
@@ -451,9 +478,11 @@
         </div>
 
         <div class="gallery-item" data-category="classroom" onclick="openEventLightbox(this)">
-          <img src="assets/images/gallery/practical-life/photo-1.jpg" alt="Practical Life Station">
+          <img src="assets/images/gallery/Practical Life Stations/practical-life-station.jpeg"
+            alt="Practical Life Station">
           <div class="event-photos-data" style="display:none;"
-            data-photos="assets/images/gallery/practical-life/photo-1.jpg"></div>
+            data-photos="assets/images/gallery/Practical Life Stations/practical-life-station.jpeg,assets/images/gallery/Practical Life Stations/epl-polishing-activity.mp4,assets/images/gallery/Practical Life Stations/ready-for-splash.mp4">
+          </div>
           <div class="gallery-overlay">
             <h4>Practical Life Station</h4>
             <p>Water pouring, handwashing and dressing frame skills.</p>
@@ -601,7 +630,6 @@
         <div class="events-calendar slide-in-left">
           <div class="calendar-header">
             <h3>Upcoming Events</h3>
-            <a href="#" class="view-all-link">View All Events →</a>
           </div>
           <div class="event-list" id="websiteEventList">
             <!-- Dynamic events load here -->
@@ -714,7 +742,7 @@
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
               <circle cx="12" cy="10" r="3" />
             </svg>
-            <span>Circular road HBL microfinance bank , Haripur, Pakistan</span>
+            <span>Circular Road, HBL Microfinance Bank Haripur, Pakistan</span>
           </li>
           <li>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -736,14 +764,7 @@
       </div>
 
       <div>
-        <h4>Newsletter</h4>
-        <div class="footer-newsletter">
-          <p>Get latest events updates and parent tips.</p>
-          <form class="newsletter-form" id="newsletterForm">
-            <input type="email" placeholder="Your Email" aria-label="Email Address" required>
-            <button type="submit">Join</button>
-          </form>
-        </div>
+
         <div class="map-container">
           <iframe
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3307.705748870337!2d72.93316067499752!3d34.00009107317665!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38dfb37001d2f68f%3A0x15918636c55c1c6b!2sKindergarten%20Saadia's%20Montessori%20School!5e0!3m2!1sen!2s!4v1788940104876!5m2!1sen!2s"
@@ -756,8 +777,7 @@
 
     <div class="footer-bottom">
       <div class="container">
-        <p>&copy; 2026 Kindergarten Saadia's Montessori School. All rights reserved. Designed in accordance with
-          authentic Montessori standards.</p>
+        <p>&copy; 2026 Kindergarten Saadia's Montessori School. All rights reserved.</p>
       </div>
     </div>
   </footer>
@@ -773,7 +793,7 @@
     </div>
   </div>
 
-  <script src="assets/js/app.js"></script>
+  <script src="assets/js/app.js?v=2"></script>
 </body>
 
 </html>

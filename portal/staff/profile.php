@@ -1,5 +1,8 @@
-﻿<?php
-$_ksm=['host'=>'localhost','user'=>'root','pass'=>'','name'=>'ksm_database'];
+<?php
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../auth.php';
+check_staff_auth();
+
 function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
 function ksm_err($m,$code=400){ksm_json(null,$m,$code);}
@@ -9,8 +12,19 @@ if(($_SERVER['REQUEST_METHOD']??'')==='OPTIONS')exit;
 $isAjax=isset($_SERVER['HTTP_X_REQUESTED_WITH'])||strpos($_SERVER['CONTENT_TYPE']??'','application/json')!==false||isset($_GET['_api']);
 $method=$_SERVER['REQUEST_METHOD']??'GET';
 $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
-  if($method==='GET'){$id=intval($_GET['id']??0);if(!$id)ksm_err('Invalid ID.');$r=ksm_db()->query("SELECT id,name,email,phone,subject,class,bio,emoji,profilePic FROM users_staff WHERE id=$id LIMIT 1");if(!$r||$r->num_rows===0)ksm_err('Not found.',404);ksm_json($r->fetch_assoc());}
-  if($method==='PUT'){$id=intval($body['id']??0);$name=ksm_esc($body['name']??'');$phone=ksm_esc($body['phone']??'');$sub=ksm_esc($body['subject']??'');$bio=ksm_esc($body['bio']??'');$pic=ksm_esc($body['profilePic']??'');if(!$id)ksm_err('Invalid ID.');if(!$name)ksm_err('Name required.');ksm_db()->query("UPDATE users_staff SET name='$name',phone='$phone',subject='$sub',bio='$bio',profilePic='$pic' WHERE id=$id");$r=ksm_db()->query("SELECT id,name,email,phone,subject,class,bio,emoji,profilePic FROM users_staff WHERE id=$id LIMIT 1");ksm_json($r->fetch_assoc(),'Profile updated.');}
+  if($method==='GET'||$method==='PUT'){
+    $id = $method==='GET' ? intval($_GET['id']??0) : intval($body['id']??0);
+    if(!$id)ksm_err('Invalid ID.');
+    if($id !== (int)$_SESSION['ksm_staff_auth']) ksm_err('Access denied.', 403);
+    if($method==='GET'){
+      $r=ksm_db()->query("SELECT id,name,email,phone,subject,class,bio,emoji,profilePic FROM users_staff WHERE id=$id LIMIT 1");if(!$r||$r->num_rows===0)ksm_err('Not found.',404);ksm_json($r->fetch_assoc());
+    }else{
+      $name=ksm_esc($body['name']??'');$phone=ksm_esc($body['phone']??'');$sub=ksm_esc($body['subject']??'');$bio=ksm_esc($body['bio']??'');$pic=ksm_esc($body['profilePic']??'');
+      if(!$name)ksm_err('Name required.');
+      ksm_db()->query("UPDATE users_staff SET name='$name',phone='$phone',subject='$sub',bio='$bio',profilePic='$pic' WHERE id=$id");
+      $r=ksm_db()->query("SELECT id,name,email,phone,subject,class,bio,emoji,profilePic FROM users_staff WHERE id=$id LIMIT 1");ksm_json($r->fetch_assoc(),'Profile updated.');
+    }
+  }
 }
 ?>
 <!DOCTYPE html>
@@ -18,9 +32,10 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Staff Profile — KSM School Portal">
-  <title>My Profile — KSM Staff Portal</title>
+  <meta name="description" content="Teacher Profile - KSM School Portal">
+  <title>My Profile - KSM Teacher Portal</title>
   <link rel="stylesheet" href="../assets/portal.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
 </head>
 <body>
 <div class="portal-wrapper">
@@ -48,7 +63,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
           <div style="flex-shrink:0;width:100%;max-width:200px;text-align:center;">
             <div id="bigAvatar" style="width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#047857,#10B981);color:white;display:flex;align-items:center;justify-content:center;font-size:3.5rem;font-weight:bold;margin:0 auto 1rem;box-shadow:var(--shadow-md);">S</div>
             <h3 id="bigName" style="margin-bottom:0.2rem;font-size:1.2rem;">Name</h3>
-            <p style="font-size:0.85rem;color:var(--text-medium);font-weight:600;">Teaching Staff</p>
+            <p style="font-size:0.85rem;color:var(--text-medium);font-weight:600;">Teacher</p>
           </div>
           <div id="profileDisplay" style="flex:1;min-width:250px;display:grid;grid-template-columns:1fr 1fr;gap:1rem;"></div>
         </div>
@@ -82,8 +97,12 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
             </div>
           </div>
           <div class="form-group">
-            <label class="form-label">Profile Picture URL</label>
-            <input type="url" id="editProfilePic" class="form-control" placeholder="https://example.com/photo.jpg">
+            <label class="form-label">Profile Picture</label>
+            <div style="display:flex; gap:1rem; align-items:center;">
+              <input type="url" id="editProfilePic" class="form-control" style="flex:1;" placeholder="URL will appear here" readonly>
+              <button type="button" class="btn btn-outline" onclick="document.getElementById('profilePicFile').click()">📸 Upload Picture</button>
+              <input type="file" id="profilePicFile" accept="image/*" style="display:none;" onchange="handleFileSelect(event)">
+            </div>
           </div>
           <div class="form-group">
             <label class="form-label">Bio / About</label>
@@ -100,6 +119,27 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   </div>
 </div>
 
+<!-- Cropper Modal -->
+<div id="cropperModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; flex-direction:column; align-items:center; justify-content:center; padding:1rem;">
+  <div style="background:white; border-radius:8px; padding:1.5rem; width:100%; max-width:600px; text-align:center;">
+    <h3 style="margin-bottom:1rem; font-weight:600; font-size:1.2rem;">Crop Profile Picture</h3>
+    <div style="width:100%; height:400px; background:#f0f0f0; margin-bottom:1rem; overflow:hidden;">
+      <img id="cropperImage" style="max-width:100%; display:block;">
+    </div>
+    <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
+      <div style="display:flex; gap:0.5rem;">
+        <button type="button" class="btn btn-sm btn-outline" onclick="if(cropper) cropper.zoom(0.1)">🔍 Zoom In</button>
+        <button type="button" class="btn btn-sm btn-outline" onclick="if(cropper) cropper.zoom(-0.1)">🔍 Zoom Out</button>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <button type="button" class="btn btn-sm btn-outline" onclick="closeCropperModal()">Cancel</button>
+        <button type="button" class="btn btn-sm btn-primary" id="btnCropSave" onclick="saveCroppedImage()">Crop & Upload</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 <script src="../assets/portal.js"></script>
 <script src="../assets/api.js"></script>
 <script src="../assets/sidebar.js"></script>
@@ -190,6 +230,60 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   function doLogout() {
     sessionStorage.removeItem('ksm_staff_auth');
     window.location.href = 'login.php';
+  }
+
+  // Cropper Logic
+  let cropper = null;
+  
+  function handleFileSelect(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      showToast('Please select a valid image file.', 'error');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      document.getElementById('cropperImage').src = e.target.result;
+      document.getElementById('cropperModal').style.display = 'flex';
+      if (cropper) { cropper.destroy(); }
+      cropper = new Cropper(document.getElementById('cropperImage'), {
+        aspectRatio: 1,
+        viewMode: 1,
+        background: false
+      });
+    };
+    reader.readAsDataURL(file);
+    event.target.value = ''; // Reset input
+  }
+
+  function closeCropperModal() {
+    document.getElementById('cropperModal').style.display = 'none';
+    if (cropper) { cropper.destroy(); cropper = null; }
+  }
+
+  async function saveCroppedImage() {
+    if (!cropper) return;
+    const btn = document.getElementById('btnCropSave');
+    btn.textContent = 'Uploading...';
+    btn.disabled = true;
+    
+    // Get cropped canvas
+    const canvas = cropper.getCroppedCanvas({ width: 300, height: 300 });
+    const base64Image = canvas.toDataURL('image/jpeg', 0.8);
+    
+    // Call upload API
+    const res = await API.uploadProfilePic(base64Image);
+    if (res.success && res.data && res.data.url) {
+      document.getElementById('editProfilePic').value = res.data.url;
+      showToast('Picture uploaded successfully! Click Save Changes.', 'success');
+      closeCropperModal();
+    } else {
+      showToast(res.message || 'Error uploading image.', 'error');
+    }
+    
+    btn.textContent = 'Crop & Upload';
+    btn.disabled = false;
   }
 </script>
 </body>
