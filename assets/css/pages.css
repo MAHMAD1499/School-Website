@@ -1,6 +1,41 @@
 /* ==========================================================================
    1. SHARED SUBPAGE HERO & BREADCRUMBS
    ========================================================================== */
+.top-bar {
+    background-color: var(--primary-deep);
+    color: white;
+    font-size: 0.85rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.top-bar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.top-bar-info {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.top-bar-info span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.top-bar-socials {
+    display: flex;
+    gap: 1rem;
+}
+
+.top-bar-socials a:hover {
+    color: var(--accent-warm);
+    transform: scale(1.1);
+}
+
 .page-hero {
     background: linear-gradient(135deg, var(--primary-deep) 0%, #1e40af 60%, var(--primary-light) 100%);
     padding: 5rem 1rem;
