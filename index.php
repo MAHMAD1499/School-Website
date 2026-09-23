@@ -7,7 +7,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description"
-    content="Nurturing independent, confident, and lifelong learners using the authentic Montessori method. Explore our Playgroup, Nursery, Prep, Grade One, Grade Two, and Grade Three classes.">
+    content="Nurturing independent, confident, and lifelong learners using the authentic Montessori method. Explore our Playgroup, Nursery, Prep, Grade One, Grade Two, Grade Three, Grade Four, and Grade Five classes.">
   <title>Kindergarten Saadia's Montessori School</title>
   <link rel="stylesheet" href="assets/css/style.css?v=2">
 </head>
@@ -194,81 +194,76 @@
 
   <!-- QUICK LINKS GRID -->
   <section class="quick-links-section">
-    <div class="container">
-      <p class="quick-links-label">Quick Access</p>
-      <div class="quick-links-grid">
-        <a href="#" class="quick-link-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-            <polyline points="14 2 14 8 20 8" />
-          </svg>
-          Dress Code
-        </a>
-        <a href="#" class="quick-link-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-            <line x1="16" y1="2" x2="16" y2="6" />
-            <line x1="8" y1="2" x2="8" y2="6" />
-            <line x1="3" y1="10" x2="21" y2="10" />
-          </svg>
-          Lunch Schedule
-        </a>
-        <a href="#" class="quick-link-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-            <line x1="3" y1="6" x2="21" y2="6" />
-            <path d="M16 10a4 4 0 0 1-8 0" />
-          </svg>
-          School Supply List
-        </a>
-        <a href="#" class="quick-link-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-          </svg>
-          Student Handbook
-        </a>
-        <a href="#" class="quick-link-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="1" y="3" width="15" height="13" rx="2" />
-            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
-            <circle cx="5.5" cy="18.5" r="2.5" />
-            <circle cx="18.5" cy="18.5" r="2.5" />
-          </svg>
-          Bus Route Locator
-        </a>
-        <a href="#" class="quick-link-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
-            <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
-            <line x1="6" y1="1" x2="6" y2="4" />
-            <line x1="10" y1="1" x2="10" y2="4" />
-            <line x1="14" y1="1" x2="14" y2="4" />
-          </svg>
-          Student Meals
-        </a>
-        <a href="#" class="quick-link-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10" />
-            <path d="M8 14s1.5 2 4 2 4-2 4-2" />
-            <line x1="9" y1="9" x2="9.01" y2="9" />
-            <line x1="15" y1="9" x2="15.01" y2="9" />
-          </svg>
-          Seasons of Fun
-        </a>
-        <a href="#" class="quick-link-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-            <circle cx="9" cy="7" r="4" />
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-          </svg>
-          PTA
-        </a>
-      </div>
-    </div>
-  </section>
-
+    <div class="quick-links-grid">
+  <button type="button" class="quick-link-btn" onclick="document.getElementById('dressCodeModal').showModal()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+    </svg>
+    Dress Code
+  </button>
+  <button type="button" class="quick-link-btn" onclick="document.getElementById('lunchModal').showModal()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+      <line x1="16" y1="2" x2="16" y2="6" />
+      <line x1="8" y1="2" x2="8" y2="6" />
+      <line x1="3" y1="10" x2="21" y2="10" />
+    </svg>
+    Lunch Schedule
+  </button>
+  <button type="button" class="quick-link-btn" onclick="document.getElementById('supplyModal').showModal()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <path d="M16 10a4 4 0 0 1-8 0" />
+    </svg>
+    School Supply List
+  </button>
+  <button type="button" class="quick-link-btn" onclick="document.getElementById('handbookModal').showModal()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+    </svg>
+    Student Handbook
+  </button>
+  <button type="button" class="quick-link-btn" onclick="document.getElementById('busModal').showModal()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="1" y="3" width="15" height="13" rx="2" />
+      <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+      <circle cx="5.5" cy="18.5" r="2.5" />
+      <circle cx="18.5" cy="18.5" r="2.5" />
+    </svg>
+    Bus Route Locator
+  </button>
+  <button type="button" class="quick-link-btn" onclick="document.getElementById('mealsModal').showModal()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
+      <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
+      <line x1="6" y1="1" x2="6" y2="4" />
+      <line x1="10" y1="1" x2="10" y2="4" />
+      <line x1="14" y1="1" x2="14" y2="4" />
+    </svg>
+    Student Meals
+  </button>
+  <button type="button" class="quick-link-btn" onclick="document.getElementById('seasonsModal').showModal()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+      <line x1="9" y1="9" x2="9.01" y2="9" />
+      <line x1="15" y1="9" x2="15.01" y2="9" />
+    </svg>
+    Seasons of Fun
+  </button>
+  <button type="button" class="quick-link-btn" onclick="document.getElementById('ptaModal').showModal()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M23 21v-2a4 <4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+    PTA
+  </button>
+</div>
   <!-- About & Montessori Philosophy -->
   <section class="section container" id="about">
     <div class="about-grid">
@@ -410,6 +405,28 @@
           <div class="program-info">
             <h3>Grade Three</h3>
             <p>Encouraging project-based learning, independent study habits, advanced problem-solving, and team projects.</p>
+          </div>
+        </div>
+
+        <div class="program-card program-hidden">
+          <div class="program-img-wrapper">
+            <img src="assets/images/program/program-4/program-image.jpeg" alt="Grade Four" class="program-img">
+            <span class="program-age">9 Years</span>
+          </div>
+          <div class="program-info">
+            <h3>Grade Four</h3>
+            <p>Building analytical thinking, critical reading comprehension, intermediate science experiments, and advanced mathematical concepts.</p>
+          </div>
+        </div>
+
+        <div class="program-card program-hidden">
+          <div class="program-img-wrapper">
+            <img src="assets/images/program/program-5/program-image.jpeg" alt="Grade Five" class="program-img">
+            <span class="program-age">10 Years</span>
+          </div>
+          <div class="program-info">
+            <h3>Grade Five</h3>
+            <p>Preparing students for middle school excellence through leadership development, comprehensive academic mastery, and independent inquiry.</p>
           </div>
         </div>
       </div>
@@ -767,7 +784,7 @@
 
         <div class="map-container">
           <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3307.705748870337!2d72.93316067499752!3d34.00009107317665!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38dfb37001d2f68f%3A0x15918636c55c1c6b!2sKindergarten%20Saadia's%20Montessori%20School!5e0!3m2!1sen!2s!4v1788940104876!5m2!1sen!2s"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3307.705748870337!2d72.93316067499752!3d34.00009107317665!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38dfb37001d2f68f%3A0x15918636c55c1c6b!2sKindergarten%20Saadia%27s%20Montessori%20School!5e0!3m2!1sen!2s!4v1788940104876!5m2!1sen!2s"
             width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
             referrerpolicy="no-referrer-when-downgrade">
           </iframe>
@@ -794,6 +811,10 @@
   </div>
 
   <script src="assets/js/app.js?v=2"></script>
+<<<<<<< HEAD
+=======
+  
+>>>>>>> refs/remotes/origin/main
 </body>
 
 </html>

@@ -12,7 +12,7 @@ $method=$_SERVER['REQUEST_METHOD']??'GET';
 if($method==='POST'){
   $isJson = strpos($_SERVER['CONTENT_TYPE']??'','application/json')!==false;
   $body = $isJson ? json_decode(file_get_contents('php://input'),true)??[] : $_POST;
-  $cn=ksm_esc($body['child_name']??'');$dob=ksm_esc($body['dob']??'');$pn=ksm_esc($body['parent_name']??'');$ph=ksm_esc($body['phone']??'');$em=ksm_esc($body['email']??'');$addr=ksm_esc($body['address']??'');$ps=ksm_esc($body['prior_school']??'');$ca=ksm_esc($body['program']??'');$msg=ksm_esc($body['notes']??'');
+  $cn=ksm_esc($body['child_name']??'');$dob=ksm_esc($body['dob']??'');$bg=ksm_esc($body['blood_group']??'');$pn=ksm_esc($body['parent_name']??'');$ph=ksm_esc($body['phone']??'');$em=ksm_esc($body['email']??'');$occ=ksm_esc($body['address']??'');$sig=ksm_esc($body['prior_school']??'');$ca=ksm_esc($body['program']??'');$med=ksm_esc($body['notes']??'');
   if(!$cn||!$pn||!$ph)ksm_err('Child name, parent name and phone required.');
   
   function up_file($k){
@@ -29,7 +29,7 @@ if($method==='POST'){
   $ph_url=ksm_esc(up_file('photos_upload'));
   $pass_url=ksm_esc(up_file('passport_photo'));
 
-  ksm_db()->query("INSERT INTO admissions(child_name,dob,parent_name,phone,email,address,prior_school,class_applied,message,status,id_card_url,birth_cert_url,photos_url,passport_photo_url)VALUES('$cn','$dob','$pn','$ph','$em','$addr','$ps','$ca','$msg','Pending','$id_url','$bc_url','$ph_url','$pass_url')");
+  ksm_db()->query("INSERT INTO admissions(child_name,dob,blood_group,parent_name,phone,email,address,prior_school,class_applied,message,status,id_card_url,birth_cert_url,photos_url,passport_photo_url)VALUES('$cn','$dob','$bg','$pn','$ph','$em','$occ','$sig','$ca','$med','Pending','$id_url','$bc_url','$ph_url','$pass_url')");
   $newId=ksm_db()->insert_id;
   ksm_json(['id'=>$newId,'refCode'=>'KSM-'.date('Ymd').'-'.$newId],'Application submitted.');
 }

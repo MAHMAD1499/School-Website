@@ -148,11 +148,11 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
 
     const fields = [
       ['Student Name', a.child_name || a.studentName], ['Date of Birth', a.dob],
-      ['Blood Group', a.blood_group || '—'], ['Medical History', a.medical_history || a.medical || 'None'],
-      ['Parent Name', a.parent_name || a.parentName], ['Occupation', a.occupation || '—'],
+      ['Blood Group', a.blood_group || '—'], ['Medical History', a.message || a.medical_history || a.medical || 'None'],
+      ['Parent Name', a.parent_name || a.parentName], ['Occupation', a.address || a.occupation || '—'],
       ['Phone', a.phone], ['Email', a.email],
-      ['Program', a.program || a.class_applied], ['Previous School', a.prior_school || a.previous_school || '—'],
-      ['Digital Signature', a.digital_signature || '—'], ['Status', a.status],
+      ['Program', a.class_applied || a.program], ['Signature', a.prior_school || a.digital_signature || '—'],
+      ['Status', a.status],
     ];
 
     let html = fields.map(([label, val]) => `
