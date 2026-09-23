@@ -96,7 +96,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
           <a href="portal/index.php" class="btn btn-accent">Portal</a>
           <a href="portal/admin/login.php" class="btn btn-outline"
             style="border-color:rgba(30,58,138,0.3);font-size:0.85rem;">Admin Portal</a>
-          <a href="index.php#admissions" class="btn btn-primary">Apply Now</a>
+          <a href="admissions.php" class="btn btn-primary">Apply Now</a>
         </div>
 
       </nav>
@@ -235,19 +235,19 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
           <div class="office-hours-table">
             <div class="hours-row">
               <span class="hours-day">Monday</span>
-              <span class="hours-time">8:00 AM – 4:00 PM</span>
+              <span class="hours-time">8:00 AM – 2:00 PM</span>
             </div>
             <div class="hours-row">
               <span class="hours-day">Tuesday</span>
-              <span class="hours-time">8:00 AM – 4:00 PM</span>
+              <span class="hours-time">8:00 AM – 2:00 PM</span>
             </div>
             <div class="hours-row">
               <span class="hours-day">Wednesday</span>
-              <span class="hours-time">8:00 AM – 4:00 PM</span>
+              <span class="hours-time">8:00 AM – 2:00 PM</span>
             </div>
             <div class="hours-row">
               <span class="hours-day">Thursday</span>
-              <span class="hours-time">8:00 AM – 4:00 PM</span>
+              <span class="hours-time">8:00 AM – 2:00 PM</span>
             </div>
             <div class="hours-row">
               <span class="hours-day">Friday</span>
@@ -262,6 +262,9 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
               <span class="hours-badge-closed">Closed</span>
             </div>
           </div>
+          <div style="padding: 0.75rem 1rem; font-size: 0.8rem; color: #6b7280; border-top: 1px solid var(--border-color); background: #f9fafb; text-align: center;">
+            * Note: These timings are for administration and management only and are not student class timings.
+          </div>
         </div>
 
         <!-- Map -->
@@ -269,13 +272,13 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
           <div class="map-header">📍 Find Us on the Map</div>
           <div class="map-embed">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3307.705748870337!2d72.93316067499752!3d34.00009107317665!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38dfb37001d2f68f%3A0x15918636c55c1c6b!2sKindergarten%20Saadia's%20Montessori%20School!5e0!3m2!1sen!2s!4v1788949841660!5m2!1sen!2s"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3307.705748870337!2d72.93316067499752!3d34.00009107317665!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38dfb37001d2f68f%3A0x15918636c55c1c6b!2sKindergarten%20Saadia%27s%20Montessori%20School!5e0!3m2!1sen!2s!4v1788949841660!5m2!1sen!2s"
               width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
               referrerpolicy="no-referrer-when-downgrade">
             </iframe>
           </div>
           <p class="map-address">📍 Circular road HBL microfinance bank, Haripur, Pakistan — <a
-              href="https://www.google.com/maps/search/?api=1&query=Kindergarten+Saadia%27s+Montessori+School+Circular+Road+Haripur"
+              href="https://www.google.com/maps/search/?api=1&query=Kindergarten+Saadia%27s+Montreal+School+Circular+Road+Haripur"
               target="_blank" style="color:var(--primary-deep); font-weight:600;">Open in Maps</a></p>
         </div>
       </div>
@@ -284,35 +287,35 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
     <!-- FAQ Section -->
     <div class="faq-section">
       <h2>Frequently Asked Questions</h2>
-      <p>Quick answers to the questions we hear most often.</p>
+      <p>Quick answers tailored for parents regarding our classes, curriculum, and admissions.</p>
       <div class="faq-grid">
         <div class="faq-item">
-          <h4>What age groups do you accept?</h4>
-          <p>We welcome children from 2 years to 8 years across our Playgroup, Nursery, Prep, Grade One, Grade Two, and Grade Three classes.</p>
+          <h4>What are the school timings for each class level?</h4>
+          <p>
+            Playgroup: 9:00 AM – 12:30 PM<br>
+            Nursery: 8:30 AM – 12:30 PM<br>
+            Prep – Grade 5: 7:45 AM – 1:30 PM
+          </p>
         </div>
         <div class="faq-item">
-          <h4>How do I schedule a campus tour?</h4>
-          <p>You can use the contact form above, call our office directly, or complete our online inquiry form in the
-            Admissions section.</p>
+          <h4>What is the age requirement for Playgroup and Nursery?</h4>
+          <p>For Playgroup, children should be 2.5 to 3.5 years old, focusing on sensory exploration and motor skills. Nursery is designed for 3.5 to 4.5 years, introducing early phonics and numbers.</p>
         </div>
         <div class="faq-item">
-          <h4>What are the school hours?</h4>
-          <p>Hours vary by class: Playgroup to Prep (8:30-12:30), Grade One to Three (8:00-2:00). Extended day options available upon request.</p>
+          <h4>Is Grade One to Five suitable for transitioning to big schools?</h4>
+          <p>Yes! Our primary and junior classes build strong academic foundations, independent study habits, and bilingual fluency, making it seamless for children to transition to top mainstream schools.</p>
         </div>
         <div class="faq-item">
-          <h4>Is there a sibling discount?</h4>
-          <p>Yes! We offer a 10% sibling discount for the second child and 15% for any additional siblings enrolled
-            simultaneously.</p>
+          <h4>Do you offer sibling concessions on tuition fees?</h4>
+          <p>Yes, we understand family budgeting. We offer a special sibling discount policy (10% for the second child and 15% for additional siblings) to ease the fee structure for parents.</p>
         </div>
         <div class="faq-item">
-          <h4>Do you follow the Montessori curriculum?</h4>
-          <p>Absolutely. All our programs are AMI-aligned. Our guides are trained through the Association Montessori
-            Internationale.</p>
+          <h4>How do you ensure student safety and secure pick-up?</h4>
+          <p>Our campus is securely located on Circular Road with strict gate monitoring. Children are only handed over to verified parents or authorized guardians carrying school pickup cards.</p>
         </div>
         <div class="faq-item">
-          <h4>When is the next enrollment period?</h4>
-          <p>Our primary enrollment window runs from January through March each year for the following academic session
-            starting in September.</p>
+          <h4>When should we apply for admission?</h4>
+          <p>Our primary admission intake opens from January through March for the upcoming academic session starting in September, but inquiry forms remain open year-round based on seat availability.</p>
         </div>
       </div>
     </div>
