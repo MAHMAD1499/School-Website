@@ -12,7 +12,7 @@ if(($_SERVER['REQUEST_METHOD']??'')==='OPTIONS')exit;
 $isAjax=isset($_SERVER['HTTP_X_REQUESTED_WITH'])||strpos($_SERVER['CONTENT_TYPE']??'','application/json')!==false||isset($_GET['_api']);
 $method=$_SERVER['REQUEST_METHOD']??'GET';
 $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
-  if($method==='GET'){$r=ksm_db()->query("SELECT * FROM admissions ORDER BY submitted_at DESC");$rows=[];while($row=$r->fetch_assoc())$rows[]=$row;ksm_json($rows);}
+  if($method==='GET'){$r=ksm_db()->query("SELECT * FROM admissions ORDER BY id DESC");$rows=[];if($r)while($row=$r->fetch_assoc())$rows[]=$row;ksm_json($rows);}
   if($method==='PUT'){$id=intval($body['id']??0);$status=ksm_esc($body['status']??'Pending');if(!$id)ksm_err('Invalid ID.');ksm_db()->query("UPDATE admissions SET status='$status' WHERE id=$id");ksm_json(null,'Status updated.');}
   if($method==='DELETE'){$id=intval($_GET['id']??0);if(!$id)ksm_err('Invalid ID.');ksm_db()->query("DELETE FROM admissions WHERE id=$id");ksm_json(null,'Deleted.');}
 }
@@ -128,7 +128,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     }
     tbody.innerHTML = apps.map(a => `
       <tr>
-        <td><strong>${a.child_name || a.studentName}</strong></td>
+        <td><strong>${a.child_name || a.studentName}</strong> ${a.id_card_url || a.birth_cert_url || a.photos_url || a.passport_photo_url ? '📎' : ''}</td>
         <td>${a.program}</td>
         <td>${a.parent_name || a.parentName}</td>
         <td>${a.phone}</td>
@@ -164,10 +164,10 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
 
     // Documents Section
     let docsHtml = '';
-    if(a.passport_photo_url) docsHtml += `<a href="../../${a.passport_photo_url}" target="_blank" class="btn btn-sm btn-outline">Passport Photo</a> `;
-    if(a.id_card_url) docsHtml += `<a href="../../${a.id_card_url}" target="_blank" class="btn btn-sm btn-outline">ID Card</a> `;
-    if(a.birth_cert_url) docsHtml += `<a href="../../${a.birth_cert_url}" target="_blank" class="btn btn-sm btn-outline">Birth Cert</a> `;
-    if(a.photos_url) docsHtml += `<a href="../../${a.photos_url}" target="_blank" class="btn btn-sm btn-outline">Photos</a> `;
+    if(a.passport_photo_url) docsHtml += `<a href="../../${a.passport_photo_url}" target="_blank" download class="btn btn-sm btn-outline">Passport Photo</a> `;
+    if(a.id_card_url) docsHtml += `<a href="../../${a.id_card_url}" target="_blank" download class="btn btn-sm btn-outline">ID Card</a> `;
+    if(a.birth_cert_url) docsHtml += `<a href="../../${a.birth_cert_url}" target="_blank" download class="btn btn-sm btn-outline">Birth Cert</a> `;
+    if(a.photos_url) docsHtml += `<a href="../../${a.photos_url}" target="_blank" download class="btn btn-sm btn-outline">Photos</a> `;
     
     if(docsHtml !== '') {
         html += `<div style="grid-column:1/-1;background:var(--accent-light);padding:0.75rem;border-radius:var(--radius-sm);"><p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.4rem;">Uploaded Documents</p><div>${docsHtml}</div></div>`;
