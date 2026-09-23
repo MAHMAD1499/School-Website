@@ -656,3 +656,107 @@
         padding: 1.5rem;
     }
 }
+
+
+/* ==========================================================================
+   5. EXTENDED RESPONSIVE FIXES — All Devices
+   ========================================================================== */
+
+/* --- Tablet Mid-Range (600px – 1024px) ----------------------------------- */
+@media (max-width: 900px) {
+    .contact-cards-row {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* --- Mobile (max 600px) -------------------------------------------------- */
+@media (max-width: 600px) {
+    /* About page */
+    .content-section h2 {
+        font-size: 1.6rem;
+    }
+
+    .values-grid,
+    .team-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .timeline-item {
+        padding-left: 1rem;
+    }
+
+    /* Contact page */
+    .contact-cards-row {
+        grid-template-columns: 1fr;
+    }
+
+    .contact-page-wrapper {
+        padding: 0 0.75rem;
+    }
+
+    .contact-form-card {
+        padding: 1.25rem;
+    }
+
+    .faq-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+        font-size: 0.85rem;
+    }
+
+    /* Page hero tighter on small phones */
+    .page-hero {
+        padding: 2.5rem 1rem;
+    }
+
+    .page-hero h1 {
+        font-size: 1.8rem;
+    }
+
+    /* About sidebar full width on mobile */
+    .about-sidebar {
+        display: none;
+    }
+
+    /* Map embed height on mobile */
+    .map-embed {
+        height: 180px;
+    }
+}
+
+/* --- Dropdown mobile inside nav drawer ----------------------------------- */
+@media (max-width: 1100px) {
+    .nav-dropdown {
+        width: 100%;
+        text-align: center;
+    }
+
+    .nav-dropdown .dropdown-content {
+        position: static;
+        display: none;
+        background: var(--primary-bg);
+        border-radius: var(--radius-md);
+        box-shadow: none;
+        margin-top: 0.5rem;
+        padding: 0;
+        width: 100%;
+    }
+
+    .nav-dropdown.open .dropdown-content {
+        display: block;
+    }
+
+    .nav-dropdown .dropdown-content a {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        text-align: center;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .nav-dropdown .dropdown-content a:last-child {
+        border-bottom: none;
+    }
+}

@@ -428,7 +428,8 @@ header.scrolled {
   color: var(--primary-deep);
 }
 
-.nav-dropdown:hover .dropdown-content {
+.nav-dropdown:hover .dropdown-content,
+.nav-dropdown.open .dropdown-content {
   display: block;
   animation: fadeIn 0.3s ease;
 }
@@ -1948,6 +1949,13 @@ footer h4 {
   }
 }
 
+/* Lock body scroll when mobile nav is open */
+body.nav-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
 /* ==========================================================================
    18. CONSOLIDATED RESPONSIVE MEDIA QUERIES
    ========================================================================== */
@@ -2186,7 +2194,8 @@ footer h4 {
   color: var(--primary-deep);
 }
 
-.nav-dropdown:hover .dropdown-content {
+.nav-dropdown:hover .dropdown-content,
+.nav-dropdown.open .dropdown-content {
   display: block;
 }
 
@@ -2264,4 +2273,168 @@ footer h4 {
   .professional-form-card {
     padding: 1.5rem;
   }
+}
+
+
+/* ==========================================================================
+   EXTENDED RESPONSIVE FIXES — All Devices
+   ========================================================================== */
+
+/* --- Tablet (769px – 1023px) — fill the gaps ----------------------------- */
+@media (max-width: 1023px) and (min-width: 769px) {
+    .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* --- Mobile (max 768px) additions --------------------------------------- */
+@media (max-width: 768px) {
+    /* Footer map height on mobile */
+    .map-container {
+        height: 180px;
+    }
+
+    /* Stats — shrink big numbers */
+    .stat-item h3 {
+        font-size: 2.2rem;
+    }
+
+    .stat-item p {
+        font-size: 0.85rem;
+    }
+
+    /* Footer grid already handled at 480px, but map column should still work */
+    .footer-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* About features grid inside about-grid */
+    .about-features {
+        grid-template-columns: 1fr;
+    }
+
+    /* Prevent horizontal overflow site-wide */
+    body {
+        overflow-x: hidden;
+    }
+
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    /* Hero content padding */
+    .hero-content {
+        padding: 0 1rem;
+    }
+
+    /* Section headings scale down */
+    .section-title {
+        font-size: 1.75rem;
+    }
+
+    /* Programs / gallery grid single column (already set at 768px but ensure gallery too) */
+    .gallery-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* --- Small Mobile (max 480px) additions ---------------------------------- */
+@media (max-width: 480px) {
+    /* Stat numbers smaller */
+    .stat-item h3 {
+        font-size: 1.8rem;
+    }
+
+    /* Hero height tighter */
+    .hero {
+        height: 420px;
+    }
+
+    /* Section title */
+    .section-title {
+        font-size: 1.5rem;
+    }
+
+    /* Buttons full width in hero */
+    .btn {
+        font-size: 0.9rem;
+        padding: 0.65rem 1.2rem;
+    }
+
+    /* Top bar info wrap on very small screens (when visible) */
+    .top-bar-info {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    /* Footer bottom text */
+    .footer-bottom p {
+        font-size: 0.8rem;
+        text-align: center;
+    }
+}
+
+/* --- Admissions paper form — mobile fix ---------------------------------- */
+@media (max-width: 640px) {
+    .pf-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .pf-logo-text h1 {
+        font-size: 1.4rem;
+    }
+
+    .pf-logo-text h2 {
+        font-size: 1rem;
+    }
+
+    .pf-sub-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .pf-photo-box {
+        width: 80px;
+        height: 96px;
+    }
+
+    .pf-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .pf-label {
+        width: 100% !important;
+        margin-bottom: 0.3rem;
+    }
+
+    .pf-input {
+        width: 100%;
+    }
+
+    .pf-body {
+        padding: 1rem;
+    }
+
+    .pf-signature-input {
+        width: 100% !important;
+    }
+
+    .pf-signature-label {
+        margin-right: 0;
+        align-self: center;
+    }
+
+    .pf-signature-area {
+        align-items: center;
+        margin-top: 2rem;
+    }
+
+    .pf-checkbox-row {
+        flex-wrap: wrap;
+        font-size: 0.95rem;
+    }
 }

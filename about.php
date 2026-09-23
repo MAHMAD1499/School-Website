@@ -178,20 +178,15 @@
 
       <div class="content-section" id="our-story">
         <h2>Our Story</h2>
-        <p>Kindergarten Saadia's Montessori School was founded in 2009 by a group of passionate educators and parents
-          who believed deeply in the transformative power of the Montessori method. What began as a small classroom of
-          eight children in Haripur has grown into a thriving learning community serving over 150 students across our Playgroup, Nursery, Prep, Grade One, Grade Two, and Grade Three classes.</p>
-        <p style="margin-top:1rem;">Our school was built on the belief, echoed in the words of Dr. Maria Montessori
-          herself: <em>"Free the child's potential and you will transform him into the world."</em> We bring this
-          philosophy to life through beautifully prepared environments, trained AMI guides, and a deep respect for each
-          child's unique developmental journey.</p>
+        <p>Kindergarten Saadia's Montessori School was founded with a heartfelt vision by <strong>Saadia Tariq</strong> — a dedicated Pakistani mother and educator who understood the challenges families in Haripur face when searching for quality early childhood education. Growing up in a society where rote learning often takes the place of genuine understanding, she set out to build something different: a place where every child is seen, heard, and nurtured as an individual.</p>
+        <p style="margin-top:1rem;">In Pakistan, parents work hard to give their children the best possible start in life. At KSM Haripur, we honour that effort by providing a Montessori environment rooted in respect, discipline, and love of learning — values that resonate deeply within our culture. From Playgroup through Grade Three, our school bridges the Montessori philosophy with the hopes and aspirations of Pakistani families, preparing children not just academically but as confident, responsible human beings.</p>
+        <p style="margin-top:1rem;">Under the leadership of Saadia Tariq as Founder and Managing Director, our school continues to grow — guided by the belief that when you invest in a child's earliest years, you invest in the future of a whole family and community.</p>
         <div
           style="margin-top:2rem; padding: 2rem; background: var(--primary-bg); border-radius: var(--radius-md); border-left: 4px solid var(--primary-deep);">
           <p
             style="font-size:1.1rem; font-style:italic; color:var(--primary-deep); font-family:var(--font-heading); font-weight:600; margin:0;">
             "Free The Child's Potential and you will Transform him into the world."</p>
-          <p style="margin-top:0.5rem; font-size:0.9rem; color:var(--text-medium);">— Managing Director of Saadia's
-            Montessori School</p>
+          <p style="margin-top:0.5rem; font-size:0.9rem; color:var(--text-medium);">— Saadia Tariq, Founder &amp; Managing Director, Kindergarten Saadia's Montessori School</p>
         </div>
       </div>
 
@@ -245,37 +240,37 @@
 
       <div class="content-section" id="our-history">
         <h2>Our History</h2>
-        <p>From humble beginnings to a flourishing school community, our journey reflects our commitment to growth.</p>
+        <p>A journey built on passion, community trust, and a commitment to quality education in Haripur.</p>
         <div class="timeline">
           <div class="timeline-item">
-            <div class="timeline-year">2009</div>
+            <div class="timeline-year">2024</div>
             <h3>School Founded</h3>
-            <p>KSM opens its doors to its first 8 students in a single-room setting in Haripur.</p>
+            <p>Kindergarten Saadia's Montessori School opens its doors in Haripur, KPK, welcoming its first batch of students with a vision to bring quality Montessori education to Pakistani families.</p>
           </div>
           <div class="timeline-item">
-            <div class="timeline-year">2012</div>
-            <h3>Primary Program Launched</h3>
-            <p>Growing demand leads to the launch of our Primary/Kindergarten program for ages 3–6.</p>
+            <div class="timeline-year">2024</div>
+            <h3>PSRA Registered</h3>
+            <p>The school is officially certified and registered under the <strong>Punjab/KPK Private Schools Regulatory Authority (PSRA)</strong>, meeting all government standards for private educational institutions in Pakistan.</p>
           </div>
           <div class="timeline-item">
-            <div class="timeline-year">2015</div>
-            <h3>New Campus Opening</h3>
-            <p>We move to our current, purpose-built campus designed specifically for Montessori environments.</p>
+            <div class="timeline-year">2024</div>
+            <h3>Montessori Curriculum Adopted</h3>
+            <p>A structured Montessori curriculum is introduced across Playgroup and Nursery levels, blending internationally recognised child development principles with the cultural context of Pakistani families.</p>
           </div>
           <div class="timeline-item">
-            <div class="timeline-year">2018</div>
-            <h3>AMI Certification Achieved</h3>
-            <p>All core teaching staff complete AMI (Association Montessori Internationale) training.</p>
+            <div class="timeline-year">2025</div>
+            <h3>Prep & Primary Classes Launched</h3>
+            <p>Due to strong parent demand and community trust, Prep, Grade One, and Grade Two classes are added — giving families a full early education pathway under one roof.</p>
           </div>
           <div class="timeline-item">
-            <div class="timeline-year">2022</div>
-            <h3>Primary & Elementary Grades Added</h3>
-            <p>We extend our offering to include classes up to Grade Three, completing the full cycle for our growing students.</p>
+            <div class="timeline-year">2025</div>
+            <h3>Annual Events & Community Programmes</h3>
+            <p>The school launches its annual sports day, art exhibitions, and cultural events — celebrating Pakistani traditions while encouraging creativity, teamwork, and confidence in every child.</p>
           </div>
           <div class="timeline-item">
             <div class="timeline-year">2026</div>
-            <h3>150+ Students Strong</h3>
-            <p>Today, KSM Haripur proudly serves over 150 students with 24 certified educators.</p>
+            <h3>Growing Strong</h3>
+            <p>KSM Haripur now serves students from Playgroup through Grade Three, with a dedicated team of trained educators and the continued trust of hundreds of families across Haripur.</p>
           </div>
         </div>
       </div>
@@ -292,10 +287,9 @@
               </svg>
             </div>
             <div class="team-info">
-              <h3>Saadia Rehman</h3>
-              <p class="team-role">Founder & Principal</p>
-              <p class="team-bio">AMI-certified educator with 18+ years of Montessori experience. Passionate about
-                child-led learning.</p>
+              <h3>Saadia Tariq</h3>
+              <p class="team-role">Founder &amp; Managing Director</p>
+              <p class="team-bio">Founder of KSM Haripur, driven by a passion for quality early education and a deep commitment to the families of this community.</p>
             </div>
           </div>
           <div class="team-card">
@@ -306,10 +300,9 @@
               </svg>
             </div>
             <div class="team-info">
-              <h3>Ahmed Farooq</h3>
-              <p class="team-role">Head of Academics</p>
-              <p class="team-bio">Curriculum specialist with expertise in early childhood development and multi-sensory
-                learning.</p>
+              <h3>Ghazala Shakeel Qureshi</h3>
+              <p class="team-role">Principal &amp; Academic Head</p>
+              <p class="team-bio">Experienced educator overseeing academics and day-to-day school operations, ensuring every classroom meets the highest teaching standards.</p>
             </div>
           </div>
           <div class="team-card">
@@ -320,10 +313,9 @@
               </svg>
             </div>
             <div class="team-info">
-              <h3>Fatima Malik</h3>
-              <p class="team-role">Lead Kindergarten Guide</p>
-              <p class="team-bio">Creates magical Primary environments where children fall in love with learning every
-                day.</p>
+              <h3>Sidra Sadique</h3>
+              <p class="team-role">Coordinator</p>
+              <p class="team-bio">Keeps communication flowing between parents, teachers, and management — making every family's experience smooth and welcoming.</p>
             </div>
           </div>
         </div>

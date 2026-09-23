@@ -166,6 +166,9 @@ document.addEventListener('DOMContentLoaded', () => {
       navMenu.classList.toggle('active');
       navToggle.classList.toggle('active');
 
+      // Lock body scroll when menu is open
+      document.body.classList.toggle('nav-open', navToggle.classList.contains('active'));
+
       const spans = navToggle.querySelectorAll('span');
       if (navToggle.classList.contains('active')) {
         spans[0].style.transform = 'rotate(45deg) translate(6px, 6px)';
@@ -182,6 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
       link.addEventListener('click', () => {
         navMenu.classList.remove('active');
         navToggle.classList.remove('active');
+        document.body.classList.remove('nav-open');
         const spans = navToggle.querySelectorAll('span');
         spans[0].style.transform = 'none';
         spans[1].style.opacity = '1';

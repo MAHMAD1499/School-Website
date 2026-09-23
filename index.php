@@ -87,11 +87,11 @@
 
       <nav class="nav-menu" id="navMenu">
         <a href="index.php" class="nav-link active">Home</a>
-        <div class="nav-dropdown">
-          <a href="#" class="nav-link">Campuses ▾</a>
+        <div class="nav-dropdown" id="campusDropdown">
+          <a href="#" class="nav-link nav-dropdown-trigger">Campuses ▾</a>
           <div class="dropdown-content">
-            <a href="#">Campus 1 (Main)</a>
-            <a href="#">Campus 2</a>
+            <a href="index.php">Campus 1 (Main)</a>
+            <a href="campus2.php">Campus 2</a>
           </div>
         </div>
         <a href="#programs" class="nav-link">Programs</a>
@@ -390,7 +390,7 @@
 
           <div class="program-card program-hidden">
             <div class="program-img-wrapper">
-              <img src="assets/images/program/program-4/program-image.jpeg" alt="Grade Four" class="program-img">
+              <img src="assets/images/program/program-6/OIP.jpg" alt="Grade Four" class="program-img">
               <span class="program-age">9 Years</span>
             </div>
             <div class="program-info">
@@ -402,7 +402,7 @@
 
           <div class="program-card program-hidden">
             <div class="program-img-wrapper">
-              <img src="assets/images/program/program-5/program-image.jpeg" alt="Grade Five" class="program-img">
+              <img src="assets/images/program/program-6/OIP (1).jpg" alt="Grade Five" class="program-img">
               <span class="program-age">10 Years</span>
             </div>
             <div class="program-info">
@@ -796,7 +796,25 @@
     </div>
 
     <script src="assets/js/app.js?v=2"></script>
-    <<<<<<< HEAD=======>>>>>>> refs/remotes/origin/main
+    <script>
+      // Click-stable Campuses dropdown toggle
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.nav-dropdown-trigger').forEach(trigger => {
+          trigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            const dropdown = trigger.closest('.nav-dropdown');
+            const isOpen = dropdown.classList.contains('open');
+            document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+            if (!isOpen) dropdown.classList.add('open');
+          });
+        });
+        document.addEventListener('click', (e) => {
+          if (!e.target.closest('.nav-dropdown')) {
+            document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+          }
+        });
+      });
+    </script>
 </body>
 
 </html>

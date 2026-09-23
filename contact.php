@@ -171,7 +171,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
           </svg>
         </div>
         <h3>Phone Number</h3>
-        <p>Main Office: +92 348 9898618<br>Admissions: +92 333 3660174</p>
+        <p>Main Office:+92 995 627347 <br>Admissions: +92 331 5620055<br>
         <a href="tel:+923489898618">Call Us →</a>
       </div>
 
@@ -255,27 +255,27 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
           <div class="office-hours-table">
             <div class="hours-row">
               <span class="hours-day">Monday</span>
-              <span class="hours-time">8:00 AM – 2:00 PM</span>
+              <span class="hours-time">8:00 AM – 2:30 PM</span>
             </div>
             <div class="hours-row">
               <span class="hours-day">Tuesday</span>
-              <span class="hours-time">8:00 AM – 2:00 PM</span>
+              <span class="hours-time">8:00 AM – 2:30 PM</span>
             </div>
             <div class="hours-row">
               <span class="hours-day">Wednesday</span>
-              <span class="hours-time">8:00 AM – 2:00 PM</span>
+              <span class="hours-time">8:00 AM – 2:30 PM</span>
             </div>
             <div class="hours-row">
               <span class="hours-day">Thursday</span>
-              <span class="hours-time">8:00 AM – 2:00 PM</span>
+              <span class="hours-time">8:00 AM – 2:30 PM</span>
             </div>
             <div class="hours-row">
               <span class="hours-day">Friday</span>
-              <span class="hours-time">8:00 AM – 2:00 PM</span>
+              <span class="hours-time">8:00 AM – 2:30 PM</span>
             </div>
             <div class="hours-row">
               <span class="hours-day">Saturday</span>
-              <span class="hours-time">8:00 AM – 2:00 PM</span>
+              <span class="hours-time">8:00 AM – 2:30 PM</span>
             </div>
             <div class="hours-row">
               <span class="hours-day">Sunday</span>
