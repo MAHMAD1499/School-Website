@@ -195,623 +195,608 @@
   <!-- QUICK LINKS GRID -->
   <section class="quick-links-section">
     <div class="quick-links-grid">
-  <button type="button" class="quick-link-btn" onclick="document.getElementById('dressCodeModal').showModal()">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-      <polyline points="14 2 14 8 20 8" />
-    </svg>
-    Dress Code
-  </button>
-  <button type="button" class="quick-link-btn" onclick="document.getElementById('lunchModal').showModal()">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-      <line x1="16" y1="2" x2="16" y2="6" />
-      <line x1="8" y1="2" x2="8" y2="6" />
-      <line x1="3" y1="10" x2="21" y2="10" />
-    </svg>
-    Lunch Schedule
-  </button>
-  <button type="button" class="quick-link-btn" onclick="document.getElementById('supplyModal').showModal()">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-      <line x1="3" y1="6" x2="21" y2="6" />
-      <path d="M16 10a4 4 0 0 1-8 0" />
-    </svg>
-    School Supply List
-  </button>
-  <button type="button" class="quick-link-btn" onclick="document.getElementById('handbookModal').showModal()">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-    </svg>
-    Student Handbook
-  </button>
-  <button type="button" class="quick-link-btn" onclick="document.getElementById('busModal').showModal()">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <rect x="1" y="3" width="15" height="13" rx="2" />
-      <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
-      <circle cx="5.5" cy="18.5" r="2.5" />
-      <circle cx="18.5" cy="18.5" r="2.5" />
-    </svg>
-    Bus Route Locator
-  </button>
-  <button type="button" class="quick-link-btn" onclick="document.getElementById('mealsModal').showModal()">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
-      <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
-      <line x1="6" y1="1" x2="6" y2="4" />
-      <line x1="10" y1="1" x2="10" y2="4" />
-      <line x1="14" y1="1" x2="14" y2="4" />
-    </svg>
-    Student Meals
-  </button>
-  <button type="button" class="quick-link-btn" onclick="document.getElementById('seasonsModal').showModal()">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <circle cx="12" cy="12" r="10" />
-      <path d="M8 14s1.5 2 4 2 4-2 4-2" />
-      <line x1="9" y1="9" x2="9.01" y2="9" />
-      <line x1="15" y1="9" x2="15.01" y2="9" />
-    </svg>
-    Seasons of Fun
-  </button>
-  <button type="button" class="quick-link-btn" onclick="document.getElementById('ptaModal').showModal()">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <path d="M23 21v-2a4 <4 0 0 0-3-3.87" />
-      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-    </svg>
-    PTA
-  </button>
-</div>
-  <!-- About & Montessori Philosophy -->
-  <section class="section container" id="about">
-    <div class="about-grid">
-      <div class="about-image-wrapper">
-        <div class="about-shape"></div>
-        <img src="assets/images/class-image.jpg" alt="Children learning in a prepared Montessori classroom"
-          class="about-img">
+      <button type="button" class="quick-link-btn" onclick="document.getElementById('dressCodeModal').showModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+          <polyline points="14 2 14 8 20 8" />
+        </svg>
+        Dress Code
+      </button>
+      <button type="button" class="quick-link-btn" onclick="document.getElementById('lunchModal').showModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+          <line x1="16" y1="2" x2="16" y2="6" />
+          <line x1="8" y1="2" x2="8" y2="6" />
+          <line x1="3" y1="10" x2="21" y2="10" />
+        </svg>
+        Lunch Schedule
+      </button>
+      <button type="button" class="quick-link-btn" onclick="document.getElementById('supplyModal').showModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <path d="M16 10a4 4 0 0 1-8 0" />
+        </svg>
+        School Supply List
+      </button>
+      <button type="button" class="quick-link-btn" onclick="document.getElementById('seasonsModal').showModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+          <line x1="9" y1="9" x2="9.01" y2="9" />
+          <line x1="15" y1="9" x2="15.01" y2="9" />
+        </svg>
+        Seasons of Fun
+      </button>
+      <button type="button" class="quick-link-btn" onclick="document.getElementById('ptaModal').showModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 <4 0 0 0-3-3.87" />
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+        PTM
+      </button>
+    </div>
+    <!-- About & Montessori Philosophy -->
+    <section class="section container" id="about">
+      <div class="about-grid">
+        <div class="about-image-wrapper">
+          <div class="about-shape"></div>
+          <img src="assets/images/class-image.jpg" alt="Children learning in a prepared Montessori classroom"
+            class="about-img">
+        </div>
+
+        <div class="about-info">
+          <h3>Self-Directed, Practical & Intentional Learning</h3>
+          <p>In our school, kids are the drivers of their own education. Our teachers act as observers and guides,
+            introducing customized materials tailored to each child's sensitive periods of development.</p>
+
+          <div class="about-features">
+            <div class="about-feat-item">
+              <div class="about-feat-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+              </div>
+              <div class="about-feat-text">
+                <h4>Prepared Environment</h4>
+                <p>Safe, beautiful and structured layout designed entirely at children's eye-level.</p>
+              </div>
+            </div>
+            <div class="about-feat-item">
+              <div class="about-feat-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path
+                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                </svg>
+              </div>
+              <div class="about-feat-text">
+                <h4>Holistic Development</h4>
+                <p>Fostering physical, emotional, social and academic growth.</p>
+              </div>
+            </div>
+            <div class="about-feat-item">
+              <div class="about-feat-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                  <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+              </div>
+              <div class="about-feat-text">
+                <h4>Hands-On Materials</h4>
+                <p>Specially curated tactile learning resources that verify understanding.</p>
+              </div>
+            </div>
+            <div class="about-feat-item">
+              <div class="about-feat-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+              </div>
+              <div class="about-feat-text">
+                <h4>Multi-Age Groups</h4>
+                <p>Promoting child mentorship, social awareness, and group cooperation.</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+    </section>
 
-      <div class="about-info">
-        <h3>Self-Directed, Practical & Intentional Learning</h3>
-        <p>In our school, kids are the drivers of their own education. Our teachers act as observers and guides,
-          introducing customized materials tailored to each child's sensitive periods of development.</p>
+    <!-- Programs & Grades Section -->
+    <section class="programs-bg" id="programs">
+      <div class="section container">
+        <h2 class="section-title">Our Montessori Programs</h2>
+        <p class="section-subtitle">Uniquely crafted learning paths tailored for different milestones of developmental
+          progress.</p>
 
-        <div class="about-features">
-          <div class="about-feat-item">
-            <div class="about-feat-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        <div class="programs-grid">
+          <div class="program-card">
+            <div class="program-img-wrapper">
+              <img src="assets/images/program/program-1/program-image.jpeg" alt="Playgroup" class="program-img">
+              <span class="program-age">2.5 - 3.5 Years</span>
+            </div>
+            <div class="program-info">
+              <h3>Playgroup</h3>
+              <p>Nurturing sensory exploration, fine/gross motor skills, language development, and foundational
+                independence within a warm community.</p>
+            </div>
+          </div>
+
+          <div class="program-card">
+            <div class="program-img-wrapper">
+              <img src="assets/images/program/program-2/program-image.jpeg" alt="Nursery" class="program-img">
+              <span class="program-age">3.5 - 4.5 Years</span>
+            </div>
+            <div class="program-info">
+              <h3>Nursery</h3>
+              <p>Introducing early mathematics, phonics, practical life refinement, and sensory activities under
+                self-directed workspace habits.</p>
+            </div>
+          </div>
+
+          <div class="program-card">
+            <div class="program-img-wrapper">
+              <img src="assets/images/program/program-3/program-image.jpeg" alt="Prep" class="program-img">
+              <span class="program-age">4.5 - 5.5 Years</span>
+            </div>
+            <div class="program-info">
+              <h3>Prep</h3>
+              <p>Advancing foundational concepts, collaborative play, early reading, writing, and environmental
+                awareness.</p>
+            </div>
+          </div>
+
+          <div class="program-card program-hidden">
+            <div class="program-img-wrapper">
+              <img src="assets/images/program/program-4/program-image.jpeg" alt="Grade One" class="program-img">
+              <span class="program-age">6 Years</span>
+            </div>
+            <div class="program-info">
+              <h3>Grade One</h3>
+              <p>Focusing on foundational literacy, arithmetic, social collaboration, and engaging academic activities
+                in a modern setting.</p>
+            </div>
+          </div>
+
+          <div class="program-card program-hidden">
+            <div class="program-img-wrapper">
+              <img src="assets/images/program/program-5/program-image.jpeg" alt="Grade Two" class="program-img">
+              <span class="program-age">7 Years</span>
+            </div>
+            <div class="program-info">
+              <h3>Grade Two</h3>
+              <p>Expanding academic horizons with scientific inquiry, structured reading, and deeper mathematical
+                understanding.</p>
+            </div>
+          </div>
+
+          <div class="program-card program-hidden">
+            <div class="program-img-wrapper">
+              <img src="assets/images/program/program-6/program-image.jpeg" alt="Grade Three" class="program-img">
+              <span class="program-age">8 Years</span>
+            </div>
+            <div class="program-info">
+              <h3>Grade Three</h3>
+              <p>Encouraging project-based learning, independent study habits, advanced problem-solving, and team
+                projects.</p>
+            </div>
+          </div>
+
+          <div class="program-card program-hidden">
+            <div class="program-img-wrapper">
+              <img src="assets/images/program/program-4/program-image.jpeg" alt="Grade Four" class="program-img">
+              <span class="program-age">9 Years</span>
+            </div>
+            <div class="program-info">
+              <h3>Grade Four</h3>
+              <p>Building analytical thinking, critical reading comprehension, intermediate science experiments, and
+                advanced mathematical concepts.</p>
+            </div>
+          </div>
+
+          <div class="program-card program-hidden">
+            <div class="program-img-wrapper">
+              <img src="assets/images/program/program-5/program-image.jpeg" alt="Grade Five" class="program-img">
+              <span class="program-age">10 Years</span>
+            </div>
+            <div class="program-info">
+              <h3>Grade Five</h3>
+              <p>Preparing students for middle school excellence through leadership development, comprehensive academic
+                mastery, and independent inquiry.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="programs-cta-wrapper" style="text-align: center; margin-top: 2rem;">
+          <button type="button" id="toggleProgramBtn" class="btn btn-outline gallery-cta-btn">
+            <span>View More</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+
+
+
+
+    <!-- News, Events & Gallery Grid Section -->
+    <section class="gallery-bg" id="gallery">
+      <div class="section container">
+        <h2 class="section-title">Campus Life & Gallery</h2>
+        <p class="section-subtitle">Take a virtual peek inside our learning spaces, campus events and Montessori
+          classrooms.</p>
+
+        <div class="gallery-filters">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="classroom">Classroom</button>
+          <button class="filter-btn" data-filter="events">Events</button>
+          <button class="filter-btn" data-filter="nature">Outdoors & Nature</button>
+        </div>
+
+        <div class="gallery-grid" id="galleryGrid">
+          <div class="gallery-item" data-category="classroom" onclick="openEventLightbox(this)">
+            <img src="assets/images/gallery/Sensory Shelves/sensory-shelves-0.jpeg" alt="Sensory Shelves">
+            <div class="event-photos-data" style="display:none;"
+              data-photos="assets/images/gallery/Sensory Shelves/sensory-shelves-0.jpeg,assets/images/gallery/Sensory Shelves/sensory-shelves-1.jpeg,assets/images/gallery/Sensory Shelves/sensory-shelves-2.jpeg,assets/images/gallery/Sensory Shelves/sensory-shelves-3.jpeg,assets/images/gallery/Sensory Shelves/sensory-shelves-4.jpeg,assets/images/gallery/Sensory Shelves/sensory-shelves-5.jpeg,assets/images/gallery/Sensory Shelves/sensory-shelves-6.jpeg">
+            </div>
+            <div class="gallery-overlay">
+              <h4>Sensory Shelves</h4>
+              <p>Classroom environments built with child-accessible wooden shapes.</p>
+            </div>
+          </div>
+
+          <div class="gallery-item" data-category="events" onclick="openEventLightbox(this)">
+            <img src="assets/images/gallery/Annual sports day/annual-sports-day-1.jpg" alt="Annual Sports Day">
+            <div class="event-photos-data" style="display:none;"
+              data-photos="assets/images/gallery/Annual sports day/annual-sports-day-1.jpg"></div>
+            <div class="gallery-overlay">
+              <h4>Annual Sports Day</h4>
+              <p>Building teamwork, confidence and physical agility through games.</p>
+            </div>
+          </div>
+
+          <div class="gallery-item" data-category="classroom" onclick="openEventLightbox(this)">
+            <img src="assets/images/gallery/classroom/charity/charity-image.jpg" alt="Charity to Palestine">
+            <div class="event-photos-data" style="display:none;"
+              data-photos="assets/images/gallery/classroom/charity/charity-image.jpg, assets/images/gallery/classroom/charity/charity-clip.mp4">
+            </div>
+            <div class="gallery-overlay">
+              <h4>Charity to Palestine</h4>
+              <p>Empowering our community and spreading kindness through meaningful charity drives, student-led outreach
+                and acts of giving.</p>
+            </div>
+          </div>
+
+          <div class="gallery-item" data-category="classroom" onclick="openEventLightbox(this)">
+            <img src="assets/images/gallery/Practical Life Stations/practical-life-station.jpeg"
+              alt="Practical Life Station">
+            <div class="event-photos-data" style="display:none;"
+              data-photos="assets/images/gallery/Practical Life Stations/practical-life-station.jpeg,assets/images/gallery/Practical Life Stations/epl-polishing-activity.mp4,assets/images/gallery/Practical Life Stations/ready-for-splash.mp4">
+            </div>
+            <div class="gallery-overlay">
+              <h4>Practical Life Station</h4>
+              <p>Water pouring, handwashing and dressing frame skills.</p>
+            </div>
+          </div>
+
+          <div class="gallery-item" data-category="nature" onclick="openEventLightbox(this)">
+            <img src="assets/images/gallery/nature/trips/trip-image-0.png" alt="Trips">
+            <div class="event-photos-data" style="display:none;"
+              data-photos="assets/images/gallery/nature/trips/trip-clip-0.mp4, assets/images/gallery/nature/trips/trip-clip-1.mp4, assets/images/gallery/nature/trips/trip-image-1.png, assets/images/gallery/nature/trips/trip-image-2.jpg, assets/images/gallery/nature/trips/trip-image-3.png, assets/images/gallery/nature/trips/trip-image-4.jpg">
+            </div>
+            <div class="gallery-overlay">
+              <h4>Trips</h4>
+              <p>Discover the excitement of learning beyond the classroom through our immersive student adventures and
+                educational excursions.</p>
+            </div>
+          </div>
+
+          <div class="gallery-item" data-category="events" onclick="openEventLightbox(this)">
+            <img src="assets/images/gallery/Events/art-exhibition/art-image-1.png" alt="Little Picassos Art Exhibition">
+            <div class="event-photos-data" style="display:none;"
+              data-photos="assets/images/gallery/Events/art-exhibition/art-image-1.png,assets/images/gallery/Events/art-exhibition/art-image-2.jpg,assets/images/gallery/Events/art-exhibition/art-image-3.png,assets/images/gallery/Events/art-exhibition/art-image-4.png,assets/images/gallery/Events/art-exhibition/art-image-5.jpg,assets/images/gallery/Events/art-exhibition/art-image-6.jpg,assets/images/gallery/Events/art-exhibition/art-image-7.jpg,assets/images/gallery/Events/art-exhibition/art-image-8.jpg,assets/images/gallery/Events/art-exhibition/art-image-9.jpg,assets/images/gallery/Events/art-exhibition/art-image-10.jpg,assets/images/gallery/Events/art-exhibition/art-image-11.jpg,assets/images/gallery/Events/art-exhibition/art-image-12.jpg,assets/images/gallery/Events/art-exhibition/art-image-13.jpg,assets/images/gallery/Events/art-exhibition/art-image-14.jpg">
+            </div>
+            <div class="gallery-overlay">
+              <h4>Little Picassos Art Exhibition</h4>
+              <p>Showcasing creative paintings and handcrafts by young learners.</p>
+            </div>
+          </div>
+
+          <div class="gallery-item gallery-hidden" data-category="events" onclick="openEventLightbox(this)">
+            <img src="assets/images/gallery/Events/Welcome Party/welcome-image-1.jpg" alt="Welcome Party">
+            <div class="event-photos-data" style="display:none;"
+              data-photos="assets/images/gallery/Events/Welcome Party/welcome-image-1.jpg,assets/images/gallery/Events/Welcome Party/welcome-image-2.jpg,assets/images/gallery/Events/Welcome Party/welcome-clip-1.mp4">
+            </div>
+            <div class="gallery-overlay">
+              <h4>Welcome Party</h4>
+              <p>Greeting new learners with orientation activities and games.</p>
+            </div>
+          </div>
+
+          <div class="gallery-item gallery-hidden" data-category="events" onclick="openEventLightbox(this)">
+            <img src="assets/images/gallery/Events/Birthday Celebrations/birthday-image-1.jpg"
+              alt="Birthday Celebration">
+            <div class="event-photos-data" style="display:none;"
+              data-photos="assets/images/gallery/Events/Birthday Celebrations/birthday-image-1.jpg,assets/images/gallery/Events/Birthday Celebrations/birthday-image-2.jpg,assets/images/gallery/Events/Birthday Celebrations/birthday-image-3.jpg,assets/images/gallery/Events/Birthday Celebrations/birthday-image-4.jpg,assets/images/gallery/Events/Birthday Celebrations/birthday-image-5.jpg,assets/images/gallery/Events/Birthday Celebrations/birthday-clip-1.mp4">
+            </div>
+            <div class="gallery-overlay">
+              <h4>Birthday Celebrations</h4>
+              <p>Traditional Montessori walk-around-the-sun ceremonies.</p>
+            </div>
+          </div>
+
+          <div class="gallery-item gallery-hidden" data-category="events" onclick="openEventLightbox(this)">
+            <img src="assets/images/gallery/activity-week/activity-image-0.jpeg" alt="Activity Week">
+            <div class="event-photos-data" style="display:none;"
+              data-photos="assets/images/gallery/activity-week/activity-clip-1.mp4,assets/images/gallery/activity-week/activity-image-1.jpg,assets/images/gallery/activity-week/activity-image-2.jpg,assets/images/gallery/activity-week/activity-image-3.png,assets/images/gallery/activity-week/activity-image-4.png,assets/images/gallery/activity-week/activity-image-5.jpg,assets/images/gallery/activity-week/activity-clip-2.mp4,assets/images/gallery/activity-week/activity-clip-3.mp4, assets/images/gallery/activity-week/activity-clip-4.mp4, assets/images/gallery/activity-week/activity-clip-5.mp4">
+            </div>
+            <div class="gallery-overlay">
+              <h4>Activity Week</h4>
+              <p>Exploring colors, textures and creative expression through various stations.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="gallery-cta-wrapper">
+          <button type="button" id="toggleGalleryBtn" class="btn btn-outline gallery-cta-btn">
+            <span>View Full Gallery</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- MISSION STATEMENT & CTA CARDS -->
+    <section class="section container mission-section" id="mission">
+      <div class="mission-header animate-on-scroll">
+        <h2 class="section-title">Let's Thrive Together</h2>
+        <p class="section-subtitle">At Saadia's Montessori, we believe every child carries the seed of greatness. Our
+          mission is to cultivate a nurturing environment where curiosity blooms, independence grows and community
+          flourishes.</p>
+      </div>
+      <div class="mission-cards-grid">
+        <div class="mission-card animate-on-scroll">
+          <div class="mission-card-img"
+            style="background: linear-gradient(135deg, var(--primary-deep) 0%, var(--primary-light) 100%);">
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+          </div>
+          <div class="mission-card-body">
+            <h3>Safe Environment</h3>
+            <p>A warm, beautifully prepared classroom where every child feels secure, seen and celebrated every single
+              day.</p>
+            <a href="about.php" class="btn btn-outline mission-card-btn">Learn More</a>
+          </div>
+        </div>
+
+        <div class="mission-card animate-on-scroll">
+          <div class="mission-card-img" style="background: linear-gradient(135deg, #F59E0B 0%, #FCD34D 100%);">
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+          </div>
+          <div class="mission-card-body">
+            <h3>Guided Discovery</h3>
+            <p>Children learn by doing. Our trained guides facilitate self-directed exploration using authentic
+              Montessori
+              materials.</p>
+            <a href="#programs" class="btn btn-outline mission-card-btn">View Programs</a>
+          </div>
+        </div>
+
+        <div class="mission-card animate-on-scroll">
+          <div class="mission-card-img" style="background: linear-gradient(135deg, #10B981 0%, #34D399 100%);">
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+          </div>
+          <div class="mission-card-body">
+            <h3>Community & Growth</h3>
+            <p>From parent workshops to community events, we build lasting bonds that extend far beyond the classroom
+              walls.</p>
+            <a href="contact.php" class="btn btn-outline mission-card-btn">Get in Touch</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CALENDAR & SOCIAL FEED -->
+    <section class="calendar-social-bg" id="events">
+      <div class="section container">
+        <h2 class="section-title animate-on-scroll">Upcoming Events & Community</h2>
+        <p class="section-subtitle animate-on-scroll">Stay connected with what's happening at our campus and follow
+          along
+          on social media.</p>
+
+        <!-- Grid Wrapper for Side-by-Side Layout -->
+        <div class="calendar-social-grid">
+
+          <!-- Column 1: Events Calendar -->
+          <div class="events-calendar slide-in-left">
+            <div class="calendar-header">
+              <h3>Upcoming Events</h3>
+            </div>
+            <div class="event-list" id="websiteEventList">
+              <!-- Dynamic events load here -->
+            </div>
+          </div>
+
+          <!-- Column 2: Social Feed -->
+          <div class="social-feed-column slide-in-right">
+            <div class="social-feed-header">
+              <div class="social-feed-brand">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                </svg>
+                <span>@kindergartenmontessori2021</span>
+              </div>
+              <a href="https://www.instagram.com/kindergartenmontessori2021/" class="btn btn-outline"
+                style="padding: 0.4rem 1rem; font-size: 0.85rem;">Follow Us</a>
+            </div>
+
+            <div class="social-photo-grid">
+              <div class="social-photo-item">
+                <img src="assets/images/social feed/social-image-1.jpg" alt="Art Class at KSM">
+                <div class="social-photo-overlay"><span>🎨 Art Class</span></div>
+              </div>
+              <div class="social-photo-item">
+                <img src="assets/images/social feed/social-image-2.jpg" alt="Awards Day at KSM">
+                <div class="social-photo-overlay"><span>🏆 Awards Day</span></div>
+              </div>
+              <div class="social-photo-item">
+                <img src="assets/images/social feed/social-image-3.jpg" alt="Trips by KSM">
+                <div class="social-photo-overlay"><span>🌱 Trip</span></div>
+              </div>
+              <div class="social-photo-item">
+                <img src="assets/images/social feed/social-image-4.jpg" alt="Family Day at KSM">
+                <div class="social-photo-overlay"><span>👨‍👩‍👧 Family Day</span></div>
+              </div>
+              <div class="social-photo-item">
+                <img src="assets/images/social feed/social-image-5.jpg" alt="Activity week at KSM">
+                <div class="social-photo-overlay"><span>🔬 Activity week</span></div>
+              </div>
+              <div class="social-photo-item">
+                <img src="assets/images/social feed/social-image-6.jpg" alt="Graduation at KSM">
+                <div class="social-photo-overlay"><span>⭐ Graduation</span></div>
+              </div>
+            </div>
+            <p class="social-feed-cta" style="margin-top: 1rem; text-align: center;">Share your KSM moments with
+              <strong>#KSMHaripur</strong>
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container footer-grid">
+        <div>
+          <div class="footer-logo">
+            <img src="assets/images/logo.svg" alt="KSM Haripur Logo" />
+            <div class="logo-text">
+              <span class="logo-title">Kindergarten Saadia's</span>
+              <span class="logo-subtitle">Montessori School</span>
+            </div>
+          </div>
+          <p class="footer-desc">Free The Child's Potential and you will Transform him into the world.</p>
+          <div class="footer-socials">
+            <a href="https://www.facebook.com/profile.php?id=61555316418649" aria-label="Facebook">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
               </svg>
-            </div>
-            <div class="about-feat-text">
-              <h4>Prepared Environment</h4>
-              <p>Safe, beautiful and structured layout designed entirely at children's eye-level.</p>
-            </div>
-          </div>
-          <div class="about-feat-item">
-            <div class="about-feat-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path
-                  d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-              </svg>
-            </div>
-            <div class="about-feat-text">
-              <h4>Holistic Development</h4>
-              <p>Fostering physical, emotional, social and academic growth.</p>
-            </div>
-          </div>
-          <div class="about-feat-item">
-            <div class="about-feat-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-                <line x1="12" y1="17" x2="12.01" y2="17" />
-              </svg>
-            </div>
-            <div class="about-feat-text">
-              <h4>Hands-On Materials</h4>
-              <p>Specially curated tactile learning resources that verify understanding.</p>
-            </div>
-          </div>
-          <div class="about-feat-item">
-            <div class="about-feat-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-              </svg>
-            </div>
-            <div class="about-feat-text">
-              <h4>Multi-Age Groups</h4>
-              <p>Promoting child mentorship, social awareness, and group cooperation.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Programs & Grades Section -->
-  <section class="programs-bg" id="programs">
-    <div class="section container">
-      <h2 class="section-title">Our Montessori Programs</h2>
-      <p class="section-subtitle">Uniquely crafted learning paths tailored for different milestones of developmental
-        progress.</p>
-
-      <div class="programs-grid">
-        <div class="program-card">
-          <div class="program-img-wrapper">
-            <img src="assets/images/program/program-1/program-image.jpeg" alt="Playgroup" class="program-img">
-            <span class="program-age">2.5 - 3.5 Years</span>
-          </div>
-          <div class="program-info">
-            <h3>Playgroup</h3>
-            <p>Nurturing sensory exploration, fine/gross motor skills, language development, and foundational independence within a warm community.</p>
-          </div>
-        </div>
-
-        <div class="program-card">
-          <div class="program-img-wrapper">
-            <img src="assets/images/program/program-2/program-image.jpeg" alt="Nursery" class="program-img">
-            <span class="program-age">3.5 - 4.5 Years</span>
-          </div>
-          <div class="program-info">
-            <h3>Nursery</h3>
-            <p>Introducing early mathematics, phonics, practical life refinement, and sensory activities under self-directed workspace habits.</p>
-          </div>
-        </div>
-
-        <div class="program-card">
-          <div class="program-img-wrapper">
-            <img src="assets/images/program/program-3/program-image.jpeg" alt="Prep" class="program-img">
-            <span class="program-age">4.5 - 5.5 Years</span>
-          </div>
-          <div class="program-info">
-            <h3>Prep</h3>
-            <p>Advancing foundational concepts, collaborative play, early reading, writing, and environmental awareness.</p>
-          </div>
-        </div>
-
-        <div class="program-card program-hidden">
-          <div class="program-img-wrapper">
-            <img src="assets/images/program/program-4/program-image.jpeg" alt="Grade One" class="program-img">
-            <span class="program-age">6 Years</span>
-          </div>
-          <div class="program-info">
-            <h3>Grade One</h3>
-            <p>Focusing on foundational literacy, arithmetic, social collaboration, and engaging academic activities in a modern setting.</p>
-          </div>
-        </div>
-
-        <div class="program-card program-hidden">
-          <div class="program-img-wrapper">
-            <img src="assets/images/program/program-5/program-image.jpeg" alt="Grade Two" class="program-img">
-            <span class="program-age">7 Years</span>
-          </div>
-          <div class="program-info">
-            <h3>Grade Two</h3>
-            <p>Expanding academic horizons with scientific inquiry, structured reading, and deeper mathematical understanding.</p>
-          </div>
-        </div>
-
-        <div class="program-card program-hidden">
-          <div class="program-img-wrapper">
-            <img src="assets/images/program/program-6/program-image.jpeg" alt="Grade Three" class="program-img">
-            <span class="program-age">8 Years</span>
-          </div>
-          <div class="program-info">
-            <h3>Grade Three</h3>
-            <p>Encouraging project-based learning, independent study habits, advanced problem-solving, and team projects.</p>
-          </div>
-        </div>
-
-        <div class="program-card program-hidden">
-          <div class="program-img-wrapper">
-            <img src="assets/images/program/program-4/program-image.jpeg" alt="Grade Four" class="program-img">
-            <span class="program-age">9 Years</span>
-          </div>
-          <div class="program-info">
-            <h3>Grade Four</h3>
-            <p>Building analytical thinking, critical reading comprehension, intermediate science experiments, and advanced mathematical concepts.</p>
-          </div>
-        </div>
-
-        <div class="program-card program-hidden">
-          <div class="program-img-wrapper">
-            <img src="assets/images/program/program-5/program-image.jpeg" alt="Grade Five" class="program-img">
-            <span class="program-age">10 Years</span>
-          </div>
-          <div class="program-info">
-            <h3>Grade Five</h3>
-            <p>Preparing students for middle school excellence through leadership development, comprehensive academic mastery, and independent inquiry.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="programs-cta-wrapper" style="text-align: center; margin-top: 2rem;">
-        <button type="button" id="toggleProgramBtn" class="btn btn-outline gallery-cta-btn">
-          <span>View More</span>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
-        </button>
-      </div>
-    </div>
-  </section>
-
-
-
-
-
-  <!-- News, Events & Gallery Grid Section -->
-  <section class="gallery-bg" id="gallery">
-    <div class="section container">
-      <h2 class="section-title">Campus Life & Gallery</h2>
-      <p class="section-subtitle">Take a virtual peek inside our learning spaces, campus events and Montessori
-        classrooms.</p>
-
-      <div class="gallery-filters">
-        <button class="filter-btn active" data-filter="all">All</button>
-        <button class="filter-btn" data-filter="classroom">Classroom</button>
-        <button class="filter-btn" data-filter="events">Events</button>
-        <button class="filter-btn" data-filter="nature">Outdoors & Nature</button>
-      </div>
-
-      <div class="gallery-grid" id="galleryGrid">
-        <div class="gallery-item" data-category="classroom" onclick="openEventLightbox(this)">
-          <img src="assets/images/gallery/Sensory Shelves/sensory-shelves-0.jpeg" alt="Sensory Shelves">
-          <div class="event-photos-data" style="display:none;"
-            data-photos="assets/images/gallery/Sensory Shelves/sensory-shelves-0.jpeg,assets/images/gallery/Sensory Shelves/sensory-shelves-1.jpeg,assets/images/gallery/Sensory Shelves/sensory-shelves-2.jpeg,assets/images/gallery/Sensory Shelves/sensory-shelves-3.jpeg,assets/images/gallery/Sensory Shelves/sensory-shelves-4.jpeg,assets/images/gallery/Sensory Shelves/sensory-shelves-5.jpeg,assets/images/gallery/Sensory Shelves/sensory-shelves-6.jpeg">
-          </div>
-          <div class="gallery-overlay">
-            <h4>Sensory Shelves</h4>
-            <p>Classroom environments built with child-accessible wooden shapes.</p>
-          </div>
-        </div>
-
-        <div class="gallery-item" data-category="events" onclick="openEventLightbox(this)">
-          <img src="assets/images/gallery/Annual sports day/annual-sports-day-1.jpg" alt="Annual Sports Day">
-          <div class="event-photos-data" style="display:none;"
-            data-photos="assets/images/gallery/Annual sports day/annual-sports-day-1.jpg"></div>
-          <div class="gallery-overlay">
-            <h4>Annual Sports Day</h4>
-            <p>Building teamwork, confidence and physical agility through games.</p>
-          </div>
-        </div>
-
-        <div class="gallery-item" data-category="classroom" onclick="openEventLightbox(this)">
-          <img src="assets/images/gallery/classroom/charity/charity-image.jpg" alt="Charity to Palestine">
-          <div class="event-photos-data" style="display:none;"
-            data-photos="assets/images/gallery/classroom/charity/charity-image.jpg, assets/images/gallery/classroom/charity/charity-clip.mp4">
-          </div>
-          <div class="gallery-overlay">
-            <h4>Charity to Palestine</h4>
-            <p>Empowering our community and spreading kindness through meaningful charity drives, student-led outreach
-              and acts of giving.</p>
-          </div>
-        </div>
-
-        <div class="gallery-item" data-category="classroom" onclick="openEventLightbox(this)">
-          <img src="assets/images/gallery/Practical Life Stations/practical-life-station.jpeg"
-            alt="Practical Life Station">
-          <div class="event-photos-data" style="display:none;"
-            data-photos="assets/images/gallery/Practical Life Stations/practical-life-station.jpeg,assets/images/gallery/Practical Life Stations/epl-polishing-activity.mp4,assets/images/gallery/Practical Life Stations/ready-for-splash.mp4">
-          </div>
-          <div class="gallery-overlay">
-            <h4>Practical Life Station</h4>
-            <p>Water pouring, handwashing and dressing frame skills.</p>
-          </div>
-        </div>
-
-        <div class="gallery-item" data-category="nature" onclick="openEventLightbox(this)">
-          <img src="assets/images/gallery/nature/trips/trip-image-0.png" alt="Trips">
-          <div class="event-photos-data" style="display:none;"
-            data-photos="assets/images/gallery/nature/trips/trip-clip-0.mp4, assets/images/gallery/nature/trips/trip-clip-1.mp4, assets/images/gallery/nature/trips/trip-image-1.png, assets/images/gallery/nature/trips/trip-image-2.jpg, assets/images/gallery/nature/trips/trip-image-3.png, assets/images/gallery/nature/trips/trip-image-4.jpg">
-          </div>
-          <div class="gallery-overlay">
-            <h4>Trips</h4>
-            <p>Discover the excitement of learning beyond the classroom through our immersive student adventures and
-              educational excursions.</p>
-          </div>
-        </div>
-
-        <div class="gallery-item" data-category="events" onclick="openEventLightbox(this)">
-          <img src="assets/images/gallery/Events/art-exhibition/art-image-1.png" alt="Little Picassos Art Exhibition">
-          <div class="event-photos-data" style="display:none;"
-            data-photos="assets/images/gallery/Events/art-exhibition/art-image-1.png,assets/images/gallery/Events/art-exhibition/art-image-2.jpg,assets/images/gallery/Events/art-exhibition/art-image-3.png,assets/images/gallery/Events/art-exhibition/art-image-4.png,assets/images/gallery/Events/art-exhibition/art-image-5.jpg,assets/images/gallery/Events/art-exhibition/art-image-6.jpg,assets/images/gallery/Events/art-exhibition/art-image-7.jpg,assets/images/gallery/Events/art-exhibition/art-image-8.jpg,assets/images/gallery/Events/art-exhibition/art-image-9.jpg,assets/images/gallery/Events/art-exhibition/art-image-10.jpg,assets/images/gallery/Events/art-exhibition/art-image-11.jpg,assets/images/gallery/Events/art-exhibition/art-image-12.jpg,assets/images/gallery/Events/art-exhibition/art-image-13.jpg,assets/images/gallery/Events/art-exhibition/art-image-14.jpg">
-          </div>
-          <div class="gallery-overlay">
-            <h4>Little Picassos Art Exhibition</h4>
-            <p>Showcasing creative paintings and handcrafts by young learners.</p>
-          </div>
-        </div>
-
-        <div class="gallery-item gallery-hidden" data-category="events" onclick="openEventLightbox(this)">
-          <img src="assets/images/gallery/Events/Welcome Party/welcome-image-1.jpg" alt="Welcome Party">
-          <div class="event-photos-data" style="display:none;"
-            data-photos="assets/images/gallery/Events/Welcome Party/welcome-image-1.jpg,assets/images/gallery/Events/Welcome Party/welcome-image-2.jpg,assets/images/gallery/Events/Welcome Party/welcome-clip-1.mp4">
-          </div>
-          <div class="gallery-overlay">
-            <h4>Welcome Party</h4>
-            <p>Greeting new learners with orientation activities and games.</p>
-          </div>
-        </div>
-
-        <div class="gallery-item gallery-hidden" data-category="events" onclick="openEventLightbox(this)">
-          <img src="assets/images/gallery/Events/Birthday Celebrations/birthday-image-1.jpg" alt="Birthday Celebration">
-          <div class="event-photos-data" style="display:none;"
-            data-photos="assets/images/gallery/Events/Birthday Celebrations/birthday-image-1.jpg,assets/images/gallery/Events/Birthday Celebrations/birthday-image-2.jpg,assets/images/gallery/Events/Birthday Celebrations/birthday-image-3.jpg,assets/images/gallery/Events/Birthday Celebrations/birthday-image-4.jpg,assets/images/gallery/Events/Birthday Celebrations/birthday-image-5.jpg,assets/images/gallery/Events/Birthday Celebrations/birthday-clip-1.mp4">
-          </div>
-          <div class="gallery-overlay">
-            <h4>Birthday Celebrations</h4>
-            <p>Traditional Montessori walk-around-the-sun ceremonies.</p>
-          </div>
-        </div>
-
-        <div class="gallery-item gallery-hidden" data-category="events" onclick="openEventLightbox(this)">
-          <img src="assets/images/gallery/activity-week/activity-image-0.jpeg" alt="Activity Week">
-          <div class="event-photos-data" style="display:none;"
-            data-photos="assets/images/gallery/activity-week/activity-clip-1.mp4,assets/images/gallery/activity-week/activity-image-1.jpg,assets/images/gallery/activity-week/activity-image-2.jpg,assets/images/gallery/activity-week/activity-image-3.png,assets/images/gallery/activity-week/activity-image-4.png,assets/images/gallery/activity-week/activity-image-5.jpg,assets/images/gallery/activity-week/activity-clip-2.mp4,assets/images/gallery/activity-week/activity-clip-3.mp4, assets/images/gallery/activity-week/activity-clip-4.mp4, assets/images/gallery/activity-week/activity-clip-5.mp4">
-          </div>
-          <div class="gallery-overlay">
-            <h4>Activity Week</h4>
-            <p>Exploring colors, textures and creative expression through various stations.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="gallery-cta-wrapper">
-        <button type="button" id="toggleGalleryBtn" class="btn btn-outline gallery-cta-btn">
-          <span>View Full Gallery</span>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
-        </button>
-      </div>
-    </div>
-  </section>
-
-  <!-- MISSION STATEMENT & CTA CARDS -->
-  <section class="section container mission-section" id="mission">
-    <div class="mission-header animate-on-scroll">
-      <h2 class="section-title">Let's Thrive Together</h2>
-      <p class="section-subtitle">At Saadia's Montessori, we believe every child carries the seed of greatness. Our
-        mission is to cultivate a nurturing environment where curiosity blooms, independence grows and community
-        flourishes.</p>
-    </div>
-    <div class="mission-cards-grid">
-      <div class="mission-card animate-on-scroll">
-        <div class="mission-card-img"
-          style="background: linear-gradient(135deg, var(--primary-deep) 0%, var(--primary-light) 100%);">
-          <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-          </svg>
-        </div>
-        <div class="mission-card-body">
-          <h3>Safe Environment</h3>
-          <p>A warm, beautifully prepared classroom where every child feels secure, seen and celebrated every single
-            day.</p>
-          <a href="about.php" class="btn btn-outline mission-card-btn">Learn More</a>
-        </div>
-      </div>
-
-      <div class="mission-card animate-on-scroll">
-        <div class="mission-card-img" style="background: linear-gradient(135deg, #F59E0B 0%, #FCD34D 100%);">
-          <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
-            <circle cx="12" cy="12" r="10" />
-            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-            <line x1="12" y1="17" x2="12.01" y2="17" />
-          </svg>
-        </div>
-        <div class="mission-card-body">
-          <h3>Guided Discovery</h3>
-          <p>Children learn by doing. Our trained guides facilitate self-directed exploration using authentic Montessori
-            materials.</p>
-          <a href="#programs" class="btn btn-outline mission-card-btn">View Programs</a>
-        </div>
-      </div>
-
-      <div class="mission-card animate-on-scroll">
-        <div class="mission-card-img" style="background: linear-gradient(135deg, #10B981 0%, #34D399 100%);">
-          <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-            <circle cx="9" cy="7" r="4" />
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-          </svg>
-        </div>
-        <div class="mission-card-body">
-          <h3>Community & Growth</h3>
-          <p>From parent workshops to community events, we build lasting bonds that extend far beyond the classroom
-            walls.</p>
-          <a href="contact.php" class="btn btn-outline mission-card-btn">Get in Touch</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CALENDAR & SOCIAL FEED -->
-  <section class="calendar-social-bg" id="events">
-    <div class="section container">
-      <h2 class="section-title animate-on-scroll">Upcoming Events & Community</h2>
-      <p class="section-subtitle animate-on-scroll">Stay connected with what's happening at our campus and follow along
-        on social media.</p>
-
-      <!-- Grid Wrapper for Side-by-Side Layout -->
-      <div class="calendar-social-grid">
-
-        <!-- Column 1: Events Calendar -->
-        <div class="events-calendar slide-in-left">
-          <div class="calendar-header">
-            <h3>Upcoming Events</h3>
-          </div>
-          <div class="event-list" id="websiteEventList">
-            <!-- Dynamic events load here -->
-          </div>
-        </div>
-
-        <!-- Column 2: Social Feed -->
-        <div class="social-feed-column slide-in-right">
-          <div class="social-feed-header">
-            <div class="social-feed-brand">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            </a>
+            <a href="https://www.instagram.com/kindergartenmontessori2021/" aria-label="Instagram">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
                 <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
                 <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
               </svg>
-              <span>@kindergartenmontessori2021</span>
-            </div>
-            <a href="https://www.instagram.com/kindergartenmontessori2021/" class="btn btn-outline"
-              style="padding: 0.4rem 1rem; font-size: 0.85rem;">Follow Us</a>
-          </div>
-
-          <div class="social-photo-grid">
-            <div class="social-photo-item">
-              <img src="assets/images/social feed/social-image-1.jpg" alt="Art Class at KSM">
-              <div class="social-photo-overlay"><span>🎨 Art Class</span></div>
-            </div>
-            <div class="social-photo-item">
-              <img src="assets/images/social feed/social-image-2.jpg" alt="Awards Day at KSM">
-              <div class="social-photo-overlay"><span>🏆 Awards Day</span></div>
-            </div>
-            <div class="social-photo-item">
-              <img src="assets/images/social feed/social-image-3.jpg" alt="Trips by KSM">
-              <div class="social-photo-overlay"><span>🌱 Trip</span></div>
-            </div>
-            <div class="social-photo-item">
-              <img src="assets/images/social feed/social-image-4.jpg" alt="Family Day at KSM">
-              <div class="social-photo-overlay"><span>👨‍👩‍👧 Family Day</span></div>
-            </div>
-            <div class="social-photo-item">
-              <img src="assets/images/social feed/social-image-5.jpg" alt="Activity week at KSM">
-              <div class="social-photo-overlay"><span>🔬 Activity week</span></div>
-            </div>
-            <div class="social-photo-item">
-              <img src="assets/images/social feed/social-image-6.jpg" alt="Graduation at KSM">
-              <div class="social-photo-overlay"><span>⭐ Graduation</span></div>
-            </div>
-          </div>
-          <p class="social-feed-cta" style="margin-top: 1rem; text-align: center;">Share your KSM moments with
-            <strong>#KSMHaripur</strong>
-          </p>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer>
-    <div class="container footer-grid">
-      <div>
-        <div class="footer-logo">
-          <img src="assets/images/logo.svg" alt="KSM Haripur Logo" />
-          <div class="logo-text">
-            <span class="logo-title">Kindergarten Saadia's</span>
-            <span class="logo-subtitle">Montessori School</span>
+            </a>
+            <a href="https://www.youtube.com/@kindergartensaadiasmontess9970" aria-label="YouTube">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                  d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z" />
+                <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" />
+              </svg>
+            </a>
           </div>
         </div>
-        <p class="footer-desc">Free The Child's Potential and you will Transform him into the world.</p>
-        <div class="footer-socials">
-          <a href="https://www.facebook.com/profile.php?id=61555316418649" aria-label="Facebook">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-            </svg>
-          </a>
-          <a href="https://www.instagram.com/kindergartenmontessori2021/" aria-label="Instagram">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-            </svg>
-          </a>
-          <a href="https://www.youtube.com/@kindergartensaadiasmontess9970" aria-label="YouTube">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path
-                d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z" />
-              <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" />
-            </svg>
-          </a>
+
+        <div>
+          <h4>Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="#about">About & Philosophy</a></li>
+            <li><a href="#programs">Montessori Programs</a></li>
+            <li><a href="admissions.php">Admissions</a></li>
+            <li><a href="#gallery">Gallery & Events</a></li>
+            <li><a href="about.php">About Us</a></li>
+            <li><a href="contact.php">Contact Us</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4>Contact Us</h4>
+          <ul class="footer-contact">
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                style="color: var(--accent-warm); flex-shrink: 0;">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              <span>Circular Road, HBL Microfinance Bank Haripur, Pakistan</span>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                style="color: var(--accent-warm); flex-shrink: 0;">
+                <path
+                  d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+              </svg>
+              <span>+92 331 5620055</span>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                style="color: var(--accent-warm); flex-shrink: 0;">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+              <span>kindergartenmontessori1@gmail.com</span>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+
+          <div class="map-container">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3307.705748870337!2d72.93316067499752!3d34.00009107317665!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38dfb37001d2f68f%3A0x15918636c55c1c6b!2sKindergarten%20Saadia%27s%20Montessori%20School!5e0!3m2!1sen!2s!4v1788940104876!5m2!1sen!2s"
+              width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+          </div>
         </div>
       </div>
 
-      <div>
-        <h4>Quick Links</h4>
-        <ul class="footer-links">
-          <li><a href="#about">About & Philosophy</a></li>
-          <li><a href="#programs">Montessori Programs</a></li>
-          <li><a href="admissions.php">Admissions</a></li>
-          <li><a href="#gallery">Gallery & Events</a></li>
-          <li><a href="about.php">About Us</a></li>
-          <li><a href="contact.php">Contact Us</a></li>
-        </ul>
-      </div>
-
-      <div>
-        <h4>Contact Us</h4>
-        <ul class="footer-contact">
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              style="color: var(--accent-warm); flex-shrink: 0;">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-              <circle cx="12" cy="10" r="3" />
-            </svg>
-            <span>Circular Road, HBL Microfinance Bank Haripur, Pakistan</span>
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              style="color: var(--accent-warm); flex-shrink: 0;">
-              <path
-                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-            </svg>
-            <span>+92 331 5620055</span>
-          </li>
-          <li>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              style="color: var(--accent-warm); flex-shrink: 0;">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-              <polyline points="22,6 12,13 2,6" />
-            </svg>
-            <span>kindergartenmontessori1@gmail.com</span>
-          </li>
-        </ul>
-      </div>
-
-      <div>
-
-        <div class="map-container">
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3307.705748870337!2d72.93316067499752!3d34.00009107317665!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38dfb37001d2f68f%3A0x15918636c55c1c6b!2sKindergarten%20Saadia%27s%20Montessori%20School!5e0!3m2!1sen!2s!4v1788940104876!5m2!1sen!2s"
-            width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade">
-          </iframe>
+      <div class="footer-bottom">
+        <div class="container">
+          <p>&copy; 2026 Kindergarten Saadia's Montessori School. All rights reserved.</p>
         </div>
       </div>
-    </div>
+    </footer>
 
-    <div class="footer-bottom">
-      <div class="container">
-        <p>&copy; 2026 Kindergarten Saadia's Montessori School. All rights reserved.</p>
+    <!-- Lightbox Modal for Photos & Videos -->
+    <div id="eventLightbox" class="lightbox-modal" onclick="closeEventLightbox()">
+      <span class="lightbox-close">&times;</span>
+      <img class="lightbox-content" id="lightboxImg" style="display:none;">
+      <video class="lightbox-content" id="lightboxVideo" controls style="display:none;"></video>
+      <div class="lightbox-nav">
+        <button type="button" onclick="changeLightboxImg(-1); event.stopPropagation();">&#10094; Prev</button>
+        <button type="button" onclick="changeLightboxImg(1); event.stopPropagation();">&#10095; Next</button>
       </div>
     </div>
-  </footer>
 
-  <!-- Lightbox Modal for Photos & Videos -->
-  <div id="eventLightbox" class="lightbox-modal" onclick="closeEventLightbox()">
-    <span class="lightbox-close">&times;</span>
-    <img class="lightbox-content" id="lightboxImg" style="display:none;">
-    <video class="lightbox-content" id="lightboxVideo" controls style="display:none;"></video>
-    <div class="lightbox-nav">
-      <button type="button" onclick="changeLightboxImg(-1); event.stopPropagation();">&#10094; Prev</button>
-      <button type="button" onclick="changeLightboxImg(1); event.stopPropagation();">&#10095; Next</button>
-    </div>
-  </div>
-
-  <script src="assets/js/app.js?v=2"></script>
-  
+    <script src="assets/js/app.js?v=2"></script>
+    <<<<<<< HEAD=======>>>>>>> refs/remotes/origin/main
 </body>
 
 </html>

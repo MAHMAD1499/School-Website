@@ -6,6 +6,7 @@ check_admin_auth();
 $id = intval($_GET['id'] ?? 0);
 if (!$id) die("Invalid ID.");
 
+
 $conn = new mysqli($_ksm['host'], $_ksm['user'], $_ksm['pass'], $_ksm['name']);
 if ($conn->connect_error) die("Database connection failed.");
 $conn->set_charset('utf8mb4');
@@ -318,7 +319,7 @@ $uploads_base = $base_url . $site_root . '/';
                 <div class="pf-tick"><?php echo !empty($id_card_url) ? '✓' : ''; ?></div>
                 <span>Attach copy of Father/ Mother/ Guardian ID Card.</span>
                 <?php if (!empty($id_card_url)): ?>
-                    <a href="<?php echo $uploads_base . htmlspecialchars($id_card_url); ?>" target="_blank" class="doc-link no-print">View</a>
+                    <a href="<?php echo $uploads_base . htmlspecialchars($id_card_url); ?>" target="_blank" download class="doc-link no-print">Download</a>
                 <?php endif; ?>
             </div>
 
@@ -326,7 +327,7 @@ $uploads_base = $base_url . $site_root . '/';
                 <div class="pf-tick"><?php echo !empty($birth_cert_url) ? '✓' : ''; ?></div>
                 <span>Attach copy of Birth Certificate of Child.</span>
                 <?php if (!empty($birth_cert_url)): ?>
-                    <a href="<?php echo $uploads_base . htmlspecialchars($birth_cert_url); ?>" target="_blank" class="doc-link no-print">View</a>
+                    <a href="<?php echo $uploads_base . htmlspecialchars($birth_cert_url); ?>" target="_blank" download class="doc-link no-print">Download</a>
                 <?php endif; ?>
             </div>
 
@@ -334,7 +335,7 @@ $uploads_base = $base_url . $site_root . '/';
                 <div class="pf-tick"><?php echo !empty($photos_url) ? '✓' : ''; ?></div>
                 <span>Attach 4 Passport Size Pictures.</span>
                 <?php if (!empty($photos_url)): ?>
-                    <a href="<?php echo $uploads_base . htmlspecialchars($photos_url); ?>" target="_blank" class="doc-link no-print">View</a>
+                    <a href="<?php echo $uploads_base . htmlspecialchars($photos_url); ?>" target="_blank" download class="doc-link no-print">Download</a>
                 <?php endif; ?>
             </div>
 

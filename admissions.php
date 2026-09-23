@@ -465,9 +465,14 @@ if($method==='POST'){
                         <div class="pf-label">Program Applying For: *</div>
                         <select name="program" class="pf-input" required>
                             <option value="" disabled selected>Select Program</option>
-                            <option value="Early Toddler (1.5 - 3 Yrs)">Early Toddler (1.5 - 3 Yrs)</option>
-                            <option value="Primary/Kindergarten (3 - 6 Yrs)">Primary/Kindergarten (3 - 6 Yrs)</option>
-                            <option value="Junior Level (6 - 9 Yrs)">Junior Level (6 - 9 Yrs)</option>
+                            <option value="Playgroup">Playgroup</option>
+                            <option value="Nursery">Nursery</option>
+                            <option value="Prep">Prep</option>
+                            <option value="Grade One">Grade One</option>
+                            <option value="Grade Two">Grade Two</option>
+                            <option value="Grade Three">Grade Three</option>
+                            <option value="Grade Four">Grade Four</option>
+                            <option value="Grade Five">Grade Five</option>
                         </select>
                     </div>
                     

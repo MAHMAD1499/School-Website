@@ -44,6 +44,9 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
           <h1 class="page-title">✉️ Contact Messages</h1>
           <p class="page-subtitle">View and manage messages sent via the contact form</p>
         </div>
+        <div class="page-header-right">
+          <button class="btn btn-primary" onclick="openModal('addMsgModal')">➕ New Message</button>
+        </div>
       </div>
 
       <div class="card">
@@ -73,6 +76,38 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
       <button class="btn btn-danger btn-sm" onclick="deleteMsg()">🗑️ Delete</button>
       <button class="btn btn-outline btn-sm" data-modal-close>Close</button>
     </div>
+  </div>
+</div>
+
+<!-- Add Message Modal -->
+<div class="modal-overlay" id="addMsgModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">Send New Message</h2>
+      <button class="modal-close" data-modal-close><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <form id="addMsgForm" onsubmit="submitNewMsg(event)">
+      <div class="form-group">
+        <label class="form-label">Name</label>
+        <input type="text" name="name" class="form-input" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" name="email" class="form-input" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Subject</label>
+        <input type="text" name="subject" class="form-input" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Message</label>
+        <textarea name="message" class="form-input" rows="4" required></textarea>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:1.5rem;">
+        <button type="button" class="btn btn-outline" data-modal-close>Cancel</button>
+        <button type="submit" class="btn btn-primary" id="saveMsgBtn">Send Message</button>
+      </div>
+    </form>
   </div>
 </div>
 
@@ -163,6 +198,38 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
       showToast('Message deleted.', 'info');
       await fetchAndRender();
     });
+  }
+
+  async function submitNewMsg(e) {
+    e.preventDefault();
+    const btn = document.getElementById('saveMsgBtn');
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+
+    const formData = new FormData(e.target);
+    const data = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      subject: formData.get('subject'),
+      message: formData.get('message')
+    };
+
+    try {
+      const res = await API.submitContact(data);
+      if (res.success) {
+        showToast('Message recorded successfully', 'success');
+        closeModal('addMsgModal');
+        e.target.reset();
+        await fetchAndRender();
+      } else {
+        showToast(res.message || 'Error sending message', 'error');
+      }
+    } catch(err) {
+      showToast('Server error', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Send Message';
+    }
   }
 </script>
 </body>
