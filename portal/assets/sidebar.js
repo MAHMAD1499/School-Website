@@ -17,14 +17,14 @@ function buildSidebar(role = 'portal') {
   const adminLinks = [
     { href: 'dashboard.php', icon: 'layout', label: 'Dashboard' },
     { href: 'fees.php', icon: 'file-text', label: 'Fees Structure' },
+    { href: 'fee_slip.php', icon: 'file-text', label: 'Fee Slip' },
     { href: 'teachers.php', icon: 'users', label: 'Manage Teachers' },
     { href: 'students.php', icon: 'users', label: 'Manage Students' },
     { href: 'gallery.php', icon: 'image', label: 'Manage Gallery' },
     { href: 'news.php', icon: 'bell', label: 'Manage News' },
     { href: 'events.php', icon: 'calendar', label: 'Manage Events' },
     { href: 'admissions.php', icon: 'file-text', label: 'Admissions' },
-    { href: 'contacts.php', icon: 'mail', label: 'Contact Messages' },
-    { href: 'credentials.php', icon: 'key', label: 'Manage Credentials' },
+    { href: 'contacts.php', icon: 'mail', label: 'Contact Messages' }
   ];
 
   const studentLinks = [

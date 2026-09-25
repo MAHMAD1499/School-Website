@@ -23,27 +23,36 @@ check_admin_auth();
       }
     }
     .form-panel {
-      background: var(--surface-color, #fff);
-      padding: 1.5rem;
-      border-radius: var(--radius-md, 8px);
-      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-      border: 1px solid var(--border-color, #eee);
+      background: linear-gradient(145deg, #ffffff, #f3f6fa);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(30,58,138,0.1);
+      border: 1px solid #e1e8f0;
     }
     .form-group {
-      margin-bottom: 1rem;
+      margin-bottom: 1.25rem;
     }
     .form-group label {
       display: block;
       margin-bottom: 0.5rem;
-      font-weight: 500;
-      color: var(--text-dark, #333);
+      font-weight: 600;
+      color: #1e293b;
+      font-size: 0.95rem;
     }
     .form-control {
       width: 100%;
-      padding: 0.6rem;
-      border: 1px solid var(--border-color, #ccc);
-      border-radius: 4px;
+      padding: 0.75rem 1rem;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
       font-size: 1rem;
+      transition: all 0.3s ease;
+      background-color: #f8fafc;
+    }
+    .form-control:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+      outline: none;
+      background-color: #ffffff;
     }
     
     /* Exact Replication of the slip */
@@ -67,6 +76,28 @@ check_admin_auth();
       max-width: 700px;
       min-height: 700px;
       box-sizing: border-box;
+      z-index: 1;
+      overflow: hidden;
+    }
+    .slip-wrapper > * {
+      position: relative;
+      z-index: 1;
+    }
+    .slip-wrapper::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 750px;
+      height: 750px;
+      background-image: url('../../assets/images/logo.svg');
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+      opacity: 0.22;
+      z-index: 0;
+      pointer-events: none;
     }
     .slip-wrapper::before {
       content: '';
@@ -76,19 +107,9 @@ check_admin_auth();
       pointer-events: none;
     }
     .slip-header {
-      position: relative;
       margin-bottom: 2.5rem;
-      text-align: center;
     }
-    .slip-logo {
-      position: absolute;
-      right: 100%;
-      margin-right: 25px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 85px;
-      height: 85px;
-    }
+    /* slip-logo removed as we use inline styles with flexbox now */
     .slip-title h2 {
       margin: 0;
       font-size: 1.35rem;
@@ -103,34 +124,35 @@ check_admin_auth();
     }
     .slip-subtitle {
       margin: 0 0 1.5rem 0;
-      font-size: 1.4rem;
-      font-weight: 600;
-      color: #444;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #222;
       text-align: left;
     }
     .slip-table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 1.5rem;
+      background: transparent !important;
     }
     .slip-table th, .slip-table td {
-      border: 1px solid #777;
-      padding: 1.2rem 1rem;
-      font-size: 1.2rem;
+      border: 1px solid #555;
+      padding: 1.4rem 1rem;
+      font-size: 1.35rem;
       text-align: left;
     }
     .slip-table tbody tr:last-child td,
     .slip-table tr:last-child td {
-      border-bottom: 1px solid #777 !important;
+      border-bottom: 1px solid #555 !important;
     }
     .slip-table td {
-      color: #333;
-      font-weight: 600;
+      color: #111;
+      font-weight: 700;
     }
     .slip-table tr td:first-child {
       width: 65%;
-      color: #444;
-      font-weight: 600;
+      color: #222;
+      font-weight: 800;
     }
 
     /* Print styles */
@@ -186,12 +208,8 @@ check_admin_auth();
       </div>
 
       <div class="portal-content fade-up">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <div style="margin-bottom:1rem;">
           <h1 style="font-size:1.5rem;color:var(--text-dark);">Generate Fee Structure</h1>
-          <button class="btn btn-primary" onclick="downloadPDF()">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:0.5rem;vertical-align:-3px;"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-            Download PDF
-          </button>
         </div>
 
         <div class="fees-container">
@@ -219,6 +237,14 @@ check_admin_auth();
               <label>Tuition Fee (Monthly)</label>
               <input type="number" id="inputTuit" class="form-control" value="7000" oninput="updateSlip()">
             </div>
+            <div class="form-group">
+              <label>Form Fee</label>
+              <input type="number" id="inputForm" class="form-control" value="1000" oninput="updateSlip()">
+            </div>
+            <div class="form-group">
+              <label>Uniform Fee</label>
+              <input type="number" id="inputUniform" class="form-control" value="5000" oninput="updateSlip()">
+            </div>
             <div class="form-group" style="margin-top: 1.5rem;">
               <button class="btn btn-primary" style="width:100%" onclick="downloadPDF()">Download Form</button>
             </div>
@@ -227,14 +253,13 @@ check_admin_auth();
           <!-- Slip Panel -->
           <div class="slip-panel">
             <div class="slip-wrapper">
-              <div class="slip-header" style="text-align: center; margin-bottom: 2.5rem;">
-                <div style="display: inline-block; text-align: center;">
-                  <h2 style="position: relative; margin: 0; font-size: 1.2rem; font-weight: 600; color: #222; white-space: nowrap;">
-                    <!-- Logo vertically centered precisely with the school name -->
-                    <img src="../../assets/images/logo.svg" alt="KSM" class="slip-logo" onerror="this.src='../assets/images/logo.svg'">
+              <div class="slip-header" style="display: flex; justify-content: center; align-items: center;">
+                <img src="../../assets/images/logo.svg" alt="KSM" style="width: 110px; height: 110px; margin-right: 20px;">
+                <div style="text-align: center;">
+                  <h2 style="margin: 0; font-size: 1.6rem; font-weight: 800; color: #111; white-space: nowrap;">
                     Kindergarten Saadia's Montessori School
                   </h2>
-                  <h3 style="margin: 8px 0 0 0; font-size: 1.1rem; font-weight: normal; color: #333;">Haripur</h3>
+                  <h3 style="margin: 8px 0 0 0; font-size: 1.3rem; font-weight: 600; color: #333;">Haripur</h3>
                 </div>
               </div>
               <h4 class="slip-subtitle">Fee Structure</h4>
@@ -260,13 +285,20 @@ check_admin_auth();
                   <td id="slipTuit">7000</td>
                 </tr>
                 <tr>
+                  <td>Form Fee</td>
+                  <td id="slipForm">1000</td>
+                </tr>
+                <tr>
+                  <td>Uniform Fee</td>
+                  <td id="slipUniform">5000</td>
+                </tr>
+                <tr>
                   <td>Total</td>
                   <td id="slipTotal">27000</td>
                 </tr>
               </table>
             </div>
           </div>
-
         </div>
       </div>
     </div>
@@ -298,14 +330,18 @@ check_admin_auth();
       const reg = parseFloat(document.getElementById('inputReg').value) || 0;
       const stat = parseFloat(document.getElementById('inputStat').value) || 0;
       const tuit = parseFloat(document.getElementById('inputTuit').value) || 0;
+      const formFee = parseFloat(document.getElementById('inputForm').value) || 0;
+      const uniformFee = parseFloat(document.getElementById('inputUniform').value) || 0;
 
       document.getElementById('slipName').textContent = name;
       document.getElementById('slipClass').textContent = cls;
       document.getElementById('slipReg').textContent = reg ? reg : '';
       document.getElementById('slipStat').textContent = stat ? stat : '';
       document.getElementById('slipTuit').textContent = tuit ? tuit : '';
+      document.getElementById('slipForm').textContent = formFee ? formFee : '';
+      document.getElementById('slipUniform').textContent = uniformFee ? uniformFee : '';
       
-      const total = reg + stat + tuit;
+      const total = reg + stat + tuit + formFee + uniformFee;
       document.getElementById('slipTotal').textContent = total ? total : '';
     }
     
