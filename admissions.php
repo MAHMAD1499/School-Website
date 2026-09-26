@@ -559,7 +559,7 @@ if($method==='POST'){
         <div class="container footer-grid">
             <div>
                 <div class="footer-logo">
-                    <img src="assets/images/logo.svg" alt="KSM Haripur Logo" />
+            <img src="assets/images/logo-footer.svg" alt="KSM Haripur Logo" />
                     <div class="logo-text">
                         <span class="logo-title">Kindergarten Saadia's</span>
                         <span class="logo-subtitle">Montessori School</span>

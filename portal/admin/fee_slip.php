@@ -5,6 +5,7 @@ check_admin_auth();
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,26 +14,31 @@ check_admin_auth();
   <style>
     .fees-container {
       display: grid;
-      grid-template-columns: 1fr 2fr; /* Make slip preview larger */
+      grid-template-columns: 1fr 2fr;
+      /* Make slip preview larger */
       gap: 2rem;
       margin-top: 1rem;
     }
+
     @media (max-width: 1200px) {
       .fees-container {
         grid-template-columns: 1fr;
       }
     }
+
     .form-panel {
       background: linear-gradient(145deg, #ffffff, #f3f6fa);
       padding: 2rem;
       border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(30,58,138,0.1);
+      box-shadow: 0 10px 25px rgba(30, 58, 138, 0.1);
       border: 1px solid #e1e8f0;
       height: fit-content;
     }
+
     .form-group {
       margin-bottom: 1.25rem;
     }
+
     .form-group label {
       display: block;
       margin-bottom: 0.5rem;
@@ -40,6 +46,7 @@ check_admin_auth();
       color: #1e293b;
       font-size: 0.95rem;
     }
+
     .form-control {
       width: 100%;
       padding: 0.75rem 1rem;
@@ -50,32 +57,52 @@ check_admin_auth();
       background-color: #f8fafc;
       box-sizing: border-box;
     }
+
     .form-control:focus {
       border-color: #3b82f6;
-      box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
       outline: none;
       background-color: #ffffff;
     }
+
     .slip-panel {
       background: #fff;
       padding: 1rem;
       border-radius: 2px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
       overflow-x: auto;
     }
-    
+
     @media print {
-      body * { visibility: hidden; }
-      .slip-panel, .slip-panel * { visibility: visible; }
-      .slip-panel {
-        position: absolute; left: 0; top: 0;
-        width: 100%; margin: 0; padding: 0;
-        box-shadow: none; display: block;
+      body * {
+        visibility: hidden;
       }
-      .portal-sidebar, .portal-topbar, .form-panel { display: none !important; }
+
+      .slip-panel,
+      .slip-panel * {
+        visibility: visible;
+      }
+
+      .slip-panel {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+        display: block;
+      }
+
+      .portal-sidebar,
+      .portal-topbar,
+      .form-panel {
+        display: none !important;
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="portal-wrapper">
     <div class="portal-main">
@@ -83,15 +110,16 @@ check_admin_auth();
         <div class="topbar-left">
           <button class="menu-toggle" id="menuToggle">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="3" y1="6" x2="21" y2="6"/>
-              <line x1="3" y1="12" x2="21" y2="12"/>
-              <line x1="3" y1="18" x2="21" y2="18"/>
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
             </svg>
           </button>
           <span class="topbar-title">Fee Slip</span>
         </div>
         <div class="topbar-right">
-          <button class="btn btn-sm btn-danger" onclick="sessionStorage.removeItem('ksm_admin_auth'); window.location.href='login.php'">Logout</button>
+          <button class="btn btn-sm btn-danger"
+            onclick="sessionStorage.removeItem('ksm_admin_auth'); window.location.href='login.php'">Logout</button>
         </div>
       </div>
 
@@ -104,22 +132,26 @@ check_admin_auth();
           <!-- Form Panel for Tri-Slip -->
           <div class="form-panel">
             <h3 style="margin-bottom:1.5rem;color:var(--primary-color);">Data Entry (Fee Slip)</h3>
-            
+
             <div class="form-group">
               <label>Student's Name</label>
-              <input type="text" id="fsInputName" class="form-control" placeholder="Enter student name" oninput="updateTriSlip()">
+              <input type="text" id="fsInputName" class="form-control" placeholder="Enter student name"
+                oninput="updateTriSlip()">
             </div>
             <div class="form-group">
               <label>Father's Name</label>
-              <input type="text" id="fsInputFname" class="form-control" placeholder="Enter father's name" oninput="updateTriSlip()">
+              <input type="text" id="fsInputFname" class="form-control" placeholder="Enter father's name"
+                oninput="updateTriSlip()">
             </div>
             <div class="form-group">
               <label>Grade</label>
-              <input type="text" id="fsInputGrade" class="form-control" placeholder="Enter grade" oninput="updateTriSlip()">
+              <input type="text" id="fsInputGrade" class="form-control" placeholder="Enter grade"
+                oninput="updateTriSlip()">
             </div>
             <div class="form-group">
               <label>Dated</label>
-              <input type="text" id="fsInputDate" class="form-control" placeholder="e.g. 25-09-2026" oninput="updateTriSlip()">
+              <input type="date" id="fsInputDate" class="form-control"
+                oninput="updateTriSlip()">
             </div>
             <div class="form-group">
               <label>Tuition Fee</label>
@@ -138,22 +170,28 @@ check_admin_auth();
               <input type="number" id="fsInputArr" class="form-control" value="" oninput="updateTriSlip()">
             </div>
             <div class="form-group" style="margin-top: 1.5rem;">
-              <button class="btn btn-primary" style="width:100%" onclick="downloadTriSlipPDF()">Download Fee Slip PDF</button>
+              <button class="btn btn-primary" style="width:100%" onclick="downloadTriSlipPDF()">Download Fee Slip
+                PDF</button>
             </div>
           </div>
 
           <!-- Preview Panel -->
           <div class="slip-panel">
-            <div class="tri-slip-wrapper" style="width: 1040px; min-width: 1040px; background: #fff; padding: 12px; border: 4px double #000; display: flex; gap: 8px; box-sizing: border-box; font-family: 'Calibri', 'Arial', sans-serif; color: #000; z-index: 1;">
-              
+            <div class="tri-slip-wrapper"
+              style="width: 1040px; min-width: 1040px; background: #fff; padding: 12px; border: 4px double #000; display: flex; gap: 8px; box-sizing: border-box; font-family: 'Calibri', 'Arial', sans-serif; color: #000; z-index: 1;">
+
               <!-- PHP Loop for 3 Slips -->
               <?php for ($i = 0; $i < 3; $i++): ?>
-              <div style="flex: 1; border: 2px solid #000; padding: 12px 10px; position: relative; z-index: 1; background: transparent;">
+                <div
+                  style="flex: 1; border: 2px solid #000; padding: 12px 10px; position: relative; z-index: 1; background: transparent;">
                   <!-- Sub-Watermark -->
-                  <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 350px; height: 350px; background-image: url('../../assets/images/logo.svg'); background-repeat: no-repeat; background-position: center; background-size: contain; opacity: 0.18; z-index: -1; pointer-events: none;"></div>
-                  
+                  <div
+                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 350px; height: 350px; background-image: url('../../assets/images/logo.svg'); background-repeat: no-repeat; background-position: center; background-size: contain; opacity: 0.35; z-index: -1; pointer-events: none;">
+                  </div>
+
                   <!-- Header -->
-                  <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 12px;">
+                  <div
+                    style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 12px;">
                     <img src="../../assets/images/logo.svg" style="width: 65px; height: 65px;" alt="Logo">
                     <div style="text-align: center; font-weight: 700; font-size: 0.95rem; line-height: 1.3;">
                       <div>Kindergarten Saadia's</div>
@@ -162,15 +200,28 @@ check_admin_auth();
                   </div>
 
                   <!-- Details -->
-                  <div style="font-size: 0.85rem; line-height: 2; font-weight: 700; margin-bottom: 10px;">
-                    <div>Student's Name: <span class="fs-out-name" style="display:inline-block; border-bottom: 1px solid #000; min-width: 160px; font-weight: 600;"></span></div>
-                    <div>Father's Name: <span class="fs-out-fname" style="display:inline-block; border-bottom: 1px solid #000; min-width: 165px; font-weight: 600;"></span></div>
-                    <div>Grade: <span class="fs-out-grade" style="display:inline-block; border-bottom: 1px solid #000; min-width: 200px; font-weight: 600;"></span></div>
-                    <div>Dated: <span class="fs-out-date" style="display:inline-block; border-bottom: 1px solid #000; min-width: 205px; font-weight: 600;"></span></div>
+                  <div style="font-size: 0.85rem; font-weight: 700; margin-bottom: 10px; display: flex; flex-direction: column; gap: 10px;">
+                    <div style="display: flex; align-items: flex-end;">
+                      <div style="width: 115px;">Student's Name:</div>
+                      <div class="fs-out-name" style="flex: 1; border-bottom: 1px solid #000; font-weight: 600; padding-left: 5px; min-height: 16px;"></div>
+                    </div>
+                    <div style="display: flex; align-items: flex-end;">
+                      <div style="width: 115px;">Father's Name:</div>
+                      <div class="fs-out-fname" style="flex: 1; border-bottom: 1px solid #000; font-weight: 600; padding-left: 5px; min-height: 16px;"></div>
+                    </div>
+                    <div style="display: flex; align-items: flex-end;">
+                      <div style="width: 115px;">Grade:</div>
+                      <div class="fs-out-grade" style="flex: 1; border-bottom: 1px solid #000; font-weight: 600; padding-left: 5px; min-height: 16px;"></div>
+                    </div>
+                    <div style="display: flex; align-items: flex-end;">
+                      <div style="width: 115px;">Dated:</div>
+                      <div class="fs-out-date" style="flex: 1; border-bottom: 1px solid #000; font-weight: 600; padding-left: 5px; min-height: 16px;"></div>
+                    </div>
                   </div>
 
                   <!-- Table -->
-                  <table style="width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 0.8rem; font-weight: 700; border: 2px solid #000; background: transparent !important;">
+                  <table
+                    style="width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 0.8rem; font-weight: 700; border: 2px solid #000; background: transparent !important;">
                     <thead>
                       <tr>
                         <th style="border: 1px solid #000; padding: 4px; text-align: left; width: 12%;">S.No</th>
@@ -209,18 +260,22 @@ check_admin_auth();
 
                   <!-- Footer -->
                   <div style="font-size: 0.8rem; line-height: 2; font-weight: 700;">
-                    <div>Received: <span style="display:inline-block; border-bottom: 1px solid #000; min-width: 150px;"></span></div>
-                    <div>Balance: <span style="display:inline-block; border-bottom: 1px solid #000; min-width: 155px;"></span></div>
-                    
+                    <div>Received: <span
+                        style="display:inline-block; border-bottom: 1px solid #000; min-width: 150px;"></span></div>
+                    <div>Balance: <span
+                        style="display:inline-block; border-bottom: 1px solid #000; min-width: 155px;"></span></div>
+
                     <div style="margin-top: 15px;">(Online Payment) Saadia Tariq</div>
                     <div>Account No: 1721043185210012</div>
                     <div>(HBL Micro Finance Bank)</div>
                     <div style="margin-top: 5px;">Easypaisa number: 03135620045</div>
 
-                    <div style="margin-top: 15px;">Principal's Signature: <span style="display:inline-block; border-bottom: 1px solid #000; min-width: 90px;"></span></div>
-                    <div>School Stamp: <span style="display:inline-block; border-bottom: 1px solid #000; min-width: 120px;"></span></div>
+                    <div style="margin-top: 15px;">Principal's Signature: <span
+                        style="display:inline-block; border-bottom: 1px solid #000; min-width: 90px;"></span></div>
+                    <div>School Stamp: <span
+                        style="display:inline-block; border-bottom: 1px solid #000; min-width: 120px;"></span></div>
                   </div>
-              </div>
+                </div>
               <?php endfor; ?>
             </div>
           </div>
@@ -234,17 +289,17 @@ check_admin_auth();
   <script src="../assets/sidebar.js"></script>
   <script>
     buildSidebar('admin');
-    
+
     function downloadTriSlipPDF() {
       window.scrollTo(0, 0);
       const element = document.querySelector('.tri-slip-wrapper');
       const studentName = document.getElementById('fsInputName').value.trim() || 'Student';
       const opt = {
-        margin:       0.2,
-        filename:     `Fee_Slip_${studentName}.pdf`,
-        image:        { type: 'jpeg', quality: 1 },
-        html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
-        jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
+        margin: 0.2,
+        filename: `Fee_Slip_${studentName}.pdf`,
+        image: { type: 'jpeg', quality: 1 },
+        html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
       };
       html2pdf().set(opt).from(element).save();
     }
@@ -254,7 +309,7 @@ check_admin_auth();
       const fname = document.getElementById('fsInputFname').value;
       const grade = document.getElementById('fsInputGrade').value;
       const date = document.getElementById('fsInputDate').value;
-      
+
       const tuit = parseFloat(document.getElementById('fsInputTuit').value) || 0;
       const stat = parseFloat(document.getElementById('fsInputStat').value) || 0;
       const uni = parseFloat(document.getElementById('fsInputUni').value) || 0;
@@ -265,7 +320,7 @@ check_admin_auth();
       document.querySelectorAll('.fs-out-fname').forEach(el => el.textContent = fname);
       document.querySelectorAll('.fs-out-grade').forEach(el => el.textContent = grade);
       document.querySelectorAll('.fs-out-date').forEach(el => el.textContent = date);
-      
+
       document.querySelectorAll('.fs-out-tuit').forEach(el => el.textContent = tuit ? tuit : '');
       document.querySelectorAll('.fs-out-stat').forEach(el => el.textContent = stat ? stat : '');
       document.querySelectorAll('.fs-out-uni').forEach(el => el.textContent = uni ? uni : '');
@@ -274,4 +329,5 @@ check_admin_auth();
     }
   </script>
 </body>
+
 </html>

@@ -141,11 +141,20 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   });
 
   async function fetchAndRender() {
+    const tbody = document.getElementById('eventsTbody');
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:3rem;color:var(--text-medium);"><div style="display:inline-block;width:30px;height:30px;border:3px solid var(--border-color);border-top-color:var(--primary-deep);border-radius:50%;animation:spin 1s linear infinite;margin-bottom:10px;"></div><br>Loading events...</td></tr>';
+    if (!document.getElementById('spinStyle')) {
+      const style = document.createElement('style');
+      style.id = 'spinStyle';
+      style.textContent = '@keyframes spin { 100% { transform: rotate(360deg); } }';
+      document.head.appendChild(style);
+    }
     try {
       const res = await API.getEvents();
       allEvents = res.data || [];
       renderTable();
     } catch (e) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--danger);padding:2rem;">Failed to load events.</td></tr>';
       showToast('Error fetching events.', 'error');
     }
   }

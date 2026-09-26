@@ -133,25 +133,37 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   });
 
   async function renderGrid() {
-    const res = await API.getGallery();
-    const gallery = res.data || [];
     const grid = document.getElementById('adminGalleryGrid');
-    if (gallery.length === 0) {
-      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">🖼️</div><div class="empty-state-title">No photos yet</div><p class="empty-state-text">Add photos using the button above.</p></div>`;
-      return;
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-medium);"><div style="display:inline-block;width:30px;height:30px;border:3px solid var(--border-color);border-top-color:var(--primary-deep);border-radius:50%;animation:spin 1s linear infinite;margin-bottom:10px;"></div><br>Loading gallery...</div>';
+    if (!document.getElementById('spinStyle')) {
+      const style = document.createElement('style');
+      style.id = 'spinStyle';
+      style.textContent = '@keyframes spin { 100% { transform: rotate(360deg); } }';
+      document.head.appendChild(style);
     }
-    grid.innerHTML = gallery.map(item => `
-      <div class="card" style="padding:0;overflow:hidden;">
-        <img src="${item.url}" alt="${item.caption || ''}" style="width:100%;height:200px;object-fit:contain;background:var(--primary-bg);" onerror="this.src='https://via.placeholder.com/300x200/EFF6FF/1E3A8A?text=Error'">
-        <div style="padding:0.75rem;">
-          <p style="font-size:0.82rem;color:var(--text-medium);margin-bottom:0.5rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${item.caption || 'No caption'}</p>
-          <div style="display:flex;gap:0.5rem;">
-            <button class="btn btn-sm btn-outline" style="flex:1;" onclick="editPhoto('${item.id}')">✏️</button>
-            <button class="btn btn-sm btn-danger" style="flex:1;" onclick="deletePhoto('${item.id}')">🗑️</button>
+    try {
+      const res = await API.getGallery();
+      const gallery = res.data || [];
+      if (gallery.length === 0) {
+        grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">🖼️</div><div class="empty-state-title">No photos yet</div><p class="empty-state-text">Add photos using the button above.</p></div>`;
+        return;
+      }
+      grid.innerHTML = gallery.map(item => `
+        <div class="card" style="padding:0;overflow:hidden;">
+          <img src="${item.url}" alt="${item.caption || ''}" style="width:100%;height:200px;object-fit:contain;background:var(--primary-bg);" onerror="this.src='https://via.placeholder.com/300x200/EFF6FF/1E3A8A?text=Error'">
+          <div style="padding:0.75rem;">
+            <p style="font-size:0.82rem;color:var(--text-medium);margin-bottom:0.5rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${item.caption || 'No caption'}</p>
+            <div style="display:flex;gap:0.5rem;">
+              <button class="btn btn-sm btn-outline" style="flex:1;" onclick="editPhoto('${item.id}')">✏️</button>
+              <button class="btn btn-sm btn-danger" style="flex:1;" onclick="deletePhoto('${item.id}')">🗑️</button>
+            </div>
           </div>
         </div>
-      </div>
-    `).join('');
+      `).join('');
+    } catch (e) {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--danger);">Failed to load gallery.</div>';
+      showToast('Error fetching gallery.', 'error');
+    }
   }
 
   function clearForm() {

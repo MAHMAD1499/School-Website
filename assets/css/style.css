@@ -1643,6 +1643,14 @@ footer h4 {
   object-fit: contain;
 }
 
+.footer-logo .logo-title {
+  color: white;
+}
+
+.footer-logo .logo-subtitle {
+  color: rgba(255, 255, 255, 0.85);
+}
+
 .footer-desc {
   margin-bottom: 1.5rem;
   line-height: 1.7;
