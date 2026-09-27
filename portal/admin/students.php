@@ -18,7 +18,7 @@ $method=$_SERVER['REQUEST_METHOD']??'GET';
 $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   if($method==='GET'){$r=ksm_db()->query("SELECT * FROM users_students ORDER BY id ASC");$rows=[];while($row=$r->fetch_assoc())$rows[]=$row;ksm_json($rows);}
   if($method==='POST'){
-    $name=ksm_esc($body['name']??'');$email=ksm_esc($body['email']??'');$password=ksm_esc($body['password']??'');$class=ksm_esc($body['class']??'');$rollNo=ksm_esc($body['rollNo']??'');$parentName=ksm_esc($body['parentName']??'');
+    $name=ksm_esc($body['name']??'');$email=ksm_esc($body['email']??'');$password=ksm_esc($body['password']??'');$class=ksm_esc($body['class']??'');$rollNo=ksm_esc($body['rollNo']??'');$parentName=ksm_esc($body['parentName']??'');$tuition_fee=ksm_esc($body['tuition_fee']??'');$annual_dues=ksm_esc($body['annual_dues']??'');
     if(!$name||!$rollNo||!$password)ksm_err('Name, Roll No, and Password required.');
     if(!preg_match('/^[A-Za-z\s]{2,50}$/', $name)) ksm_err('Invalid name format.');
     if($parentName && !preg_match('/^[A-Za-z\s]{2,50}$/', $parentName)) ksm_err('Invalid parent name format.');
@@ -29,7 +29,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     if ($chk && $chk->num_rows > 0) ksm_err("Roll number '$rollNo' is already assigned to another student.");
 
     $hashed_pass = password_hash($password, PASSWORD_DEFAULT);
-    ksm_db()->query("INSERT INTO users_students(name,email,password,class,rollNo,parentName)VALUES('$name','$email','$hashed_pass','$class','$rollNo','$parentName')");
+    ksm_db()->query("INSERT INTO users_students(name,email,password,class,rollNo,parentName,tuition_fee,annual_dues)VALUES('$name','$email','$hashed_pass','$class','$rollNo','$parentName','$tuition_fee','$annual_dues')");
     ksm_json(['id'=>ksm_db()->insert_id],'Student added.');
   }
   if($method==='PUT'){
@@ -43,6 +43,8 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     $class=isset($body['class']) ? ksm_esc($body['class']) : ksm_esc($curr['class']);
     $rollNo=isset($body['rollNo']) ? ksm_esc($body['rollNo']) : ksm_esc($curr['rollNo']);
     $parentName=isset($body['parentName']) ? ksm_esc($body['parentName']) : ksm_esc($curr['parentName']);
+    $tuition_fee=isset($body['tuition_fee']) ? ksm_esc($body['tuition_fee']) : ksm_esc($curr['tuition_fee'] ?? '');
+    $annual_dues=isset($body['annual_dues']) ? ksm_esc($body['annual_dues']) : ksm_esc($curr['annual_dues'] ?? '');
     $status=isset($body['status']) ? ksm_esc($body['status']) : ksm_esc($curr['status'] ?? 'Active');
     
     if(!preg_match('/^[A-Za-z\s]{2,50}$/', $name)) ksm_err('Invalid name format.');
@@ -61,7 +63,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
       if ($chk && $chk->num_rows > 0) ksm_err("Roll number '$rollNo' is already assigned to another student.");
     }
 
-    ksm_db()->query("UPDATE users_students SET name='$name',email='$email',class='$class',rollNo='$rollNo',parentName='$parentName',status='$status' $password_update_sql WHERE id=$id");
+    ksm_db()->query("UPDATE users_students SET name='$name',email='$email',class='$class',rollNo='$rollNo',parentName='$parentName',status='$status',tuition_fee='$tuition_fee',annual_dues='$annual_dues' $password_update_sql WHERE id=$id");
     ksm_json(null,'Updated.');
   }
   if($method==='DELETE'){
@@ -100,7 +102,20 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
           <h1 class="page-title">👨‍🎓 Manage Students</h1>
           <p class="page-subtitle">Add, edit, or remove students and manage their login credentials</p>
         </div>
-        <button class="btn btn-primary" onclick="openModal('studentModal'); clearForm()">+ Add Student</button>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <select id="classFilter" class="form-control" style="width: auto; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; height: auto;" onchange="renderTable()">
+            <option value="">All Classes</option>
+            <option value="Playgroup">Playgroup</option>
+            <option value="Nursery">Nursery</option>
+            <option value="Prep">Prep</option>
+            <option value="Grade One">Grade One</option>
+            <option value="Grade Two">Grade Two</option>
+            <option value="Grade Three">Grade Three</option>
+            <option value="Grade Four">Grade Four</option>
+            <option value="Grade Five">Grade Five</option>
+          </select>
+          <button class="btn btn-primary" onclick="openModal('studentModal'); clearForm()">+ Add Student</button>
+        </div>
       </div>
 
       <div class="card">
@@ -156,11 +171,27 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
           <option value="Grade One">Grade One</option>
           <option value="Grade Two">Grade Two</option>
           <option value="Grade Three">Grade Three</option>
+          <option value="Grade Four">Grade Four</option>
+          <option value="Grade Five">Grade Five</option>
         </select>
       </div>
       <div class="form-group">
         <label class="form-label">Parent Name</label>
         <input type="text" id="sParentName" class="form-control" placeholder="Parent Name" pattern="[A-Za-z\s]{2,50}" maxlength="50" title="Only letters and spaces allowed">
+      </div>
+    </div>
+
+    <hr style="margin:1rem 0;border:none;border-top:1px solid var(--border-color);">
+    <h3 style="margin-bottom:1rem;font-size:1rem;color:var(--text-dark);">Fee Configuration</h3>
+    
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Tuition Fee</label>
+        <input type="number" id="sTuitionFee" class="form-control" placeholder="e.g. 1500" min="0">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Annual Dues / Stationery</label>
+        <input type="number" id="sAnnualDues" class="form-control" placeholder="e.g. 2000" min="0">
       </div>
     </div>
 
@@ -284,9 +315,12 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   async function renderTable() {
     try {
       const res = await API.getStudents();
-      const students = res.data || [];
+      const allStudents = res.data || [];
       // Also push to local DB to sync for credentials panel fallback
-      try { DB.set('students', students); } catch(e) { console.error('DB set failed:', e); }
+      try { DB.set('students', allStudents); } catch(e) { console.error('DB set failed:', e); }
+      
+      const classFilter = document.getElementById('classFilter')?.value;
+      const students = classFilter ? allStudents.filter(s => s.class === classFilter) : allStudents;
       
       const tbody = document.getElementById('studentsTbody');
       if (students.length === 0) {
@@ -341,6 +375,8 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     document.getElementById('sClass').value = '';
     document.getElementById('sRollNo').value = '';
     document.getElementById('sParentName').value = '';
+    document.getElementById('sTuitionFee').value = '';
+    document.getElementById('sAnnualDues').value = '';
     document.getElementById('studentModalTitle').textContent = 'Add Student';
   }
 
@@ -352,11 +388,13 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     document.getElementById('sName').value = s.name;
     document.getElementById('sEmail').value = s.email;
     document.getElementById('sEmail').readOnly = true;
-    document.getElementById('sPassword').value = s.password || '';
+    document.getElementById('sPassword').value = ''; // Don't put hashed password here
     document.getElementById('sPwdGroup').style.display = 'none';
     document.getElementById('sClass').value = s.class || '';
     document.getElementById('sRollNo').value = s.rollNo || '';
     document.getElementById('sParentName').value = s.parentName || '';
+    document.getElementById('sTuitionFee').value = s.tuition_fee || '';
+    document.getElementById('sAnnualDues').value = s.annual_dues || '';
     document.getElementById('studentModalTitle').textContent = 'Edit Student';
     openModal('studentModal');
   }
@@ -377,7 +415,9 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
         password,
         class: document.getElementById('sClass').value.trim(),
         rollNo: document.getElementById('sRollNo').value.trim(),
-        parentName: document.getElementById('sParentName').value.trim()
+        parentName: document.getElementById('sParentName').value.trim(),
+        tuition_fee: document.getElementById('sTuitionFee').value.trim(),
+        annual_dues: document.getElementById('sAnnualDues').value.trim()
     };
     
     let res;
@@ -411,7 +451,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   }
 
   async function promoteStudent(id, currentClass) {
-    const classHierarchy = ['Playgroup', 'Nursery', 'Prep', 'Grade One', 'Grade Two', 'Grade Three'];
+    const classHierarchy = ['Playgroup', 'Nursery', 'Prep', 'Grade One', 'Grade Two', 'Grade Three', 'Grade Four', 'Grade Five'];
     let nextClass = currentClass;
     let newStatus = 'Active';
 
@@ -424,7 +464,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     }
 
     const msg = newStatus === 'Graduated' 
-      ? 'Promote this student? They are in Grade Three and will be marked as Graduated.' 
+      ? 'Promote this student? They are in Grade Five and will be marked as Graduated.' 
       : `Promote this student to ${nextClass}?`;
 
     confirmDelete(msg, async () => {

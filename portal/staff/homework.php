@@ -89,6 +89,8 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
             <option value="Grade One">Grade One</option>
             <option value="Grade Two">Grade Two</option>
             <option value="Grade Three">Grade Three</option>
+            <option value="Grade Four">Grade Four</option>
+            <option value="Grade Five">Grade Five</option>
           </select>
           <input type="text" id="searchHomework" class="search-input" placeholder="Search homework..." oninput="renderHomework()">
         </div>
@@ -133,6 +135,8 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
           <option>Grade One</option>
           <option>Grade Two</option>
           <option>Grade Three</option>
+          <option>Grade Four</option>
+          <option>Grade Five</option>
         </select>
       </div>
       <div class="form-group">

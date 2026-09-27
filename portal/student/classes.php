@@ -149,6 +149,36 @@ $body=json_decode(file_get_contents('php://input'),true)??[];
             </div>
           </div>
         </div>
+
+        <div class="class-card">
+          <div class="class-card-header" data-emoji="🌍" style="background:linear-gradient(135deg,#6366F1,#4F46E5);">
+            <h3 class="class-card-title">Grade Four</h3>
+            <p class="class-card-age">Ages 8 – 9 Years</p>
+          </div>
+          <div class="class-card-body">
+            <p style="font-size:0.85rem;color:var(--text-medium);margin-bottom:1rem;">Developing critical thinking skills, exploring complex texts, and expanding knowledge of world history and geography.</p>
+            <div>
+              <span class="subject-tag">Creative Writing</span>
+              <span class="subject-tag">Geometry & Fractions</span>
+              <span class="subject-tag">Social Studies</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="class-card">
+          <div class="class-card-header" data-emoji="🎓" style="background:linear-gradient(135deg,#EC4899,#DB2777);">
+            <h3 class="class-card-title">Grade Five</h3>
+            <p class="class-card-age">Ages 9 – 10 Years</p>
+          </div>
+          <div class="class-card-body">
+            <p style="font-size:0.85rem;color:var(--text-medium);margin-bottom:1rem;">Preparing for middle school transition with comprehensive essays, pre-algebra concepts, and independent research.</p>
+            <div>
+              <span class="subject-tag">Advanced Grammar</span>
+              <span class="subject-tag">Pre-Algebra</span>
+              <span class="subject-tag">Earth Science</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Daily Schedule -->

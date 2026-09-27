@@ -179,7 +179,7 @@
       <div class="content-section" id="our-story">
         <h2>Our Story</h2>
         <p>Kindergarten Saadia's Montessori School was founded with a heartfelt vision by <strong>Saadia Tariq</strong> — a dedicated Pakistani mother and educator who understood the challenges families in Haripur face when searching for quality early childhood education. Growing up in a society where rote learning often takes the place of genuine understanding, she set out to build something different: a place where every child is seen, heard, and nurtured as an individual.</p>
-        <p style="margin-top:1rem;">In Pakistan, parents work hard to give their children the best possible start in life. At KSM Haripur, we honour that effort by providing a Montessori environment rooted in respect, discipline, and love of learning — values that resonate deeply within our culture. From Playgroup through Grade Three, our school bridges the Montessori philosophy with the hopes and aspirations of Pakistani families, preparing children not just academically but as confident, responsible human beings.</p>
+        <p style="margin-top:1rem;">In Pakistan, parents work hard to give their children the best possible start in life. At KSM Haripur, we honour that effort by providing a Montessori environment rooted in respect, discipline, and love of learning — values that resonate deeply within our culture. From Playgroup through Grade Five, our school bridges the Montessori philosophy with the hopes and aspirations of Pakistani families, preparing children not just academically but as confident, responsible human beings.</p>
         <p style="margin-top:1rem;">Under the leadership of Saadia Tariq as Founder and Managing Director, our school continues to grow — guided by the belief that when you invest in a child's earliest years, you invest in the future of a whole family and community.</p>
         <div
           style="margin-top:2rem; padding: 2rem; background: var(--primary-bg); border-radius: var(--radius-md); border-left: 4px solid var(--primary-deep);">
@@ -270,7 +270,7 @@
           <div class="timeline-item">
             <div class="timeline-year">2026</div>
             <h3>Growing Strong</h3>
-            <p>KSM Haripur now serves students from Playgroup through Grade Three, with a dedicated team of trained educators and the continued trust of hundreds of families across Haripur.</p>
+            <p>KSM Haripur now serves students from Playgroup through Grade Five, with a dedicated team of trained educators and the continued trust of hundreds of families across Haripur.</p>
           </div>
         </div>
       </div>
