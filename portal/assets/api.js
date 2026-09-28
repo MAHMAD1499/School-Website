@@ -103,15 +103,7 @@ const API = {
   async addHomework(d) { return apiCall(makePageUrl('homework','staff'), 'POST', d); },
   async updateHomework(d) { return apiCall(makePageUrl('homework','staff'), 'PUT', d); },
   async deleteHomework(id) { return apiCall(makePageUrl('homework','staff') + '?id=' + id, 'DELETE'); },
-  async getHomeworkSubmissions(hwId, studentId) { 
-    const q = new URLSearchParams();
-    if(hwId) q.append('hwId', hwId);
-    if(studentId) q.append('studentId', studentId);
-    const curr = window.location.pathname;
-    const sub = curr.includes('/student/') ? 'student' : 'staff';
-    return apiCall(makePageUrl('homework', sub) + '?' + q.toString() + '&submissions=1', 'GET'); 
-  },
-  async submitHomeworkAnswer(d) { return apiCall(makePageUrl('homework','student'), 'POST', d); },
+
 
   // ATTENDANCE
   async getAttendance(params) { const q = params ? '?' + new URLSearchParams(params).toString() : ''; return apiCall(makePageUrl('attendance','staff') + q, 'GET'); },

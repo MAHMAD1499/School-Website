@@ -12,30 +12,13 @@ if(($_SERVER['REQUEST_METHOD']??'')==='OPTIONS')exit;
 $isAjax=isset($_SERVER['HTTP_X_REQUESTED_WITH'])||strpos($_SERVER['CONTENT_TYPE']??'','application/json')!==false||isset($_GET['_api']);
 $method=$_SERVER['REQUEST_METHOD']??'GET';
 $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
-  if($method==='GET' && isset($_GET['submissions'])){
-    $hwId = intval($_GET['hwId']??0);
-    $studentId = (int)$_SESSION['ksm_student_auth']; // Force to logged-in student
-    $where = [];
-    if($hwId) $where[] = "homework_id=$hwId";
-    $where[] = "student_id=$studentId";
-    $w = count($where) ? "WHERE " . implode(" AND ", $where) : "";
-    $r=ksm_db()->query("SELECT s.*, us.name student_name FROM homework_submissions s JOIN users_students us ON s.student_id=us.id $w ORDER BY s.submitted_at DESC");
-    $rows=[];while($row=$r->fetch_assoc())$rows[]=$row;
-    ksm_json($rows);
-  }
   if($method==='GET'){
-    $class=ksm_esc($_GET['class']??'');$where=$class?"WHERE class_name='$class'":'';
-    $r=ksm_db()->query("SELECT h.*,us.name staff_name FROM homework h LEFT JOIN users_staff us ON h.staff_id=us.id $where ORDER BY h.date_assigned DESC");
+    $studentId = (int)$_SESSION['ksm_student_auth'];
+    $stu_res = ksm_db()->query("SELECT class FROM users_students WHERE id=$studentId");
+    $studentClass = ($stu_row = $stu_res->fetch_assoc()) ? ksm_esc($stu_row['class']) : '';
+    
+    $r=ksm_db()->query("SELECT h.*,us.name staff_name FROM homework h LEFT JOIN users_staff us ON h.staff_id=us.id WHERE h.class_name='$studentClass' ORDER BY h.date_assigned DESC");
     $rows=[];while($row=$r->fetch_assoc())$rows[]=$row;ksm_json($rows);
-  }
-  if($method==='POST'){
-    $hwId = intval($body['hwId']??0);
-    $studentId = intval($body['studentId']??0);
-    $answer = ksm_esc($body['answer']??'');
-    if(!$hwId || !$studentId) ksm_err('Invalid data.');
-    if($studentId !== (int)$_SESSION['ksm_student_auth']) ksm_err('Access denied.', 403);
-    ksm_db()->query("INSERT INTO homework_submissions(homework_id, student_id, answer) VALUES($hwId, $studentId, '$answer') ON DUPLICATE KEY UPDATE answer='$answer', submitted_at=CURRENT_TIMESTAMP");
-    ksm_json(null, 'Submitted.');
   }
 }
 ?>
@@ -65,7 +48,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
       <div class="page-header">
         <div class="page-header-left">
           <h1 class="page-title">📋 Homework Diary</h1>
-          <p class="page-subtitle">View and submit your homework assignments</p>
+          <p class="page-subtitle">View your homework assignments</p>
         </div>
       </div>
       <div id="homeworkList" class="grid-2"></div>
@@ -73,21 +56,24 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   </div>
 </div>
 
-<!-- Submit Homework Modal -->
-<div class="modal-overlay" id="submitModal">
+<!-- View Homework Modal -->
+<div class="modal-overlay" id="viewHomeworkModal">
   <div class="modal">
     <div class="modal-header">
-      <h2 class="modal-title">Submit Homework Answer</h2>
+      <h2 class="modal-title" id="viewHwTitle">Homework Title</h2>
       <button class="modal-close" data-modal-close><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
-    <input type="hidden" id="hwId">
-    <div class="form-group">
-      <label class="form-label">Your Answer *</label>
-      <textarea id="hwAnswer" class="form-control" rows="5" placeholder="Type your answer here..." required></textarea>
+    <div class="homework-meta" style="margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+      <span id="viewHwSubject">📚 Subject</span>
+      <span id="viewHwTeacher">👨‍🏫 Teacher</span>
+      <span id="viewHwDue">📅 Due: Date</span>
     </div>
-    <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:1rem;">
-      <button class="btn btn-outline" data-modal-close>Cancel</button>
-      <button class="btn btn-primary" onclick="submitAnswer()">📤 Submit</button>
+    <div class="form-group">
+      <label class="form-label">Instructions / Description</label>
+      <div id="viewHwDesc" style="background: var(--bg-light); padding: 1rem; border-radius: var(--radius-md); font-size: 0.9rem; line-height: 1.5; white-space: pre-wrap;"></div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-top:1rem;">
+      <button class="btn btn-primary" data-modal-close>Close</button>
     </div>
   </div>
 </div>
@@ -98,6 +84,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
 <script>
   buildSidebar('student');
   let currentStudent = null;
+  let currentHWList = [];
   document.addEventListener('DOMContentLoaded', () => {
     currentStudent = Auth.getStudent();
     if (!currentStudent) { window.location.href = 'login.php'; return; }
@@ -119,18 +106,15 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
       }
       
       const myHW = res.data;
-      
-      const subRes = await API.getHomeworkSubmissions(null, currentStudent.id);
-      const submissions = subRes.success && subRes.data ? subRes.data : [];
+      currentHWList = myHW;
       
       el.innerHTML = myHW.map(h => {
-        const sub = submissions.find(s => s.homework_id == h.id && s.student_id == currentStudent.id);
         const isPast = new Date(h.due_date) < new Date();
           return `
         <div class="homework-card">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.5rem;">
             <h3 class="homework-title">${h.title}</h3>
-            ${sub ? '<span class="badge badge-green">Submitted</span>' : isPast ? '<span class="badge badge-red">Past Due</span>' : '<span class="badge badge-blue">Pending</span>'}
+            ${isPast ? '<span class="badge badge-red">Past Due</span>' : '<span class="badge badge-blue">Pending</span>'}
           </div>
           <div class="homework-meta">
             <span>📚 ${h.subject}</span>
@@ -138,7 +122,9 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
             <span>📅 Due: ${formatDate(h.due_date)}</span>
           </div>
           <p class="homework-desc">${h.description || 'No description provided.'}</p>
-          ${renderAssignment({ ...h, student_submitted: !!sub })}
+          <div style="margin-top:0.5rem;">
+            <button class="btn btn-sm btn-primary" onclick="openViewModal('${h.id}')">👁️ View Details</button>
+          </div>
         </div>`;
       }).join('');
     } catch (e) {
@@ -146,46 +132,20 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     }
   }
 
-  function renderAssignment(h) {
-    if (h.student_submitted) {
-      return `
-        <div style="margin-top:0.5rem;display:flex;align-items:center;gap:0.5rem;">
-          <span style="color:var(--primary);font-size:0.85rem;">✅ Submitted</span>
-        </div>
-      `;
-    }
-    return `
-      <div style="margin-top:0.5rem;">
-        <button class="btn btn-sm btn-primary" onclick="openSubmitModal('${h.id}')">Answer</button>
-      </div>
-    `;
-  }
-
-  function openSubmitModal(id) {
-    document.getElementById('hwId').value = id;
-    document.getElementById('hwAnswer').value = '';
-    openModal('submitModal');
-  }
-
-  async function submitAnswer() {
-    const answer = document.getElementById('hwAnswer').value.trim();
-    if (!answer) { showToast('Please enter your answer', 'error'); return; }
-    const hwId = document.getElementById('hwId').value;
-    const data = {
-      hwId,
-      studentId: currentStudent.id,
-      answer
-    };
+  function openViewModal(id) {
+    const h = currentHWList.find(x => x.id == id);
+    if (!h) return;
     
-    const res = await API.submitHomeworkAnswer(data);
-    if(res.success){
-      showToast('Homework answer submitted!', 'success');
-      closeModal('submitModal');
-      renderHomework();
-    } else {
-      showToast(res.message, 'error');
-    }
+    document.getElementById('viewHwTitle').textContent = h.title;
+    document.getElementById('viewHwSubject').innerHTML = '📚 ' + h.subject;
+    document.getElementById('viewHwTeacher').innerHTML = '👨‍🏫 ' + (h.staff_name || 'Teacher');
+    document.getElementById('viewHwDue').innerHTML = '📅 Due: ' + formatDate(h.due_date);
+    document.getElementById('viewHwDesc').textContent = h.description || 'No description provided.';
+    
+    openModal('viewHomeworkModal');
   }
+
+
 
   function doLogout() { Auth.logoutStudent(); window.location.href = 'login.php'; }
 </script>

@@ -14,8 +14,7 @@ check_admin_auth();
   <style>
     .fees-container {
       display: grid;
-      grid-template-columns: 1fr 2fr;
-      /* Make slip preview larger */
+      grid-template-columns: minmax(320px, 1fr) minmax(750px, 2fr);
       gap: 2rem;
       margin-top: 1rem;
     }
@@ -33,6 +32,45 @@ check_admin_auth();
       box-shadow: 0 10px 25px rgba(30, 58, 138, 0.1);
       border: 1px solid #e1e8f0;
       height: fit-content;
+    }
+
+    .form-panel.panel-bulk {
+      background: linear-gradient(135deg, var(--primary-deep), var(--primary-light));
+      border: none;
+      box-shadow: 0 10px 25px rgba(30, 58, 138, 0.4);
+      color: #ffffff;
+    }
+    .form-panel.panel-bulk h3,
+    .form-panel.panel-bulk .form-group label {
+      color: #ffffff !important;
+    }
+    .form-panel.panel-bulk .form-control {
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .form-panel.panel-bulk .btn-primary {
+      background: #ffffff !important;
+      color: var(--primary-deep) !important;
+      font-weight: 700;
+      border: none !important;
+      box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+    }
+    .form-panel.panel-bulk .btn-primary:hover {
+      background: #f8fafc !important;
+      transform: translateY(-2px);
+    }
+
+    .form-panel.panel-quick {
+      background: linear-gradient(135deg, var(--accent-warm), var(--accent-hover));
+      border: none;
+      box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4);
+      color: #ffffff;
+    }
+    .form-panel.panel-quick h3,
+    .form-panel.panel-quick .form-group label {
+      color: #ffffff !important;
+    }
+    .form-panel.panel-quick .form-control {
+      border: 1px solid rgba(255, 255, 255, 0.4);
     }
 
     .form-group {
@@ -125,20 +163,41 @@ check_admin_auth();
 
       <div class="portal-content fade-up">
         <div style="margin-bottom:1rem;">
-          <h1 style="font-size:1.5rem;color:var(--text-dark);">Generate 2-Copy Fee Slip</h1>
+          <h1 style="font-size:1.5rem;color:var(--text-dark);">Fee Slip</h1>
         </div>
 
         <div class="fees-container">
-          <!-- Form Panel for Tri-Slip -->
-          <div class="form-panel">
-            <h3 style="margin-bottom:1.5rem;color:var(--primary-color);">Data Entry (Fee Slip)</h3>
+          <!-- LEFT COLUMN -->
+          <div style="display: flex; flex-direction: column; gap: 2rem;">
+            <div class="form-panel panel-bulk">
+              <h3 style="margin-bottom:1.5rem;color:var(--primary-color);">Bulk Class Download</h3>
+              <div class="form-group">
+                <label>Select Class</label>
+                <select id="bulkClassSelect" class="form-control" onchange="loadClassStudentsForBulk()">
+                  <option value="">-- Choose Class --</option>
+                  <option value="Playgroup">Playgroup</option>
+                  <option value="Nursery">Nursery</option>
+                  <option value="Prep">Prep</option>
+                  <option value="Grade One">Grade One</option>
+                  <option value="Grade Two">Grade Two</option>
+                  <option value="Grade Three">Grade Three</option>
+                  <option value="Grade Four">Grade Four</option>
+                  <option value="Grade Five">Grade Five</option>
+                </select>
+              </div>
 
-            <div class="form-group" style="padding: 1rem; background: #f8fafc; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid #cbd5e1;">
-              <label style="color:#0f172a; font-weight: 600; margin-bottom: 0.5rem;">⚡ Quick Fill (Select Student)</label>
-              <select id="quickStudentSelect" class="form-control" onchange="fillStudentData()">
-                <option value="">-- Manual Entry --</option>
-              </select>
+              <div id="bulkStudentsList"
+                style="margin-top: 1rem; max-height: 280px; overflow-y: auto; display: none; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.75rem;">
+              </div>
+
+              <div class="form-group" style="margin-top: 1.5rem;">
+                <button class="btn btn-primary" style="width:100%;"
+                  onclick="downloadBulkSlips()" id="bulkBtn">Download Class Slips</button>
+              </div>
             </div>
+
+            <div class="form-panel">
+              <h3 style="margin-bottom:1.5rem;color:var(--primary-color);">Data Entry (Fee Slip)</h3>
 
             <div class="form-group">
               <label>Student's Name</label>
@@ -157,8 +216,7 @@ check_admin_auth();
             </div>
             <div class="form-group">
               <label>Dated</label>
-              <input type="date" id="fsInputDate" class="form-control"
-                oninput="updateTriSlip()">
+              <input type="date" id="fsInputDate" class="form-control" oninput="updateTriSlip()">
             </div>
             <div class="form-group">
               <label>Tuition Fee</label>
@@ -180,35 +238,23 @@ check_admin_auth();
               <button class="btn btn-primary" style="width:100%" onclick="downloadTriSlipPDF()">Download Fee Slip
                 PDF</button>
             </div>
-            
-            <hr style="margin: 2rem 0; border: none; border-top: 1px solid #cbd5e1;">
-
-            <h3 style="margin-bottom:1.5rem;color:var(--primary-color);">Bulk Class Download</h3>
-            <div class="form-group">
-              <label>Select Class</label>
-              <select id="bulkClassSelect" class="form-control" onchange="loadClassStudentsForBulk()">
-                <option value="">-- Choose Class --</option>
-                <option value="Playgroup">Playgroup</option>
-                <option value="Nursery">Nursery</option>
-                <option value="Prep">Prep</option>
-                <option value="Grade One">Grade One</option>
-                <option value="Grade Two">Grade Two</option>
-                <option value="Grade Three">Grade Three</option>
-                <option value="Grade Four">Grade Four</option>
-                <option value="Grade Five">Grade Five</option>
-              </select>
-            </div>
-            
-            <div id="bulkStudentsList" style="margin-top: 1rem; max-height: 280px; overflow-y: auto; display: none; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.75rem;">
-            </div>
-
-            <div class="form-group" style="margin-top: 1.5rem;">
-              <button class="btn btn-primary" style="width:100%; background: #10b981; border-color: #10b981;" onclick="downloadBulkSlips()" id="bulkBtn">Download Class Slips</button>
-            </div>
           </div>
+        </div> <!-- End Left Column -->
 
-          <!-- Preview Panel -->
-          <div class="slip-panel">
+          <!-- RIGHT COLUMN -->
+          <div style="display: flex; flex-direction: column; gap: 2rem;">
+            <div class="form-panel panel-quick">
+              <h3 style="margin-bottom:0.5rem;color:var(--primary-color);">⚡ Quick Fill</h3>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label style="color:#0f172a; font-weight: 600; margin-bottom: 0.5rem;">Select Student</label>
+                <select id="quickStudentSelect" class="form-control" onchange="fillStudentData()">
+                  <option value="">-- Manual Entry --</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Preview Panel -->
+            <div class="slip-panel">
             <div class="tri-slip-wrapper"
               style="width: 720px; min-width: 720px; margin: 0 auto; background: #fff; padding: 12px; border: 4px double #000; display: flex; gap: 8px; box-sizing: border-box; font-family: 'Calibri', 'Arial', sans-serif; color: #000; z-index: 1;">
 
@@ -228,29 +274,39 @@ check_admin_auth();
                     <div style="text-align: center; font-weight: 700; font-size: 0.95rem; line-height: 1.3;">
                       <div>Kindergarten Saadia's</div>
                       <div>Montessori School Haripur</div>
-                      <div style="margin-top: 5px; font-weight: 800; text-decoration: underline; letter-spacing: 1px; color: #000;">
+                      <div
+                        style="margin-top: 5px; font-weight: 800; text-decoration: underline; letter-spacing: 1px; color: #000;">
                         <?= $i === 0 ? 'STUDENT SLIP' : 'ADMIN SLIP' ?>
                       </div>
                     </div>
                   </div>
 
                   <!-- Details -->
-                  <div style="font-size: 0.85rem; font-weight: 700; margin-bottom: 10px; display: flex; flex-direction: column; gap: 10px;">
+                  <div
+                    style="font-size: 0.85rem; font-weight: 700; margin-bottom: 10px; display: flex; flex-direction: column; gap: 10px;">
                     <div style="display: flex; align-items: flex-end;">
                       <div style="width: 115px;">Student's Name:</div>
-                      <div class="fs-out-name" style="flex: 1; border-bottom: 1px solid #000; font-weight: 600; padding-left: 5px; min-height: 16px;"></div>
+                      <div class="fs-out-name"
+                        style="flex: 1; border-bottom: 1px solid #000; font-weight: 600; padding-left: 5px; min-height: 16px;">
+                      </div>
                     </div>
                     <div style="display: flex; align-items: flex-end;">
                       <div style="width: 115px;">Father's Name:</div>
-                      <div class="fs-out-fname" style="flex: 1; border-bottom: 1px solid #000; font-weight: 600; padding-left: 5px; min-height: 16px;"></div>
+                      <div class="fs-out-fname"
+                        style="flex: 1; border-bottom: 1px solid #000; font-weight: 600; padding-left: 5px; min-height: 16px;">
+                      </div>
                     </div>
                     <div style="display: flex; align-items: flex-end;">
                       <div style="width: 115px;">Grade:</div>
-                      <div class="fs-out-grade" style="flex: 1; border-bottom: 1px solid #000; font-weight: 600; padding-left: 5px; min-height: 16px;"></div>
+                      <div class="fs-out-grade"
+                        style="flex: 1; border-bottom: 1px solid #000; font-weight: 600; padding-left: 5px; min-height: 16px;">
+                      </div>
                     </div>
                     <div style="display: flex; align-items: flex-end;">
                       <div style="width: 115px;">Dated:</div>
-                      <div class="fs-out-date" style="flex: 1; border-bottom: 1px solid #000; font-weight: 600; padding-left: 5px; min-height: 16px;"></div>
+                      <div class="fs-out-date"
+                        style="flex: 1; border-bottom: 1px solid #000; font-weight: 600; padding-left: 5px; min-height: 16px;">
+                      </div>
                     </div>
                   </div>
 
@@ -313,7 +369,8 @@ check_admin_auth();
                 </div>
               <?php endfor; ?>
             </div>
-          </div>
+          </div> <!-- End slip-panel -->
+          </div> <!-- End Right Column -->
         </div>
       </div>
     </div>
@@ -328,43 +385,43 @@ check_admin_auth();
 
     let allStudentsForFee = [];
     window.addEventListener('DOMContentLoaded', async () => {
-        // Auto-fill today's date
-        const dateInput = document.getElementById('fsInputDate');
-        if (!dateInput.value) {
-            dateInput.value = new Date().toISOString().split('T')[0];
-            updateTriSlip();
-        }
+      // Auto-fill today's date
+      const dateInput = document.getElementById('fsInputDate');
+      if (!dateInput.value) {
+        dateInput.value = new Date().toISOString().split('T')[0];
+        updateTriSlip();
+      }
 
-        try {
-            const res = await API.getStudents();
-            allStudentsForFee = res.data || [];
-            const select = document.getElementById('quickStudentSelect');
-            allStudentsForFee.forEach(s => {
-                const opt = document.createElement('option');
-                opt.value = s.id;
-                opt.textContent = `${s.name} (${s.class || 'No Class'}) - ${s.rollNo || 'N/A'}`;
-                select.appendChild(opt);
-            });
-        } catch(e) { console.error(e); }
+      try {
+        const res = await API.getStudents();
+        allStudentsForFee = res.data || [];
+        const select = document.getElementById('quickStudentSelect');
+        allStudentsForFee.forEach(s => {
+          const opt = document.createElement('option');
+          opt.value = s.id;
+          opt.textContent = `${s.name} (${s.class || 'No Class'}) - ${s.rollNo || 'N/A'}`;
+          select.appendChild(opt);
+        });
+      } catch (e) { console.error(e); }
     });
 
     function fillStudentData() {
-        const id = document.getElementById('quickStudentSelect').value;
-        if (!id) {
-          // Clear if needed, or leave manual inputs
-          return;
-        }
-        const student = allStudentsForFee.find(s => String(s.id) === String(id));
-        if (!student) return;
+      const id = document.getElementById('quickStudentSelect').value;
+      if (!id) {
+        // Clear if needed, or leave manual inputs
+        return;
+      }
+      const student = allStudentsForFee.find(s => String(s.id) === String(id));
+      if (!student) return;
 
-        document.getElementById('fsInputName').value = student.name || '';
-        document.getElementById('fsInputFname').value = student.parentName || '';
-        document.getElementById('fsInputGrade').value = student.class || '';
+      document.getElementById('fsInputName').value = student.name || '';
+      document.getElementById('fsInputFname').value = student.parentName || '';
+      document.getElementById('fsInputGrade').value = student.class || '';
 
-        if (student.tuition_fee) document.getElementById('fsInputTuit').value = student.tuition_fee;
-        if (student.annual_dues) document.getElementById('fsInputStat').value = student.annual_dues;
+      if (student.tuition_fee) document.getElementById('fsInputTuit').value = student.tuition_fee;
+      if (student.annual_dues) document.getElementById('fsInputStat').value = student.annual_dues;
 
-        updateTriSlip();
+      updateTriSlip();
     }
 
     let currentBulkStudents = [];
@@ -377,17 +434,17 @@ check_admin_auth();
         currentBulkStudents = [];
         return;
       }
-      
+
       try {
         const res = await API.getStudents();
         currentBulkStudents = (res.data || []).filter(s => s.class === classSelect);
-        
+
         if (currentBulkStudents.length === 0) {
           listContainer.innerHTML = '<p style="color:var(--text-medium); margin:0;">No students found in this class.</p>';
           listContainer.style.display = 'block';
           return;
         }
-        
+
         let html = `
           <input type="text" id="bulkStudentSearch" class="form-control" placeholder="Search student by name or roll no..." style="margin-bottom: 10px; font-size: 0.9rem; padding: 0.5rem;" oninput="filterBulkStudentsList()">
           <div id="bulkStudentsRows" style="display:flex; flex-direction:column; gap: 0.5rem;">
@@ -406,11 +463,11 @@ check_admin_auth();
           `;
         });
         html += '</div>';
-        
+
         listContainer.innerHTML = html;
         listContainer.style.display = 'block';
-        
-      } catch(e) {
+
+      } catch (e) {
         console.error('Error loading students for bulk:', e);
       }
     }
@@ -445,32 +502,32 @@ check_admin_auth();
         for (let i = 0; i < currentBulkStudents.length; i++) {
           const student = currentBulkStudents[i];
           btn.textContent = `Downloading ${i + 1} / ${currentBulkStudents.length}...`;
-          
+
           document.getElementById('fsInputName').value = student.name || '';
           document.getElementById('fsInputFname').value = student.parentName || '';
           document.getElementById('fsInputGrade').value = student.class || '';
-          
+
           const specificArr = document.getElementById(`bulkArr_${i}`)?.value;
           if (specificArr !== "" && specificArr !== undefined) {
-             document.getElementById('fsInputArr').value = specificArr;
+            document.getElementById('fsInputArr').value = specificArr;
           } else {
-             document.getElementById('fsInputArr').value = '0'; // default to 0 if not provided
+            document.getElementById('fsInputArr').value = '0'; // default to 0 if not provided
           }
 
           if (student.tuition_fee && parseFloat(student.tuition_fee) > 0) {
-              document.getElementById('fsInputTuit').value = student.tuition_fee;
+            document.getElementById('fsInputTuit').value = student.tuition_fee;
           } else {
-              document.getElementById('fsInputTuit').value = globalTuit;
+            document.getElementById('fsInputTuit').value = globalTuit;
           }
 
           if (student.annual_dues && parseFloat(student.annual_dues) > 0) {
-              document.getElementById('fsInputStat').value = student.annual_dues;
+            document.getElementById('fsInputStat').value = student.annual_dues;
           } else {
-              document.getElementById('fsInputStat').value = globalStat;
+            document.getElementById('fsInputStat').value = globalStat;
           }
-          
+
           updateTriSlip();
-          
+
           window.scrollTo(0, 0);
           const element = document.querySelector('.tri-slip-wrapper');
           const safeName = (student.name || 'Student').replace(/[^a-zA-Z0-9 ]/g, "");
@@ -481,12 +538,12 @@ check_admin_auth();
             html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
             jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
           };
-          
+
           await html2pdf().set(opt).from(element).save();
           // Short delay to allow the browser to process the download event without hanging
-          await new Promise(r => setTimeout(r, 800)); 
+          await new Promise(r => setTimeout(r, 800));
         }
-        
+
         alert('Bulk download complete!');
       } catch (err) {
         console.error(err);

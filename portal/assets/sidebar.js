@@ -16,8 +16,14 @@ function buildSidebar(role = 'portal') {
 
   const adminLinks = [
     { href: 'dashboard.php', icon: 'layout', label: 'Dashboard' },
-    { href: 'fees.php', icon: 'file-text', label: 'Fees Structure' },
-    { href: 'fee_slip.php', icon: 'file-text', label: 'Fee Slip' },
+    { 
+      label: 'Fee Management', 
+      icon: 'file-text',
+      subLinks: [
+        { href: 'fees.php', icon: 'file-text', label: 'Fees Structure' },
+        { href: 'fee_slip.php', icon: 'file-text', label: 'Fee Slip' }
+      ]
+    },
     { href: 'teachers.php', icon: 'users', label: 'Manage Teachers' },
     { href: 'students.php', icon: 'users', label: 'Manage Students' },
     { href: 'gallery.php', icon: 'image', label: 'Manage Gallery' },
@@ -76,9 +82,25 @@ function buildSidebar(role = 'portal') {
 
   let links = isAdmin ? adminLinks : isStudent ? studentLinks : isStaff ? staffLinks : portalLinks;
 
-  let linksHTML = links.map(l =>
-    `<a href="${l.href}" class="sidebar-link">${makeIconSVG(l.icon)}<span>${l.label}</span></a>`
-  ).join('');
+  let linksHTML = links.map(l => {
+    if (l.subLinks) {
+      let subLinksHTML = l.subLinks.map(sl =>
+        `<a href="${sl.href}" class="sidebar-sublink">${makeIconSVG(sl.icon || 'book-open')}<span>${sl.label}</span></a>`
+      ).join('');
+      return `
+        <div class="sidebar-dropdown">
+          <a href="javascript:void(0)" class="sidebar-link dropdown-toggle">
+            ${makeIconSVG(l.icon)}<span>${l.label}</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto; width:16px; height:16px;"><polyline points="6 9 12 15 18 9"/></svg>
+          </a>
+          <div class="sidebar-submenu">
+            ${subLinksHTML}
+          </div>
+        </div>
+      `;
+    }
+    return `<a href="${l.href}" class="sidebar-link">${makeIconSVG(l.icon)}<span>${l.label}</span></a>`;
+  }).join('');
 
   let logoutBtn = '';
   let userSection = '';
@@ -124,12 +146,25 @@ function buildSidebar(role = 'portal') {
 
   document.body.insertAdjacentHTML('afterbegin', sidebarHTML);
 
+  // Handle dropdown toggles
+  document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+    toggle.addEventListener('click', function(e) {
+      e.preventDefault();
+      const dropdown = this.parentElement;
+      dropdown.classList.toggle('open');
+    });
+  });
+
   // Re-highlight active link after insertion
   const currentPage = window.location.pathname.split('/').pop();
-  document.querySelectorAll('.sidebar-link').forEach(link => {
+  document.querySelectorAll('.sidebar-link, .sidebar-sublink').forEach(link => {
     const href = link.getAttribute('href') || '';
     if (href && href !== 'javascript:void(0)' && href.split('/').pop() === currentPage) {
       link.classList.add('active');
+      const parentDropdown = link.closest('.sidebar-dropdown');
+      if (parentDropdown) {
+        parentDropdown.classList.add('open');
+      }
     }
   });
 }

@@ -12,17 +12,7 @@ if(($_SERVER['REQUEST_METHOD']??'')==='OPTIONS')exit;
 $isAjax=isset($_SERVER['HTTP_X_REQUESTED_WITH'])||strpos($_SERVER['CONTENT_TYPE']??'','application/json')!==false||isset($_GET['_api']);
 $method=$_SERVER['REQUEST_METHOD']??'GET';
 $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
-  if($method==='GET' && isset($_GET['submissions'])){
-    $hwId = intval($_GET['hwId']??0);
-    $sid = (int)$_SESSION['ksm_staff_auth'];
-    // Staff can see all submissions for a given homework ID ONLY if they authored it
-    $where = ["h.staff_id=$sid"];
-    if($hwId) $where[] = "s.homework_id=$hwId";
-    $w = "WHERE " . implode(" AND ", $where);
-    $r=ksm_db()->query("SELECT s.*, us.name student_name FROM homework_submissions s JOIN users_students us ON s.student_id=us.id JOIN homework h ON s.homework_id = h.id $w ORDER BY s.submitted_at DESC");
-    $rows=[];while($row=$r->fetch_assoc())$rows[]=$row;
-    ksm_json($rows);
-  }
+
   if($method==='GET'){
     $sid = (int)$_SESSION['ksm_staff_auth'];
     $cls = ksm_esc($_GET['class']??'');
@@ -71,11 +61,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
         <button class="btn btn-primary" onclick="openModal('homeworkModal'); clearForm()">+ New Homework</button>
       </div>
 
-      <!-- NEW TABS -->
-      <div style="display:flex; gap:1.5rem; border-bottom:1px solid var(--border); margin-bottom:1.5rem; padding-bottom:0.5rem;">
-        <div id="tabBtnManage" onclick="switchTab('manage')" style="cursor:pointer; font-weight:600; color:var(--primary); border-bottom:2px solid var(--primary); padding:0.5rem; user-select:none;">Manage Homework</div>
-        <div id="tabBtnSubmissions" onclick="switchTab('submissions')" style="cursor:pointer; font-weight:600; color:var(--text-medium); padding:0.5rem; user-select:none;">Check Submissions</div>
-      </div>
+
 
       <!-- MANAGE VIEW -->
       <div id="viewManage">
@@ -99,18 +85,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
         <div id="homeworkList" class="grid-2"></div>
       </div>
 
-      <!-- SUBMISSIONS VIEW -->
-      <div id="viewSubmissions" style="display:none;">
-        <div class="form-group" style="max-width: 400px; margin-bottom: 1.5rem;">
-          <label class="form-label">Select Homework Assignment</label>
-          <select id="selectHomeworkSubmission" class="form-control" onchange="renderSubmissionsTab()">
-            <option value="">-- Choose Homework --</option>
-          </select>
-        </div>
-        <div id="submissionsTabList" style="display: flex; flex-direction: column; gap: 0.75rem;">
-          <div class="empty-state"><p>Please select a homework assignment above.</p></div>
-        </div>
-      </div>
+
     </div>
     <div class="portal-footer">© 2026 Kindergarten Saadia's Montessori School. All rights reserved.</div>
   </div>
@@ -295,76 +270,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     });
   }
 
-  function switchTab(tab) {
-    if (tab === 'manage') {
-      document.getElementById('tabBtnManage').style.color = 'var(--primary)';
-      document.getElementById('tabBtnManage').style.borderBottom = '2px solid var(--primary)';
-      document.getElementById('tabBtnSubmissions').style.color = 'var(--text-medium)';
-      document.getElementById('tabBtnSubmissions').style.borderBottom = 'none';
-      document.getElementById('viewManage').style.display = 'block';
-      document.getElementById('viewSubmissions').style.display = 'none';
-      renderHomework();
-    } else {
-      document.getElementById('tabBtnSubmissions').style.color = 'var(--primary)';
-      document.getElementById('tabBtnSubmissions').style.borderBottom = '2px solid var(--primary)';
-      document.getElementById('tabBtnManage').style.color = 'var(--text-medium)';
-      document.getElementById('tabBtnManage').style.borderBottom = 'none';
-      document.getElementById('viewManage').style.display = 'none';
-      document.getElementById('viewSubmissions').style.display = 'block';
-      
-      const sel = document.getElementById('selectHomeworkSubmission');
-      sel.innerHTML = '<option value="">-- Choose Homework --</option>' + currentHomeworkList.map(h => `<option value="${h.id}">${h.title} (${h.class_name})</option>`).join('');
-      renderSubmissionsTab();
-    }
-  }
 
-  async function renderSubmissionsTab() {
-    const hwId = document.getElementById('selectHomeworkSubmission').value;
-    const listEl = document.getElementById('submissionsTabList');
-    if (!hwId) {
-      listEl.innerHTML = '<div class="empty-state"><p>Please select a homework assignment above.</p></div>';
-      return;
-    }
-    const hw = currentHomeworkList.find(h => h.id == hwId);
-    if (!hw) return;
-
-    listEl.innerHTML = '<div style="padding:2rem;text-align:center;">Loading students...</div>';
-
-    // Fetch students using API.getAttendance trick or API.getStudents if available
-    const resStudents = await API.getAttendance({ students: 1, class: hw.class_name });
-    if (!resStudents.success || !resStudents.data || resStudents.data.length === 0) {
-      listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🚸</div><h3 class="empty-state-title">No students found</h3><p class="empty-state-text">No students are currently assigned to this class.</p></div>';
-      return;
-    }
-    const allStudents = resStudents.data;
-    
-    // Fetch submissions from API
-    const subRes = await API.getHomeworkSubmissions(hwId);
-    const submissions = subRes.success && subRes.data ? subRes.data : [];
-
-    listEl.innerHTML = allStudents.map(student => {
-      const sub = submissions.find(s => s.student_id == student.id);
-      if (sub) {
-        return `
-          <div style="background:var(--primary-bg); padding:0.75rem; border-radius:var(--radius-sm); border-left:4px solid var(--success);">
-            <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem;">
-              <strong>${student.name} <span style="color:var(--text-medium);font-size:0.8rem;">(${student.rollNo})</span></strong>
-              <span class="badge badge-green">Submitted</span>
-            </div>
-            <p style="font-size:0.85rem; color:var(--text-dark); margin:0.5rem 0; background:white; padding:0.5rem; border-radius:4px;">${sub.answer}</p>
-            <div style="font-size:0.75rem; color:var(--text-light);">Submitted: ${formatDate(sub.submitted_at)}</div>
-          </div>`;
-      } else {
-        return `
-          <div style="background:var(--bg-light); padding:0.75rem; border-radius:var(--radius-sm); border-left:4px solid var(--danger); opacity:0.8;">
-            <div style="display:flex; justify-content:space-between;">
-              <strong>${student.name} <span style="color:var(--text-medium);font-size:0.8rem;">(${student.rollNo})</span></strong>
-              <span class="badge badge-red">Not Submitted</span>
-            </div>
-          </div>`;
-      }
-    }).join('');
-  }
 
   function doLogout() {
 
