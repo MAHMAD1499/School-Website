@@ -142,10 +142,10 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     }
     tbody.innerHTML = contacts.map(c => `
       <tr>
-        <td><strong>${c.name}</strong></td>
-        <td><a href="mailto:${c.email}" style="color:var(--primary-light);">${c.email}</a></td>
-        <td>${c.subject}</td>
-        <td><span class="badge ${c.status === 'Read' ? 'badge-green' : 'badge-gold'}">${c.status || 'Unread'}</span></td>
+        <td><strong>${escapeHtml(c.name)}</strong></td>
+        <td><a href="mailto:${encodeURIComponent(c.email || '')}" style="color:var(--primary-light);">${escapeHtml(c.email)}</a></td>
+        <td>${escapeHtml(c.subject)}</td>
+        <td><span class="badge ${c.status === 'Read' ? 'badge-green' : 'badge-gold'}">${escapeHtml(c.status || 'Unread')}</span></td>
         <td style="font-size:0.82rem;color:var(--text-medium);">${formatDate(c.date || c.sentAt)}</td>
         <td>
           <div style="display:flex;gap:0.5rem;">
@@ -170,14 +170,14 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
 
     document.getElementById('msgContent').innerHTML = `
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem;">
-        <div style="background:var(--primary-bg);padding:0.75rem;border-radius:var(--radius-sm);"><p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.2rem;">From</p><p style="font-weight:600;">${c.name}</p></div>
-        <div style="background:var(--primary-bg);padding:0.75rem;border-radius:var(--radius-sm);"><p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.2rem;">Email</p><p style="font-weight:600;">${c.email}</p></div>
-        <div style="background:var(--primary-bg);padding:0.75rem;border-radius:var(--radius-sm);"><p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.2rem;">Phone</p><p style="font-weight:600;">${c.phone || '—'}</p></div>
-        <div style="background:var(--primary-bg);padding:0.75rem;border-radius:var(--radius-sm);"><p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.2rem;">Subject</p><p style="font-weight:600;">${c.subject}</p></div>
+        <div style="background:var(--primary-bg);padding:0.75rem;border-radius:var(--radius-sm);"><p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.2rem;">From</p><p style="font-weight:600;">${escapeHtml(c.name)}</p></div>
+        <div style="background:var(--primary-bg);padding:0.75rem;border-radius:var(--radius-sm);"><p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.2rem;">Email</p><p style="font-weight:600;">${escapeHtml(c.email)}</p></div>
+        <div style="background:var(--primary-bg);padding:0.75rem;border-radius:var(--radius-sm);"><p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.2rem;">Phone</p><p style="font-weight:600;">${escapeHtml(c.phone || '—')}</p></div>
+        <div style="background:var(--primary-bg);padding:0.75rem;border-radius:var(--radius-sm);"><p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.2rem;">Subject</p><p style="font-weight:600;">${escapeHtml(c.subject)}</p></div>
       </div>
       <div style="background:var(--bg-main);border:1px solid var(--border-color);padding:1rem;border-radius:var(--radius-sm);">
         <p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.5rem;">Message</p>
-        <p style="font-size:0.92rem;line-height:1.7;color:var(--text-dark);">${c.message}</p>
+        <p style="font-size:0.92rem;line-height:1.7;color:var(--text-dark);">${escapeHtml(c.message)}</p>
       </div>
       <p style="font-size:0.78rem;color:var(--text-light);margin-top:0.75rem;">Received: ${formatDate(c.date || c.sentAt)}</p>
     `;

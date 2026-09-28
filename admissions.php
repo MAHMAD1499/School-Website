@@ -13,14 +13,44 @@ if($method==='POST'){
   $isJson = strpos($_SERVER['CONTENT_TYPE']??'','application/json')!==false;
   $body = $isJson ? json_decode(file_get_contents('php://input'),true)??[] : $_POST;
   $cn=ksm_esc($body['child_name']??'');$dob=ksm_esc($body['dob']??'');$bg=ksm_esc($body['blood_group']??'');$pn=ksm_esc($body['parent_name']??'');$ph=ksm_esc($body['phone']??'');$em=ksm_esc($body['email']??'');$occ=ksm_esc($body['address']??'');$sig=ksm_esc($body['prior_school']??'');$ca=ksm_esc($body['program']??'');$med=ksm_esc($body['notes']??'');
-  if(!$cn||!$pn||!$ph)ksm_err('Child name, parent name and phone required.');
   
+  if(!$cn||!$pn||!$ph)ksm_err('Child name, parent name and phone required.');
+  if(!preg_match('/^[A-Za-z\s.\'-]{2,80}$/', $cn)) ksm_err('Invalid child name format.');
+  if(!preg_match('/^[A-Za-z\s.\'-]{2,80}$/', $pn)) ksm_err('Invalid parent name format.');
+  if(!preg_match('/^[\+0-9\s\-]{10,20}$/', $ph)) ksm_err('Invalid phone number format (10-20 digits).');
+  if($em && (!filter_var($em, FILTER_VALIDATE_EMAIL) || strlen($em)>100)) ksm_err('Invalid email format.');
+  if($dob && !strtotime($dob)) ksm_err('Invalid date of birth format.');
+
+  $allowed_bg = ['', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+  if (!in_array($bg, $allowed_bg, true)) $bg = '';
+
+  if (strlen($occ) > 255) $occ = substr($occ, 0, 255);
+  if (strlen($sig) > 100) $sig = substr($sig, 0, 100);
+  if (strlen($ca) > 100) $ca = substr($ca, 0, 100);
+  if (strlen($med) > 1000) $med = substr($med, 0, 1000);
+
   function up_file($k){
-    if(!isset($_FILES[$k])||$_FILES[$k]['error']!==UPLOAD_ERR_OK)return '';
-    $n=uniqid().'_'.basename($_FILES[$k]['name']);
-    $d='uploads/admissions/';
-    if(!is_dir($d))mkdir($d,0777,true);
-    if(move_uploaded_file($_FILES[$k]['tmp_name'],$d.$n))return $d.$n;
+    if(!isset($_FILES[$k]) || $_FILES[$k]['error'] !== UPLOAD_ERR_OK) return '';
+    $file = $_FILES[$k];
+    if ($file['size'] > 5 * 1024 * 1024) return ''; // 5MB max limit
+
+    $allowed_exts = ['jpg', 'jpeg', 'png', 'pdf'];
+    $allowed_mimes = ['image/jpeg', 'image/png', 'application/pdf'];
+
+    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    if (!in_array($ext, $allowed_exts, true)) return '';
+
+    if (function_exists('finfo_open')) {
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime = finfo_file($finfo, $file['tmp_name']);
+        finfo_close($finfo);
+        if (!in_array($mime, $allowed_mimes, true)) return '';
+    }
+
+    $safe_name = bin2hex(random_bytes(16)) . '.' . $ext;
+    $d = 'uploads/admissions/';
+    if(!is_dir($d)) mkdir($d, 0755, true);
+    if(move_uploaded_file($file['tmp_name'], $d . $safe_name)) return $d . $safe_name;
     return '';
   }
   
@@ -392,7 +422,7 @@ if($method==='POST'){
         </style>
 
         <div class="paper-form-container">
-            <form id="admissionForm" novalidate>
+            <form id="admissionForm">
                 <div class="pf-header">
                     <div class="pf-header-left">
                         <img src="assets/images/logo-white-wreath.svg" alt="KSM Logo" style="width: 80px; height: 80px; display: block;">
@@ -679,6 +709,37 @@ if($method==='POST'){
                     e.preventDefault();
                     
                     const btn = form.querySelector('button[type="submit"]');
+                    const childName = (form.querySelector('[name="child_name"]')?.value || '').trim();
+                    const parentName = (form.querySelector('[name="parent_name"]')?.value || '').trim();
+                    const phone = (form.querySelector('[name="phone"]')?.value || '').trim();
+                    const email = (form.querySelector('[name="email"]')?.value || '').trim();
+
+                    if (!childName || !parentName || !phone) {
+                        alert('Please fill in Student Name, Parent/Guardian Name, and Contact Number.');
+                        return;
+                    }
+
+                    if (!/^[\+0-9\s\-]{10,20}$/.test(phone)) {
+                        alert('Please enter a valid phone number (10 to 20 digits).');
+                        return;
+                    }
+
+                    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                        alert('Please enter a valid email address.');
+                        return;
+                    }
+
+                    // Check file sizes (max 5MB each)
+                    const fileInputs = form.querySelectorAll('input[type="file"]');
+                    for (const fi of fileInputs) {
+                        if (fi.files && fi.files[0]) {
+                            if (fi.files[0].size > 5 * 1024 * 1024) {
+                                alert(`File "${fi.files[0].name}" is too large. Maximum allowed size is 5MB.`);
+                                return;
+                            }
+                        }
+                    }
+
                     btn.disabled = true;
                     btn.textContent = 'Submitting...';
 

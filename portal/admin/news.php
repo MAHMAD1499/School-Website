@@ -7,18 +7,22 @@ function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ks
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
 function ksm_err($m,$code=400){ksm_json(null,$m,$code);}
 function ksm_esc($v){return ksm_db()->real_escape_string(trim($v??''));}
-header('Access-Control-Allow-Origin: *');header('Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS');header('Access-Control-Allow-Headers: Content-Type,X-Requested-With');
 if(($_SERVER['REQUEST_METHOD']??'')==='OPTIONS')exit;
 $isAjax=isset($_SERVER['HTTP_X_REQUESTED_WITH'])||strpos($_SERVER['CONTENT_TYPE']??'','application/json')!==false||isset($_GET['_api']);
 $method=$_SERVER['REQUEST_METHOD']??'GET';
 $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   if($method==='GET'){$r=ksm_db()->query("SELECT * FROM news ORDER BY date DESC");$rows=[];while($row=$r->fetch_assoc())$rows[]=$row;ksm_json($rows);}
   if($method==='POST'||$method==='PUT'){
-    $t=ksm_esc($body['title']??'');$b=ksm_esc($body['body']??'');$d=ksm_esc($body['date']??date('Y-m-d'));$cat=ksm_esc($body['category']??'General');
-    if(!$t||!$b)ksm_err('Title and body required.');
-    if(strlen($t)>100) ksm_err('Title too long.');
-    if(strlen($b)>2000) ksm_err('Body too long.');
-    $b = htmlspecialchars($b, ENT_QUOTES, 'UTF-8');
+    $raw_t=trim($body['title']??'');
+    $raw_b=trim($body['body']??'');
+    $d=ksm_esc($body['date']??date('Y-m-d'));
+    $cat=htmlspecialchars(ksm_esc($body['category']??'General'), ENT_QUOTES, 'UTF-8');
+    if(!$raw_t||!$raw_b)ksm_err('Title and body required.');
+    if(strlen($raw_t)>100) ksm_err('Title too long.');
+    if(strlen($raw_b)>2000) ksm_err('Body too long.');
+    
+    $t = ksm_esc(htmlspecialchars($raw_t, ENT_QUOTES, 'UTF-8'));
+    $b = ksm_esc(htmlspecialchars($raw_b, ENT_QUOTES, 'UTF-8'));
     if($method==='POST'){
       ksm_db()->query("INSERT INTO news(title,body,date,category)VALUES('$t','$b','$d','$cat')");ksm_json(['id'=>ksm_db()->insert_id],'News added.');
     }else{

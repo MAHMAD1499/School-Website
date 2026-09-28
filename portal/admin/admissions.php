@@ -128,12 +128,12 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     }
     tbody.innerHTML = apps.map(a => `
       <tr>
-        <td><strong>${a.child_name || a.studentName}</strong> ${a.id_card_url || a.birth_cert_url || a.photos_url || a.passport_photo_url ? '📎' : ''}</td>
-        <td>${a.program}</td>
-        <td>${a.parent_name || a.parentName}</td>
-        <td>${a.phone}</td>
+        <td><strong>${escapeHtml(a.child_name || a.studentName)}</strong> ${a.id_card_url || a.birth_cert_url || a.photos_url || a.passport_photo_url ? '📎' : ''}</td>
+        <td>${escapeHtml(a.class_applied || a.program || '—')}</td>
+        <td>${escapeHtml(a.parent_name || a.parentName || '—')}</td>
+        <td>${escapeHtml(a.phone || '—')}</td>
         <td style="font-size:0.82rem;color:var(--text-medium);">${formatDate(a.submitted_at || a.submittedAt)}</td>
-        <td><span class="badge ${statusColors[a.status] || 'badge-blue'}">${a.status}</span></td>
+        <td><span class="badge ${statusColors[a.status] || 'badge-blue'}">${escapeHtml(a.status || 'Pending')}</span></td>
         <td>
           <button class="btn btn-sm btn-outline" onclick="viewApplication('${a.id}')">👁️ View</button>
         </td>
@@ -157,17 +157,17 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
 
     let html = fields.map(([label, val]) => `
       <div style="background:var(--primary-bg);padding:0.75rem;border-radius:var(--radius-sm);">
-        <p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.2rem;text-transform:uppercase;letter-spacing:0.5px;">${label}</p>
-        <p style="font-weight:600;font-size:0.9rem;">${val || '—'}</p>
+        <p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.2rem;text-transform:uppercase;letter-spacing:0.5px;">${escapeHtml(label)}</p>
+        <p style="font-weight:600;font-size:0.9rem;">${escapeHtml(val || '—')}</p>
       </div>
     `).join('');
 
     // Documents Section
     let docsHtml = '';
-    if(a.passport_photo_url) docsHtml += `<a href="../../${a.passport_photo_url}" target="_blank" download class="btn btn-sm btn-outline">Passport Photo</a> `;
-    if(a.id_card_url) docsHtml += `<a href="../../${a.id_card_url}" target="_blank" download class="btn btn-sm btn-outline">ID Card</a> `;
-    if(a.birth_cert_url) docsHtml += `<a href="../../${a.birth_cert_url}" target="_blank" download class="btn btn-sm btn-outline">Birth Cert</a> `;
-    if(a.photos_url) docsHtml += `<a href="../../${a.photos_url}" target="_blank" download class="btn btn-sm btn-outline">Photos</a> `;
+    if(a.passport_photo_url) docsHtml += `<a href="../../${encodeURI(a.passport_photo_url)}" target="_blank" download class="btn btn-sm btn-outline">Passport Photo</a> `;
+    if(a.id_card_url) docsHtml += `<a href="../../${encodeURI(a.id_card_url)}" target="_blank" download class="btn btn-sm btn-outline">ID Card</a> `;
+    if(a.birth_cert_url) docsHtml += `<a href="../../${encodeURI(a.birth_cert_url)}" target="_blank" download class="btn btn-sm btn-outline">Birth Cert</a> `;
+    if(a.photos_url) docsHtml += `<a href="../../${encodeURI(a.photos_url)}" target="_blank" download class="btn btn-sm btn-outline">Photos</a> `;
     
     if(docsHtml !== '') {
         html += `<div style="grid-column:1/-1;background:var(--accent-light);padding:0.75rem;border-radius:var(--radius-sm);"><p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.4rem;">Uploaded Documents</p><div>${docsHtml}</div></div>`;

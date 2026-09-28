@@ -31,15 +31,19 @@ function ksm_esc($v)
 {
   return ksm_db()->real_escape_string(trim($v ?? ''));
 }
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type,X-Requested-With');
 if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS')
   exit;
 $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strpos($_SERVER['CONTENT_TYPE'] ?? '', 'application/json') !== false || isset($_GET['_api']);
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $body = json_decode(file_get_contents('php://input'), true) ?? [];
 if ($isAjax) {
+  if (!isset($_SESSION['student_login_attempts'])) $_SESSION['student_login_attempts'] = 0;
+  if (!isset($_SESSION['student_login_lockout'])) $_SESSION['student_login_lockout'] = 0;
+  if ($_SESSION['student_login_lockout'] > time()) {
+      $wait = ceil(($_SESSION['student_login_lockout'] - time()) / 60);
+      ksm_err("Too many failed attempts. Please try again in {$wait} minute(s).", 429);
+  }
+
   $rollNo = ksm_esc($body['rollNo'] ?? '');
   $pass = trim($body['password'] ?? '');
   $r = ksm_db()->query("SELECT * FROM users_students WHERE rollNo='$rollNo' LIMIT 1");
@@ -50,13 +54,26 @@ if ($isAjax) {
               $hashed = password_hash($pass, PASSWORD_DEFAULT);
               ksm_db()->query("UPDATE users_students SET password='$hashed' WHERE id={$user['id']}");
           }
+          $_SESSION['student_login_attempts'] = 0;
+          $_SESSION['student_login_lockout'] = 0;
+          session_regenerate_id(true);
           $_SESSION['ksm_student_auth'] = $user['id'];
           unset($user['password']);
           ksm_json($user, 'Login successful.');
       } else {
+          $_SESSION['student_login_attempts']++;
+          if ($_SESSION['student_login_attempts'] >= 5) {
+              $_SESSION['student_login_lockout'] = time() + 900;
+              ksm_err('Too many failed login attempts. Locked out for 15 minutes.', 429);
+          }
           ksm_err('Invalid roll number or password.', 401);
       }
   } else {
+      $_SESSION['student_login_attempts']++;
+      if ($_SESSION['student_login_attempts'] >= 5) {
+          $_SESSION['student_login_lockout'] = time() + 900;
+          ksm_err('Too many failed login attempts. Locked out for 15 minutes.', 429);
+      }
       ksm_err('Invalid roll number or password.', 401);
   }
 }

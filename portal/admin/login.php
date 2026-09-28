@@ -5,9 +5,6 @@ require_once __DIR__ . '/../auth.php';
 function ksm_db() { global $ksm_db_config; static $c=null; if($c)return $c; $c=new mysqli($ksm_db_config['host'],$ksm_db_config['user'],$ksm_db_config['pass'],$ksm_db_config['name']); if($c->connect_error){http_response_code(500);echo json_encode(['error'=>$c->connect_error]);exit;} $c->set_charset('utf8mb4'); return $c; }
 function ksm_json($data,$msg='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$msg,'data'=>$data]);exit;}
 function ksm_escape($v){return ksm_db()->real_escape_string(trim($v??''));}
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type,X-Requested-With');
 if(isset($_SERVER['REQUEST_METHOD'])&&$_SERVER['REQUEST_METHOD']==='OPTIONS')exit;
 $isAjax=isset($_SERVER['HTTP_X_REQUESTED_WITH'])||(isset($_SERVER['CONTENT_TYPE'])&&strpos($_SERVER['CONTENT_TYPE'],'application/json')!==false)||isset($_GET['_api']);
 
@@ -16,11 +13,30 @@ if($isAjax){
     $body=json_decode(file_get_contents('php://input'),true)??[];
     $action=$body['action']??$_GET['action']??'';
     if($action==='admin_login'){
+        // Brute-force rate limiting: 5 attempts per 15 minutes
+        if (!isset($_SESSION['login_attempts'])) $_SESSION['login_attempts'] = 0;
+        if (!isset($_SESSION['login_lockout'])) $_SESSION['login_lockout'] = 0;
+
+        if ($_SESSION['login_lockout'] > time()) {
+            $wait = ceil(($_SESSION['login_lockout'] - time()) / 60);
+            ksm_json(null, "Too many failed attempts. Please try again in {$wait} minute(s).", 429);
+        }
+
         $user=trim($body['username']??''); $pass=trim($body['password']??'');
         if($user==='admin'&&$pass==='admin123') {
+            $_SESSION['login_attempts'] = 0;
+            $_SESSION['login_lockout'] = 0;
+            session_regenerate_id(true);
             $_SESSION['ksm_admin_auth'] = true;
             ksm_json(['role'=>'admin'],'Login successful.');
-        } else ksm_json(null,'Invalid credentials.',401);
+        } else {
+            $_SESSION['login_attempts']++;
+            if ($_SESSION['login_attempts'] >= 5) {
+                $_SESSION['login_lockout'] = time() + 900; // 15 mins
+                ksm_json(null, 'Too many failed login attempts. Locked out for 15 minutes.', 429);
+            }
+            ksm_json(null,'Invalid credentials.',401);
+        }
     }
     ksm_json(null,'Unknown action.',400);
 }

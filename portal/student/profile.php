@@ -7,7 +7,6 @@ function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ks
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
 function ksm_err($m,$code=400){ksm_json(null,$m,$code);}
 function ksm_esc($v){return ksm_db()->real_escape_string(trim($v??''));}
-header('Access-Control-Allow-Origin: *');header('Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS');header('Access-Control-Allow-Headers: Content-Type,X-Requested-With');
 if(($_SERVER['REQUEST_METHOD']??'')==='OPTIONS')exit;
 $isAjax=isset($_SERVER['HTTP_X_REQUESTED_WITH'])||strpos($_SERVER['CONTENT_TYPE']??'','application/json')!==false||isset($_GET['_api']);
 $method=$_SERVER['REQUEST_METHOD']??'GET';
@@ -19,8 +18,22 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     if($method==='GET'){
       $r=ksm_db()->query("SELECT id,name,email,phone,address,class,rollNo,parentName,profilePic FROM users_students WHERE id=$id LIMIT 1");if(!$r||$r->num_rows===0)ksm_err('Not found.',404);ksm_json($r->fetch_assoc());
     }else{
-      $phone=ksm_esc($body['phone']??'');$addr=ksm_esc($body['address']??'');$pic=ksm_esc($body['profilePic']??'');
-      ksm_db()->query("UPDATE users_students SET phone='$phone',address='$addr',profilePic='$pic' WHERE id=$id");
+      $raw_phone=trim($body['phone']??'');
+      $raw_addr=trim($body['address']??'');
+      $pic=trim($body['profilePic']??'');
+
+      if($raw_phone && !preg_match('/^[\+0-9\s\-]{10,20}$/', $raw_phone)) ksm_err('Invalid phone number format.');
+      if(strlen($raw_addr)>255) ksm_err('Address too long.');
+
+      if($pic && (!preg_match('/^(https?:\/\/|\.\.\/|\/|assets\/)/i', $pic) || preg_match('/javascript:/i', $pic))) {
+          $pic = '';
+      }
+
+      $phone=ksm_esc(htmlspecialchars($raw_phone, ENT_QUOTES, 'UTF-8'));
+      $addr=ksm_esc(htmlspecialchars($raw_addr, ENT_QUOTES, 'UTF-8'));
+      $safe_pic=ksm_esc($pic);
+
+      ksm_db()->query("UPDATE users_students SET phone='$phone',address='$addr',profilePic='$safe_pic' WHERE id=$id");
       $r=ksm_db()->query("SELECT id,name,email,phone,address,class,rollNo,parentName,profilePic FROM users_students WHERE id=$id LIMIT 1");ksm_json($r->fetch_assoc(),'Profile updated.');
     }
   }
@@ -136,21 +149,36 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   let isEditing = false;
 
   document.addEventListener('DOMContentLoaded', async () => {
-    currentStudent = JSON.parse(sessionStorage.getItem('ksm_student_auth'));
-    if (!currentStudent) { window.location.href = 'login.php'; return; }
+    try {
+      let rawAuth = sessionStorage.getItem('ksm_student_auth');
+      currentStudent = JSON.parse(rawAuth);
+      if (typeof currentStudent !== 'object') currentStudent = { id: currentStudent };
+    } catch(e) {
+      currentStudent = null;
+    }
+    
+    if (!currentStudent || !currentStudent.id) { window.location.href = 'login.php'; return; }
+    
     // Refresh from DB
     const res = await API.getStudent(currentStudent.id);
-    if (res.success && res.data) currentStudent = res.data;
+    if (res && res.success && res.data) {
+      currentStudent = res.data;
+      sessionStorage.setItem('ksm_student_auth', JSON.stringify(currentStudent));
+    }
+    
     renderProfile();
   });
 
   function renderProfile() {
-    document.getElementById('studentNameTopbar').textContent = currentStudent.name;
-    document.getElementById('bigProfileName').textContent = currentStudent.name;
+    if (!currentStudent) return;
+    const name = currentStudent.name || 'Unknown Student';
+    
+    document.getElementById('studentNameTopbar').textContent = name;
+    document.getElementById('bigProfileName').textContent = name;
 
     const avatarHtml = currentStudent.profilePic 
       ? `<img src="${currentStudent.profilePic}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` 
-      : currentStudent.name.charAt(0).toUpperCase();
+      : name.charAt(0).toUpperCase();
 
     document.getElementById('studentAvatar').innerHTML = avatarHtml;
     document.getElementById('bigProfileAvatar').innerHTML = avatarHtml;
@@ -166,8 +194,8 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     ];
     document.getElementById('studentProfile').innerHTML = profileFields.map(([label, val]) => `
       <div style="background:var(--primary-bg);padding:0.75rem;border-radius:var(--radius-sm);">
-        <p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.2rem;">${label}</p>
-        <p style="font-weight:600;font-size:0.9rem;">${val}</p>
+        <p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.2rem;">${escapeHtml(label)}</p>
+        <p style="font-weight:600;font-size:0.9rem;">${escapeHtml(val)}</p>
       </div>
     `).join('');
 

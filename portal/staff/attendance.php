@@ -7,7 +7,6 @@ function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ks
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
 function ksm_err($m,$code=400){ksm_json(null,$m,$code);}
 function ksm_esc($v){return ksm_db()->real_escape_string(trim($v??''));}
-header('Access-Control-Allow-Origin: *');header('Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS');header('Access-Control-Allow-Headers: Content-Type,X-Requested-With');
 if(($_SERVER['REQUEST_METHOD']??'')==='OPTIONS')exit;
 $isAjax=isset($_SERVER['HTTP_X_REQUESTED_WITH'])||strpos($_SERVER['CONTENT_TYPE']??'','application/json')!==false||isset($_GET['_api']);
 $method=$_SERVER['REQUEST_METHOD']??'GET';
@@ -15,12 +14,16 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   if($method==='GET' && !isset($_GET['students'])){$class=ksm_esc($_GET['class']??'');$where=$class?"WHERE us.class='$class'":'';$r=ksm_db()->query("SELECT a.*,us.name student_name,us.rollNo FROM attendance a JOIN users_students us ON a.student_id=us.id $where ORDER BY a.date DESC,us.name ASC");$rows=[];while($row=$r->fetch_assoc())$rows[]=$row;ksm_json($rows);}
   if($method==='POST'){
     $records=$body['records']??[];if(empty($records))ksm_err('No records.');$ins=0;
+    $allowed_status = ['present', 'absent', 'late', 'leave'];
     foreach($records as $rec){
       $sid=intval($rec['studentId']??0);
       if(!$sid) $sid=intval($rec['student_id']??0);
-      $date=ksm_esc($rec['date']??date('Y-m-d'));
-      $status=ksm_esc($rec['status']??'present');
-      $notes=ksm_esc($rec['notes']??'');
+      $raw_date = $rec['date']??date('Y-m-d');
+      $date = ksm_esc(date('Y-m-d', strtotime($raw_date) ?: time()));
+      $raw_status = strtolower(trim($rec['status']??'present'));
+      $status = in_array($raw_status, $allowed_status, true) ? $raw_status : 'present';
+      $notes = htmlspecialchars(trim($rec['notes']??''), ENT_QUOTES, 'UTF-8');
+      $notes = ksm_esc(substr($notes, 0, 255));
       if(!$sid)continue;
       ksm_db()->query("INSERT INTO attendance(student_id,date,status,notes)VALUES($sid,'$date','$status','$notes')ON DUPLICATE KEY UPDATE status='$status',notes='$notes'");
       $ins++;

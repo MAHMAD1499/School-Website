@@ -24,11 +24,20 @@ if($method==='GET'){
 }
 if($method==='POST'){
   $student_id = intval($body['student_id']??0);
-  $url = ksm_esc($body['url']??'');
-  $cap = ksm_esc($body['caption']??'');
+  $url = trim($body['url']??'');
+  $cap = htmlspecialchars(trim($body['caption']??''), ENT_QUOTES, 'UTF-8');
   if(!$student_id || !$url) ksm_err('student_id and URL required.');
   if($student_id !== (int)$_SESSION['ksm_student_auth']) ksm_err('Access denied.', 403);
-  ksm_db()->query("INSERT INTO student_gallery(student_id, url, caption) VALUES($student_id, '$url', '$cap')");
+  
+  // Safe URL scheme check
+  if (!preg_match('/^(https?:\/\/|\.\.\/|\/|assets\/)/i', $url) || preg_match('/javascript:/i', $url)) {
+      ksm_err('Invalid image URL scheme.');
+  }
+  if (strlen($url) > 500) ksm_err('URL too long.');
+  $safe_url = ksm_esc($url);
+  $safe_cap = ksm_esc($cap);
+
+  ksm_db()->query("INSERT INTO student_gallery(student_id, url, caption) VALUES($student_id, '$safe_url', '$safe_cap')");
   ksm_json(['id'=>ksm_db()->insert_id], 'Photo added to personal gallery.');
 }
 if($method==='DELETE'){

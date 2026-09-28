@@ -36,9 +36,6 @@ function ksm_esc($v)
 {
   return ksm_db()->real_escape_string(trim($v ?? ''));
 }
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type,X-Requested-With');
 if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS')
   exit;
 $isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strpos($_SERVER['CONTENT_TYPE'] ?? '', 'application/json') !== false || isset($_GET['_api']);
@@ -47,7 +44,7 @@ $body = json_decode(file_get_contents('php://input'), true) ?? [];
 if ($isAjax) {
   $db = ksm_db();
   if ($method === 'GET') {
-    $r = $db->query("SELECT id, name, role, subject, emoji, bio, email, staffNumber, password, profilePic FROM users_staff ORDER BY id ASC");
+    $r = $db->query("SELECT id, name, role, subject, emoji, bio, email, staffNumber, profilePic FROM users_staff ORDER BY id ASC");
     $rows = [];
     while ($row = $r->fetch_assoc())
       $rows[] = $row;

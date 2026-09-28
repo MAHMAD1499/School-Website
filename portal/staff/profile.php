@@ -7,7 +7,6 @@ function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ks
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
 function ksm_err($m,$code=400){ksm_json(null,$m,$code);}
 function ksm_esc($v){return ksm_db()->real_escape_string(trim($v??''));}
-header('Access-Control-Allow-Origin: *');header('Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS');header('Access-Control-Allow-Headers: Content-Type,X-Requested-With');
 if(($_SERVER['REQUEST_METHOD']??'')==='OPTIONS')exit;
 $isAjax=isset($_SERVER['HTTP_X_REQUESTED_WITH'])||strpos($_SERVER['CONTENT_TYPE']??'','application/json')!==false||isset($_GET['_api']);
 $method=$_SERVER['REQUEST_METHOD']??'GET';
@@ -19,9 +18,29 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     if($method==='GET'){
       $r=ksm_db()->query("SELECT id,name,email,phone,subject,class,bio,emoji,profilePic FROM users_staff WHERE id=$id LIMIT 1");if(!$r||$r->num_rows===0)ksm_err('Not found.',404);ksm_json($r->fetch_assoc());
     }else{
-      $name=ksm_esc($body['name']??'');$phone=ksm_esc($body['phone']??'');$sub=ksm_esc($body['subject']??'');$bio=ksm_esc($body['bio']??'');$pic=ksm_esc($body['profilePic']??'');
-      if(!$name)ksm_err('Name required.');
-      ksm_db()->query("UPDATE users_staff SET name='$name',phone='$phone',subject='$sub',bio='$bio',profilePic='$pic' WHERE id=$id");
+      $raw_name=trim($body['name']??'');
+      $raw_phone=trim($body['phone']??'');
+      $raw_sub=trim($body['subject']??'');
+      $raw_bio=trim($body['bio']??'');
+      $pic=trim($body['profilePic']??'');
+
+      if(!$raw_name)ksm_err('Name required.');
+      if(!preg_match('/^[A-Za-z\s.\'-]{2,50}$/', $raw_name)) ksm_err('Invalid name format.');
+      if($raw_phone && !preg_match('/^[\+0-9\s\-]{10,20}$/', $raw_phone)) ksm_err('Invalid phone number format.');
+      if(strlen($raw_sub)>100) ksm_err('Subject too long.');
+      if(strlen($raw_bio)>1000) ksm_err('Bio too long.');
+
+      if($pic && (!preg_match('/^(https?:\/\/|\.\.\/|\/|assets\/)/i', $pic) || preg_match('/javascript:/i', $pic))) {
+          $pic = '';
+      }
+
+      $name=ksm_esc(htmlspecialchars($raw_name, ENT_QUOTES, 'UTF-8'));
+      $phone=ksm_esc(htmlspecialchars($raw_phone, ENT_QUOTES, 'UTF-8'));
+      $sub=ksm_esc(htmlspecialchars($raw_sub, ENT_QUOTES, 'UTF-8'));
+      $bio=ksm_esc(htmlspecialchars($raw_bio, ENT_QUOTES, 'UTF-8'));
+      $safe_pic=ksm_esc($pic);
+
+      ksm_db()->query("UPDATE users_staff SET name='$name',phone='$phone',subject='$sub',bio='$bio',profilePic='$safe_pic' WHERE id=$id");
       $r=ksm_db()->query("SELECT id,name,email,phone,subject,class,bio,emoji,profilePic FROM users_staff WHERE id=$id LIMIT 1");ksm_json($r->fetch_assoc(),'Profile updated.');
     }
   }
@@ -149,21 +168,36 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   let isEditing = false;
 
   document.addEventListener('DOMContentLoaded', async () => {
-    currentStaff = JSON.parse(sessionStorage.getItem('ksm_staff_auth'));
-    if (!currentStaff) { window.location.href = 'login.php'; return; }
+    try {
+      let rawAuth = sessionStorage.getItem('ksm_staff_auth');
+      currentStaff = JSON.parse(rawAuth);
+      if (typeof currentStaff !== 'object') currentStaff = { id: currentStaff };
+    } catch(e) {
+      currentStaff = null;
+    }
+    
+    if (!currentStaff || !currentStaff.id) { window.location.href = 'login.php'; return; }
+    
     // Refresh from DB
     const res = await API.getStaffMember(currentStaff.id);
-    if (res.success && res.data) currentStaff = res.data;
+    if (res && res.success && res.data) {
+      currentStaff = res.data;
+      sessionStorage.setItem('ksm_staff_auth', JSON.stringify(currentStaff));
+    }
+    
     renderProfile();
   });
 
   function renderProfile() {
-    document.getElementById('staffNameTopbar').textContent = currentStaff.name;
-    document.getElementById('bigName').textContent = currentStaff.name;
+    if (!currentStaff) return;
+    const name = currentStaff.name || 'Unknown Staff';
+    
+    document.getElementById('staffNameTopbar').textContent = name;
+    document.getElementById('bigName').textContent = name;
 
     const avatarHtml = currentStaff.profilePic 
       ? `<img src="${currentStaff.profilePic}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` 
-      : currentStaff.name.charAt(0).toUpperCase();
+      : name.charAt(0).toUpperCase();
 
     document.getElementById('staffAvatar').innerHTML = avatarHtml;
     document.getElementById('bigAvatar').innerHTML = avatarHtml;
@@ -179,8 +213,8 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
 
     document.getElementById('profileDisplay').innerHTML = fields.map(([label, val]) => `
       <div style="background:var(--primary-bg);padding:0.75rem;border-radius:var(--radius-sm);">
-        <p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.2rem;">${label}</p>
-        <p style="font-weight:600;font-size:0.9rem;">${val}</p>
+        <p style="font-size:0.72rem;color:var(--text-medium);margin-bottom:0.2rem;">${escapeHtml(label)}</p>
+        <p style="font-weight:600;font-size:0.9rem;">${escapeHtml(val)}</p>
       </div>
     `).join('');
 

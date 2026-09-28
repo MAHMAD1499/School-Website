@@ -7,14 +7,13 @@ function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ks
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
 function ksm_err($m,$code=400){ksm_json(null,$m,$code);}
 function ksm_esc($v){return ksm_db()->real_escape_string(trim($v??''));}
-header('Access-Control-Allow-Origin: *');header('Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS');header('Access-Control-Allow-Headers: Content-Type,X-Requested-With');
 if(($_SERVER['REQUEST_METHOD']??'')==='OPTIONS')exit;
 $isAjax=isset($_SERVER['HTTP_X_REQUESTED_WITH'])||strpos($_SERVER['CONTENT_TYPE']??'','application/json')!==false||isset($_GET['_api']);
 $method=$_SERVER['REQUEST_METHOD']??'GET';
 $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
+  $sid = (int)$_SESSION['ksm_staff_auth'];
 
   if($method==='GET'){
-    $sid = (int)$_SESSION['ksm_staff_auth'];
     $cls = ksm_esc($_GET['class']??'');
     $where = "WHERE h.staff_id=$sid";
     if($cls) $where .= " AND h.class_name='$cls'";
@@ -23,9 +22,33 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     while($row=$r->fetch_assoc())$rows[]=$row;
     ksm_json($rows);
   }
-  if($method==='POST'){$t=ksm_esc($body['title']??'');$cl=ksm_esc($body['class_name']??$body['class']??'');$sub=ksm_esc($body['subject']??'');$desc=ksm_esc($body['description']??'');$due=ksm_esc($body['due_date']??'');$sid=intval($body['staff_id']??0);if(!$t||!$cl||!$sub)ksm_err('Title, class and subject required.');ksm_db()->query("INSERT INTO homework(title,class_name,subject,description,due_date,staff_id)VALUES('$t','$cl','$sub','$desc','$due',".($sid?$sid:'NULL').")");ksm_json(['id'=>ksm_db()->insert_id],'Homework assigned.');}
-  if($method==='PUT'){$id=intval($body['id']??0);$t=ksm_esc($body['title']??'');$cl=ksm_esc($body['class_name']??'');$sub=ksm_esc($body['subject']??'');$desc=ksm_esc($body['description']??'');$due=ksm_esc($body['due_date']??'');if(!$id)ksm_err('Invalid ID.');ksm_db()->query("UPDATE homework SET title='$t',class_name='$cl',subject='$sub',description='$desc',due_date='$due' WHERE id=$id");ksm_json(null,'Updated.');}
-  if($method==='DELETE'){$id=intval($_GET['id']??0);if(!$id)ksm_err('Invalid ID.');ksm_db()->query("DELETE FROM homework WHERE id=$id");ksm_json(null,'Deleted.');}
+  if($method==='POST'){
+    $t=htmlspecialchars(ksm_esc($body['title']??''), ENT_QUOTES, 'UTF-8');
+    $cl=htmlspecialchars(ksm_esc($body['class_name']??$body['class']??''), ENT_QUOTES, 'UTF-8');
+    $sub=htmlspecialchars(ksm_esc($body['subject']??''), ENT_QUOTES, 'UTF-8');
+    $desc=htmlspecialchars(ksm_esc($body['description']??''), ENT_QUOTES, 'UTF-8');
+    $due=ksm_esc($body['due_date']??'');
+    if(!$t||!$cl||!$sub)ksm_err('Title, class and subject required.');
+    ksm_db()->query("INSERT INTO homework(title,class_name,subject,description,due_date,staff_id)VALUES('$t','$cl','$sub','$desc','$due',$sid)");
+    ksm_json(['id'=>ksm_db()->insert_id],'Homework assigned.');
+  }
+  if($method==='PUT'){
+    $id=intval($body['id']??0);
+    $t=htmlspecialchars(ksm_esc($body['title']??''), ENT_QUOTES, 'UTF-8');
+    $cl=htmlspecialchars(ksm_esc($body['class_name']??''), ENT_QUOTES, 'UTF-8');
+    $sub=htmlspecialchars(ksm_esc($body['subject']??''), ENT_QUOTES, 'UTF-8');
+    $desc=htmlspecialchars(ksm_esc($body['description']??''), ENT_QUOTES, 'UTF-8');
+    $due=ksm_esc($body['due_date']??'');
+    if(!$id)ksm_err('Invalid ID.');
+    ksm_db()->query("UPDATE homework SET title='$t',class_name='$cl',subject='$sub',description='$desc',due_date='$due' WHERE id=$id AND staff_id=$sid");
+    ksm_json(null,'Updated.');
+  }
+  if($method==='DELETE'){
+    $id=intval($_GET['id']??0);
+    if(!$id)ksm_err('Invalid ID.');
+    ksm_db()->query("DELETE FROM homework WHERE id=$id AND staff_id=$sid");
+    ksm_json(null,'Deleted.');
+  }
 }
 ?>
 <!DOCTYPE html>

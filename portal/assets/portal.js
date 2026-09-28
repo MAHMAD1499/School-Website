@@ -4,6 +4,20 @@
    =================================================== */
 
 // ============================================================
+// SECURITY: HTML ESCAPING
+// ============================================================
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+window.escapeHtml = escapeHtml;
+
+// ============================================================
 // STORAGE HELPERS
 // ============================================================
 const DB = {
@@ -45,8 +59,6 @@ function seedData() {
   DB.set('students', []);
   DB.set('staff', []);
   DB.set('teachers', []);
-
-  // Teachers (demo accounts removed)
   DB.set('teachers', []);
 
   // Gallery
@@ -74,24 +86,12 @@ function seedData() {
     { id: '4', title: 'Eid Celebration Event', date: '2026-12-10', time: '11:00 AM', location: 'Main Hall', description: 'A festive celebration with performances, food stalls, and fun activities for the whole family.', category: 'Cultural' },
   ]);
 
-  // Admissions (empty — filled via form)
   DB.set('admissions', []);
-
-  // Contact Messages (empty)
   DB.set('contacts', []);
-
-  // Students (demo accounts removed)
   DB.set('students', []);
-
-  // Staff (teacher login accounts removed)
   DB.set('staff', []);
-
-  // Homework (empty — filled by staff)
   DB.set('homework', []);
-
-  // Attendance (empty — filled by staff)
   DB.set('attendance', []);
-
   DB.set('seeded_v4', true);
 }
 
@@ -99,17 +99,6 @@ function seedData() {
 // AUTH HELPERS
 // ============================================================
 const Auth = {
-  ADMIN_USER: 'admin',
-  ADMIN_PASS: 'admin123',
-
-  loginAdmin(user, pass) {
-    if (user === this.ADMIN_USER && pass === this.ADMIN_PASS) {
-      sessionStorage.setItem('ksm_admin_auth', '1');
-      return true;
-    }
-    return false;
-  },
-
   isAdminLoggedIn() {
     return sessionStorage.getItem('ksm_admin_auth') === '1';
   },

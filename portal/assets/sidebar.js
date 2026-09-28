@@ -24,11 +24,17 @@ function buildSidebar(role = 'portal') {
         { href: 'fee_slip.php', icon: 'file-text', label: 'Fee Slip' }
       ]
     },
-    { href: 'teachers.php', icon: 'users', label: 'Manage Teachers' },
-    { href: 'students.php', icon: 'users', label: 'Manage Students' },
-    { href: 'gallery.php', icon: 'image', label: 'Manage Gallery' },
-    { href: 'news.php', icon: 'bell', label: 'Manage News' },
-    { href: 'events.php', icon: 'calendar', label: 'Manage Events' },
+    {
+      label: 'Management',
+      icon: 'settings',
+      subLinks: [
+        { href: 'teachers.php', icon: 'users', label: 'Manage Teachers' },
+        { href: 'students.php', icon: 'users', label: 'Manage Students' },
+        { href: 'gallery.php', icon: 'image', label: 'Manage Gallery' },
+        { href: 'news.php', icon: 'bell', label: 'Manage News' },
+        { href: 'events.php', icon: 'calendar', label: 'Manage Events' }
+      ]
+    },
     { href: 'admissions.php', icon: 'file-text', label: 'Admissions' },
     { href: 'contacts.php', icon: 'mail', label: 'Contact Messages' }
   ];
@@ -38,6 +44,15 @@ function buildSidebar(role = 'portal') {
     { href: 'dashboard.php', icon: 'home', label: 'My Dashboard' },
     { href: 'homework.php', icon: 'clipboard', label: 'Homework (Diary)' },
     { href: 'attendance.php', icon: 'check-square', label: 'My Attendance' },
+    {
+      label: 'CBT',
+      icon: 'book-open',
+      subLinks: [
+        { href: 'cbt_dashboard.php', icon: 'layout', label: 'CBT Dashboard' },
+        { href: 'cbt_test_reports.php', icon: 'file-text', label: 'CBT Test Reports' },
+        { href: 'cbt_exam_reports.php', icon: 'file-text', label: 'CBT Exam Reports' }
+      ]
+    },
     { href: 'news.php', icon: 'bell', label: 'Announcements' },
     { href: 'events.php', icon: 'calendar', label: 'Events' },
     { href: 'gallery.php', icon: 'image', label: 'School Gallery' },
@@ -49,6 +64,15 @@ function buildSidebar(role = 'portal') {
     { href: 'profile.php', icon: 'user', label: 'My Profile' },
     { href: 'homework.php', icon: 'clipboard', label: 'Assign Homework' },
     { href: 'attendance.php', icon: 'check-square', label: 'Mark Attendance' },
+    {
+      label: 'CBT',
+      icon: 'book-open',
+      subLinks: [
+        { href: 'cbt_dashboard.php', icon: 'layout', label: 'CBT Dashboard' },
+        { href: 'cbt_test_reports.php', icon: 'file-text', label: 'CBT Test Reports' },
+        { href: 'cbt_exam_reports.php', icon: 'file-text', label: 'CBT Exam Reports' }
+      ]
+    },
   ];
 
   const svgIcons = {

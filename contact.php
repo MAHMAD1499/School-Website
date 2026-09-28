@@ -12,10 +12,15 @@ $method=$_SERVER['REQUEST_METHOD']??'GET';
 $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $method==='POST'){
   $name=ksm_esc($body['name']??'');$email=ksm_esc($body['email']??'');$sub=ksm_esc($body['subject']??'');$msg=ksm_esc($body['message']??'');
   if(!$name||!$email||!$msg)ksm_err('Name, email and message required.');
-  if(!preg_match('/^[A-Za-z\s]{2,50}$/', $name)) ksm_err('Invalid name format.');
+  if(!preg_match('/^[A-Za-z\s.\'-]{2,50}$/', $name)) ksm_err('Invalid name format.');
   if(!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email)>100) ksm_err('Invalid email format.');
-  if(strlen($msg)<10 || strlen($msg)>1000) ksm_err('Message must be between 10 and 1000 characters.');
+  if(strlen($sub)>100) $sub = substr($sub, 0, 100);
+  if(strlen($msg)<10 || strlen($msg)>2000) ksm_err('Message must be between 10 and 2000 characters.');
+  
+  $name = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
+  $sub = htmlspecialchars($sub ?: 'General Inquiry', ENT_QUOTES, 'UTF-8');
   $msg = htmlspecialchars($msg, ENT_QUOTES, 'UTF-8');
+  
   ksm_db()->query("INSERT INTO contacts(name,email,subject,message,status)VALUES('$name','$email','$sub','$msg','Unread')");
   ksm_json(['id'=>ksm_db()->insert_id],'Message sent.');
 }

@@ -11,17 +11,19 @@ function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ks
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
 function ksm_err($m,$code=400){ksm_json(null,$m,$code);}
 function ksm_esc($v){return ksm_db()->real_escape_string(trim($v??''));}
-header('Access-Control-Allow-Origin: *');header('Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS');header('Access-Control-Allow-Headers: Content-Type,X-Requested-With');
 if(($_SERVER['REQUEST_METHOD']??'')==='OPTIONS')exit;
 $isAjax=isset($_SERVER['HTTP_X_REQUESTED_WITH'])||strpos($_SERVER['CONTENT_TYPE']??'','application/json')!==false||isset($_GET['_api']);
 $method=$_SERVER['REQUEST_METHOD']??'GET';
 $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
-  if($method==='GET'){$r=ksm_db()->query("SELECT * FROM users_students ORDER BY id ASC");$rows=[];while($row=$r->fetch_assoc())$rows[]=$row;ksm_json($rows);}
+  if($method==='GET'){$r=ksm_db()->query("SELECT id,name,email,phone,address,class,rollNo,parentName,profilePic,status,tuition_fee,annual_dues FROM users_students ORDER BY id ASC");$rows=[];while($row=$r->fetch_assoc())$rows[]=$row;ksm_json($rows);}
   if($method==='POST'){
     $name=ksm_esc($body['name']??'');$email=ksm_esc($body['email']??'');$password=ksm_esc($body['password']??'');$class=ksm_esc($body['class']??'');$rollNo=ksm_esc($body['rollNo']??'');$parentName=ksm_esc($body['parentName']??'');$tuition_fee=ksm_esc($body['tuition_fee']??'');$annual_dues=ksm_esc($body['annual_dues']??'');
     if(!$name||!$rollNo||!$password)ksm_err('Name, Roll No, and Password required.');
-    if(!preg_match('/^[A-Za-z\s]{2,50}$/', $name)) ksm_err('Invalid name format.');
-    if($parentName && !preg_match('/^[A-Za-z\s]{2,50}$/', $parentName)) ksm_err('Invalid parent name format.');
+    if(!preg_match('/^[A-Za-z\s.\'-]{2,50}$/', $name)) ksm_err('Invalid name format.');
+    if($parentName && !preg_match('/^[A-Za-z\s.\'-]{2,50}$/', $parentName)) ksm_err('Invalid parent name format.');
+    if($email && (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 100)) ksm_err('Invalid email format.');
+    if($tuition_fee !== '' && !is_numeric($tuition_fee)) ksm_err('Tuition fee must be a number.');
+    if($annual_dues !== '' && !is_numeric($annual_dues)) ksm_err('Annual dues must be a number.');
     if(strlen($class)>50 || strlen($rollNo)>50) ksm_err('Class or Roll No too long.');
     if(strlen($password)<6 || strlen($password)>50) ksm_err('Password must be between 6 and 50 characters.');
     

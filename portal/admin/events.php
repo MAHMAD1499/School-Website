@@ -7,20 +7,30 @@ function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ks
 function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
 function ksm_err($m,$code=400){ksm_json(null,$m,$code);}
 function ksm_esc($v){return ksm_db()->real_escape_string(trim($v??''));}
-header('Access-Control-Allow-Origin: *');header('Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS');header('Access-Control-Allow-Headers: Content-Type,X-Requested-With');
 if(($_SERVER['REQUEST_METHOD']??'')==='OPTIONS')exit;
 $isAjax=isset($_SERVER['HTTP_X_REQUESTED_WITH'])||strpos($_SERVER['CONTENT_TYPE']??'','application/json')!==false||isset($_GET['_api']);
 $method=$_SERVER['REQUEST_METHOD']??'GET';
 $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   if($method==='GET'){$r=ksm_db()->query("SELECT * FROM events ORDER BY date ASC");$rows=[];while($row=$r->fetch_assoc())$rows[]=$row;ksm_json($rows);}
   if($method==='POST'||$method==='PUT'){
-    $t=ksm_esc($body['title']??'');$d=ksm_esc($body['date']??'');$ti=ksm_esc($body['time']??'');$loc=ksm_esc($body['location']??'');$desc=ksm_esc($body['description']??'');$cat=ksm_esc($body['category']??'General');
-    if(!$t||!$d)ksm_err('Title and date required.');
-    if(strlen($t)>100) ksm_err('Title too long.');
-    if(strlen($loc)>100) ksm_err('Location too long.');
-    if(strlen($desc)>1000) ksm_err('Description too long.');
+    $raw_t=trim($body['title']??'');
+    $d=ksm_esc($body['date']??'');
+    $raw_ti=trim($body['time']??'');
+    $raw_loc=trim($body['location']??'');
+    $raw_desc=trim($body['description']??'');
+    $cat=htmlspecialchars(ksm_esc($body['category']??'General'), ENT_QUOTES, 'UTF-8');
+
+    if(!$raw_t||!$d)ksm_err('Title and date required.');
+    if(strlen($raw_t)>100) ksm_err('Title too long.');
+    if(strlen($raw_loc)>100) ksm_err('Location too long.');
+    if(strlen($raw_desc)>1000) ksm_err('Description too long.');
     if(!strtotime($d)) ksm_err('Invalid date format.');
-    $desc = htmlspecialchars($desc, ENT_QUOTES, 'UTF-8');
+
+    $t=ksm_esc(htmlspecialchars($raw_t, ENT_QUOTES, 'UTF-8'));
+    $ti=ksm_esc(htmlspecialchars($raw_ti, ENT_QUOTES, 'UTF-8'));
+    $loc=ksm_esc(htmlspecialchars($raw_loc, ENT_QUOTES, 'UTF-8'));
+    $desc=ksm_esc(htmlspecialchars($raw_desc, ENT_QUOTES, 'UTF-8'));
+
     if($method==='POST'){
       ksm_db()->query("INSERT INTO events(title,date,time,location,description,category)VALUES('$t','$d','$ti','$loc','$desc','$cat')");ksm_json(['id'=>ksm_db()->insert_id],'Event added.');
     }else{
