@@ -87,6 +87,13 @@
       </a>
       <nav class="nav-menu" id="navMenu">
         <a href="index.php" class="nav-link">Home</a>
+        <div class="nav-dropdown" id="campusDropdown">
+          <a href="#" class="nav-link nav-dropdown-trigger">Campuses ▾</a>
+          <div class="dropdown-content">
+            <a href="index.php">Campus 1 (Main)</a>
+            <a href="campus2.php">Campus 2</a>
+          </div>
+        </div>
         <a href="index.php#programs" class="nav-link">Programs</a>
         <a href="admissions.php" class="nav-link">Admissions</a>
         <a href="index.php#gallery" class="nav-link">Gallery & Events</a>
@@ -96,7 +103,8 @@
         <!-- Mobile Only Action Buttons -->
         <div class="mobile-menu-buttons">
           <a href="portal/index.php" class="btn btn-accent">Portal</a>
-          <a href="index.php#admissions" class="btn btn-primary">Apply Now</a>
+          <a href="portal/admin/login.php" class="btn btn-outline" style="border-color:rgba(30,58,138,0.3);font-size:0.85rem;">Admin Portal</a>
+          <a href="admissions.php" class="btn btn-primary">Apply Now</a>
         </div>
 
       </nav>
@@ -178,9 +186,10 @@
 
       <div class="content-section" id="our-story">
         <h2>Our Story</h2>
-        <p>Kindergarten Saadia's Montessori School was founded with a heartfelt vision by <strong>Saadia Tariq</strong> — a dedicated Pakistani mother and educator who understood the challenges families in Haripur face when searching for quality early childhood education. Growing up in a society where rote learning often takes the place of genuine understanding, she set out to build something different: a place where every child is seen, heard, and nurtured as an individual.</p>
-        <p style="margin-top:1rem;">In Pakistan, parents work hard to give their children the best possible start in life. At KSM Haripur, we honour that effort by providing a Montessori environment rooted in respect, discipline, and love of learning — values that resonate deeply within our culture. From Playgroup through Grade Five, our school bridges the Montessori philosophy with the hopes and aspirations of Pakistani families, preparing children not just academically but as confident, responsible human beings.</p>
-        <p style="margin-top:1rem;">Under the leadership of Saadia Tariq as Founder and Managing Director, our school continues to grow — guided by the belief that when you invest in a child's earliest years, you invest in the future of a whole family and community.</p>
+        <p>Kindergarten Saadia's Montessori School was founded in <strong>2024</strong> by <strong>Saadia Tariq</strong>, a dedicated Pakistani mother and educator based in <strong>Haripur, Khyber Pakhtunkhwa</strong>. Understanding the challenges families in the region face when searching for quality early childhood education, she set out to build something different — a place where every child is seen, heard, and nurtured as an individual.</p>
+        <p style="margin-top:1rem;">Our main campus is situated on <strong>Circular Road, 1st Floor of the HBL Microfinance Bank, Haripur</strong>. In a society where rote learning often replaces genuine understanding, KSM was established to offer an authentic Montessori alternative — one that bridges internationally recognised child development principles with the cultural values and hopes of Pakistani families.</p>
+        <p style="margin-top:1rem;">From Playgroup through Grade 5, our school prepares children not just academically but as confident, responsible human beings. The school is <strong>PSRA registered and certified</strong>, meeting all government standards for private educational institutions in Khyber Pakhtunkhwa. School timings are: <strong>Playgroup 9:00 AM – 12:30 PM &nbsp;|&nbsp; Nursery 8:30 AM – 12:30 PM &nbsp;|&nbsp; Prep – Grade 5: 7:45 AM – 1:30 PM</strong>.</p>
+        <p style="margin-top:1rem;">Under the leadership of Saadia Tariq as Founder and Managing Director, the school continues to grow — with <strong>Campus 2</strong> now also serving families across Haripur, guided by the same mission and values.</p>
         <div
           style="margin-top:2rem; padding: 2rem; background: var(--primary-bg); border-radius: var(--radius-md); border-left: 4px solid var(--primary-deep);">
           <p
@@ -418,6 +427,24 @@
   </footer>
 
   <script src="assets/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.nav-dropdown-trigger').forEach(trigger => {
+        trigger.addEventListener('click', (e) => {
+          e.preventDefault();
+          const dropdown = trigger.closest('.nav-dropdown');
+          const isOpen = dropdown.classList.contains('open');
+          document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+          if (!isOpen) dropdown.classList.add('open');
+        });
+      });
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.nav-dropdown')) {
+          document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+        }
+      });
+    });
+  </script>
 </body>
 
 </html>

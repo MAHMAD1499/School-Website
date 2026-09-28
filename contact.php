@@ -105,6 +105,13 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
       </a>
       <nav class="nav-menu" id="navMenu">
         <a href="index.php" class="nav-link">Home</a>
+        <div class="nav-dropdown" id="campusDropdown">
+          <a href="#" class="nav-link nav-dropdown-trigger">Campuses ▾</a>
+          <div class="dropdown-content">
+            <a href="index.php">Campus 1 (Main)</a>
+            <a href="campus2.php">Campus 2</a>
+          </div>
+        </div>
         <a href="index.php#programs" class="nav-link">Programs</a>
         <a href="admissions.php" class="nav-link">Admissions</a>
         <a href="index.php#gallery" class="nav-link">Gallery & Events</a>
@@ -436,6 +443,24 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
   </footer>
 
   <script src="assets/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.nav-dropdown-trigger').forEach(trigger => {
+        trigger.addEventListener('click', (e) => {
+          e.preventDefault();
+          const dropdown = trigger.closest('.nav-dropdown');
+          const isOpen = dropdown.classList.contains('open');
+          document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+          if (!isOpen) dropdown.classList.add('open');
+        });
+      });
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.nav-dropdown')) {
+          document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+        }
+      });
+    });
+  </script>
   <script>
     const contactForm = document.getElementById('contactForm');
     const contactSuccess = document.getElementById('contactSuccess');

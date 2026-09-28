@@ -129,8 +129,13 @@
     <!-- Overview -->
     <div class="content-section" id="overview" style="margin-bottom: 2.5rem;">
       <h2>About Campus 2</h2>
-      <p>Following the success and growing demand at our main campus, Kindergarten Saadia's Montessori School expanded with a second campus to serve more families across the area. Campus 2 carries forward the same core values — quality early education, a nurturing Montessori environment, and a deep respect for every child's unique potential.</p>
-      <p style="margin-top: 1rem;">Like Campus 1, this campus is PSRA registered and follows the same structured Montessori curriculum, ensuring a consistent and high-quality learning experience for all students.</p>
+      <p>Kindergarten Saadia's Montessori School — Campus 2 was established in <strong>2024</strong>, located in <strong>Haripur, Khyber Pakhtunkhwa, Pakistan</strong>. Founded by <strong>Saadia Tariq</strong>, Campus 2 was opened in response to the growing demand from families across the area who wished to enrol their children closer to their neighbourhoods.</p>
+      <p style="margin-top: 1rem;">Campus 2 carries forward the exact same core values as our main campus — quality early education, a nurturing Montessori environment, and a deep respect for every child's unique developmental journey. From Playgroup through Grade 5, students at Campus 2 receive the same structured, PSRA-registered curriculum delivered by our trained and dedicated teaching team.</p>
+      <p style="margin-top: 1rem;">Like Campus 1, this campus is fully <strong>PSRA registered and certified</strong>, ensuring all programmes meet the government standards for private schools in Khyber Pakhtunkhwa. Parents can visit the campus anytime during school hours for admissions inquiries or to speak with our coordination team.</p>
+      <a href="https://ksmschool.site" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:0.5rem; margin-top:1.25rem; color:var(--primary-deep); font-weight:600; text-decoration:none;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        Visit ksmschool.site →
+      </a>
     </div>
 
     <!-- Key Info Cards -->
@@ -146,7 +151,7 @@
           </svg>
           <strong style="color: var(--primary-deep);">Established</strong>
         </div>
-        <p style="color: var(--text-medium); font-size: 0.95rem;"><em style="color:#9ca3af;">Year to be confirmed</em></p>
+        <p style="color: var(--text-medium); font-size: 0.95rem;">2024</p>
       </div>
 
       <div style="background: var(--primary-bg); border-radius: var(--radius-md); padding: 1.5rem; border-left: 4px solid var(--accent-warm);">
@@ -157,7 +162,7 @@
           </svg>
           <strong style="color: var(--accent-warm);">Location</strong>
         </div>
-        <p style="color: var(--text-medium); font-size: 0.95rem;"><em style="color:#9ca3af;">Location to be confirmed</em></p>
+        <p style="color: var(--text-medium); font-size: 0.95rem;">Haripur, Khyber Pakhtunkhwa, Pakistan</p>
       </div>
 
       <div style="background: var(--primary-bg); border-radius: var(--radius-md); padding: 1.5rem; border-left: 4px solid #10b981;">
@@ -193,19 +198,15 @@
         <div style="background: var(--primary-deep); color: #fff; padding: 0.75rem 1.25rem; font-weight: 600;">Class Timings</div>
         <div style="padding: 0.75rem 1.25rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between;">
           <span style="color: var(--text-medium);">Playgroup</span>
-          <span style="color: var(--primary-deep); font-weight: 600;"><em style="color:#9ca3af; font-weight:400;">To be confirmed</em></span>
+          <span style="color: var(--primary-deep); font-weight: 600;">9:00 AM – 12:30 PM</span>
         </div>
         <div style="padding: 0.75rem 1.25rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between;">
           <span style="color: var(--text-medium);">Nursery</span>
-          <span style="color: var(--primary-deep); font-weight: 600;"><em style="color:#9ca3af; font-weight:400;">To be confirmed</em></span>
+          <span style="color: var(--primary-deep); font-weight: 600;">8:30 AM – 12:30 PM</span>
         </div>
         <div style="padding: 0.75rem 1.25rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between;">
-          <span style="color: var(--text-medium);">Prep – Grade 2</span>
-          <span style="color: var(--primary-deep); font-weight: 600;"><em style="color:#9ca3af; font-weight:400;">To be confirmed</em></span>
-        </div>
-        <div style="padding: 0.75rem 1.25rem; display: flex; justify-content: space-between;">
-          <span style="color: var(--text-medium);">Grade 3 – Grade 5</span>
-          <span style="color: var(--primary-deep); font-weight: 600;"><em style="color:#9ca3af; font-weight:400;">To be confirmed</em></span>
+          <span style="color: var(--text-medium);">Prep – Grade 5</span>
+          <span style="color: var(--primary-deep); font-weight: 600;">7:45 AM – 1:30 PM</span>
         </div>
       </div>
     </div>
