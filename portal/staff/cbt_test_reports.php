@@ -14,11 +14,11 @@ if($isAjax){
 
   if($method==='GET'){
     $submissions = [];
-    $typeFilter = isset($_GET['type']) ? ksm_db()->real_escape_string($_GET['type']) : '';
+    $classFilter = isset($_GET['class']) ? ksm_db()->real_escape_string($_GET['class']) : '';
     
-    $where = "sess.teacher_id=$teacher_id";
-    if($typeFilter) {
-       $where .= " AND sess.type='$typeFilter'";
+    $where = "sess.teacher_id=$teacher_id AND sess.type='test'";
+    if($classFilter) {
+       $where .= " AND st.class='$classFilter'";
     }
 
     $res = $db->query("SELECT sub.id, sub.status, sub.score, sub.completed_at, sess.title as session_title, sess.type, st.name as student_name, st.class 
@@ -52,6 +52,7 @@ if($isAjax){
       </div>
       <div class="topbar-right">
         <span id="staffNameTopbar" style="font-size:0.82rem;color:var(--text-medium);"></span>
+        <div class="topbar-avatar" style="background:#10B981;color:white;" id="staffAvatar"></div>
         <button class="btn btn-sm btn-outline" onclick="Auth.logoutStaff(); window.location='login.php';">Logout</button>
       </div>
     </div>
@@ -63,10 +64,16 @@ if($isAjax){
       </div>
 
       <div class="card mb-4" style="padding: 1rem; display: flex; gap: 1rem; align-items:center;">
-        <select class="form-control" style="max-width:200px;" id="typeFilter">
-           <option value="">All Types</option>
-           <option value="test">Tests</option>
-           <option value="exam">Exams</option>
+        <select class="form-control" style="max-width:200px;" id="classFilter">
+          <option value="">All Classes</option>
+          <option value="Playgroup">Playgroup</option>
+          <option value="Nursery">Nursery</option>
+          <option value="Prep">Prep</option>
+          <option value="Grade One">Grade One</option>
+          <option value="Grade Two">Grade Two</option>
+          <option value="Grade Three">Grade Three</option>
+          <option value="Grade Four">Grade Four</option>
+          <option value="Grade Five">Grade Five</option>
         </select>
         <button class="btn btn-primary" onclick="loadSubmissions()">Filter</button>
       </div>
@@ -90,13 +97,16 @@ if($isAjax){
   buildSidebar('staff');
   document.addEventListener('DOMContentLoaded', () => {
     let staff = Auth.getStaff();
-    if(staff) document.getElementById('staffNameTopbar').textContent = staff.name;
+    if(staff) {
+        document.getElementById('staffNameTopbar').textContent = staff.name;
+        document.getElementById('staffAvatar').innerHTML = staff.profilePic ? `<img src="${staff.profilePic}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : staff.name.charAt(0).toUpperCase();
+    }
     loadSubmissions();
   });
 
   async function loadSubmissions() {
-    const typeFilter = document.getElementById('typeFilter').value;
-    const res = await selfApi('GET', null, typeFilter ? `type=${typeFilter}` : '');
+    const classFilter = document.getElementById('classFilter').value;
+    const res = await selfApi('GET', null, classFilter ? `class=${classFilter}` : '');
     if(res.success) {
       const tb = document.getElementById('submissionsList');
       if(res.data.submissions.length === 0) {

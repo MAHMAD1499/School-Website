@@ -17,37 +17,40 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
       ksm_err("Too many failed attempts. Please try again in {$wait} minute(s).", 429);
   }
 
-  $staffNumber=ksm_esc($body['staffNumber']??'');$pass=trim($body['password']??'');
-  $r=ksm_db()->query("SELECT * FROM users_staff WHERE staffNumber='$staffNumber' LIMIT 1");
-  if ($r && $r->num_rows > 0) {
-      $user = $r->fetch_assoc();
-      if ($pass === $user['password'] || password_verify($pass, $user['password'])) {
-          if ($pass === $user['password']) {
-              $hashed = password_hash($pass, PASSWORD_DEFAULT);
-              ksm_db()->query("UPDATE users_staff SET password='$hashed' WHERE id={$user['id']}");
+  $staffNumber = trim($body['staffNumber'] ?? '');
+  $pass = trim($body['password'] ?? '');
+  
+  $db = ksm_db();
+  $stmt = $db->prepare("SELECT * FROM users_staff WHERE staffNumber=? LIMIT 1");
+  if ($stmt) {
+      $stmt->bind_param("s", $staffNumber);
+      $stmt->execute();
+      $r = $stmt->get_result();
+      if ($r && $r->num_rows > 0) {
+          $user = $r->fetch_assoc();
+          if ($pass === $user['password'] || password_verify($pass, $user['password'])) {
+              if ($pass === $user['password']) {
+                  $hashed = password_hash($pass, PASSWORD_DEFAULT);
+                  $upd_stmt = $db->prepare("UPDATE users_staff SET password=? WHERE id=?");
+                  $upd_stmt->bind_param("si", $hashed, $user['id']);
+                  $upd_stmt->execute();
+              }
+              $_SESSION['staff_login_attempts'] = 0;
+              $_SESSION['staff_login_lockout'] = 0;
+              session_regenerate_id(true);
+              $_SESSION['ksm_staff_auth'] = $user['id'];
+              unset($user['password']);
+              ksm_json($user, 'Login successful.');
           }
-          $_SESSION['staff_login_attempts'] = 0;
-          $_SESSION['staff_login_lockout'] = 0;
-          session_regenerate_id(true);
-          $_SESSION['ksm_staff_auth'] = $user['id'];
-          unset($user['password']);
-          ksm_json($user, 'Login successful.');
-      } else {
-          $_SESSION['staff_login_attempts']++;
-          if ($_SESSION['staff_login_attempts'] >= 5) {
-              $_SESSION['staff_login_lockout'] = time() + 900;
-              ksm_err('Too many failed login attempts. Locked out for 15 minutes.', 429);
-          }
-          ksm_err('Invalid staff number or password.', 401);
       }
-  } else {
-      $_SESSION['staff_login_attempts']++;
-      if ($_SESSION['staff_login_attempts'] >= 5) {
-          $_SESSION['staff_login_lockout'] = time() + 900;
-          ksm_err('Too many failed login attempts. Locked out for 15 minutes.', 429);
-      }
-      ksm_err('Invalid staff number or password.', 401);
   }
+
+  $_SESSION['staff_login_attempts']++;
+  if ($_SESSION['staff_login_attempts'] >= 3) {
+      $_SESSION['staff_login_lockout'] = time() + 900;
+      ksm_err('Too many failed login attempts. Locked out for 15 minutes.', 429);
+  }
+  ksm_err('Invalid staff number or password.', 401);
 }
 ?>
 <!DOCTYPE html>

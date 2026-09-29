@@ -72,7 +72,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){$r=ksm_
   });
 
   async function renderGallery() {
-    const res = await API.getGallery();
+    const res = await selfApi('GET');
     const gallery = res.data || [];
     const grid = document.getElementById('galleryGrid');
     if (gallery.length === 0) {
@@ -88,7 +88,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){$r=ksm_
   }
 
   async function openLightbox(index) {
-    const res = await API.getGallery();
+    const res = await selfApi('GET');
     const gallery = res.data || [];
     const item = gallery[index];
     if (!item) return;

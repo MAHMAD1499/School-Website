@@ -43,6 +43,7 @@ if($isAjax){
       </div>
       <div class="topbar-right">
         <span id="studentNameTopbar" style="font-size:0.82rem;color:var(--text-medium);"></span>
+        <div class="topbar-avatar" style="background:var(--accent-warm);color:white;" id="studentAvatar"></div>
         <button class="btn btn-sm btn-outline" onclick="Auth.logoutStudent(); window.location='login.php';">Logout</button>
       </div>
     </div>
@@ -68,7 +69,10 @@ if($isAjax){
   buildSidebar('student');
   document.addEventListener('DOMContentLoaded', () => {
     let student = Auth.getStudent();
-    if(student) document.getElementById('studentNameTopbar').textContent = student.name;
+    if(student) {
+        document.getElementById('studentNameTopbar').textContent = student.name;
+        document.getElementById('studentAvatar').innerHTML = student.profilePic ? `<img src="${student.profilePic}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : student.name.charAt(0).toUpperCase();
+    }
     loadResults();
   });
 

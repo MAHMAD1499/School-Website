@@ -23,20 +23,31 @@ if($isAjax){
         }
 
         $user=trim($body['username']??''); $pass=trim($body['password']??'');
-        if($user==='admin'&&$pass==='admin123') {
-            $_SESSION['login_attempts'] = 0;
-            $_SESSION['login_lockout'] = 0;
-            session_regenerate_id(true);
-            $_SESSION['ksm_admin_auth'] = true;
-            ksm_json(['role'=>'admin'],'Login successful.');
-        } else {
-            $_SESSION['login_attempts']++;
-            if ($_SESSION['login_attempts'] >= 5) {
-                $_SESSION['login_lockout'] = time() + 900; // 15 mins
-                ksm_json(null, 'Too many failed login attempts. Locked out for 15 minutes.', 429);
+        
+        $db = ksm_db();
+        $stmt = $db->prepare("SELECT password FROM users_admin WHERE username=? LIMIT 1");
+        if ($stmt) {
+            $stmt->bind_param("s", $user);
+            $stmt->execute();
+            $res = $stmt->get_result();
+            if ($res && $res->num_rows > 0) {
+                $row = $res->fetch_assoc();
+                if (password_verify($pass, $row['password'])) {
+                    $_SESSION['login_attempts'] = 0;
+                    $_SESSION['login_lockout'] = 0;
+                    session_regenerate_id(true);
+                    $_SESSION['ksm_admin_auth'] = true;
+                    ksm_json(['role'=>'admin'],'Login successful.');
+                }
             }
-            ksm_json(null,'Invalid credentials.',401);
         }
+
+        $_SESSION['login_attempts']++;
+        if ($_SESSION['login_attempts'] >= 3) {
+            $_SESSION['login_lockout'] = time() + 900; // 15 mins
+            ksm_json(null, 'Too many failed login attempts. Locked out for 15 minutes.', 429);
+        }
+        ksm_json(null,'Invalid credentials.',401);
     }
     ksm_json(null,'Unknown action.',400);
 }

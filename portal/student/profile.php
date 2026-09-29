@@ -25,7 +25,16 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
       if($raw_phone && !preg_match('/^[\+0-9\s\-]{10,20}$/', $raw_phone)) ksm_err('Invalid phone number format.');
       if(strlen($raw_addr)>255) ksm_err('Address too long.');
 
-      if($pic && (!preg_match('/^(https?:\/\/|\.\.\/|\/|assets\/)/i', $pic) || preg_match('/javascript:/i', $pic))) {
+      if($pic && preg_match('/^data:image\/(jpeg|png|gif|webp);base64,/', $pic, $matches)) {
+          $data = explode(',', $pic)[1];
+          $data = base64_decode($data);
+          $ext = $matches[1] === 'jpeg' ? 'jpg' : $matches[1];
+          $filename = 'student_' . $id . '_' . time() . '.' . $ext;
+          $uploadDir = __DIR__ . '/../../uploads/profiles/';
+          if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+          file_put_contents($uploadDir . $filename, $data);
+          $pic = '../uploads/profiles/' . $filename;
+      } else if($pic && (!preg_match('/^(https?:\/\/|\.\.\/|\/|assets\/)/i', $pic) || preg_match('/javascript:/i', $pic))) {
           $pic = '';
       }
 
@@ -271,22 +280,16 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   async function saveCroppedImage() {
     if (!cropper) return;
     const btn = document.getElementById('btnCropSave');
-    btn.textContent = 'Uploading...';
+    btn.textContent = 'Preparing...';
     btn.disabled = true;
     
     // Get cropped canvas
     const canvas = cropper.getCroppedCanvas({ width: 300, height: 300 });
     const base64Image = canvas.toDataURL('image/jpeg', 0.8);
     
-    // Call upload API
-    const res = await API.uploadProfilePic(base64Image);
-    if (res.success && res.data && res.data.url) {
-      document.getElementById('editProfilePic').value = res.data.url;
-      showToast('Picture uploaded successfully! Click Save Changes.', 'success');
-      closeCropperModal();
-    } else {
-      showToast(res.message || 'Error uploading image.', 'error');
-    }
+    document.getElementById('editProfilePic').value = base64Image;
+    showToast('Picture prepared successfully! Click Save Changes to upload.', 'success');
+    closeCropperModal();
     
     btn.textContent = 'Crop & Upload';
     btn.disabled = false;

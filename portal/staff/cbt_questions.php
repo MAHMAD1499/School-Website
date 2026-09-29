@@ -88,6 +88,7 @@ if($isAjax){
       </div>
       <div class="topbar-right">
         <span id="staffNameTopbar" style="font-size:0.82rem;color:var(--text-medium);"></span>
+        <div class="topbar-avatar" style="background:#10B981;color:white;" id="staffAvatar"></div>
         <a href="cbt_dashboard.php" class="btn btn-sm btn-outline">Back to Dashboard</a>
       </div>
     </div>
@@ -151,7 +152,7 @@ if($isAjax){
   });
 
   async function loadQuestions() {
-    const res = await selfApi('GET');
+    const res = await selfApi('GET', null, `session_id=${sessionId}`);
     if(res.success) {
       const tbody = document.getElementById('questionsList');
       if(res.data.questions.length === 0) {
@@ -184,7 +185,7 @@ if($isAjax){
     const data = Object.fromEntries(fd.entries());
     data.action = 'add_question';
     data.correct_answer = data.correct_answer.toUpperCase();
-    const res = await selfApi('POST', data);
+    const res = await selfApi('POST', data, `session_id=${sessionId}`);
     if(res.success) {
       document.getElementById('addQuestionModal').classList.remove('active');
       e.target.reset();
@@ -194,7 +195,7 @@ if($isAjax){
 
   async function deleteQuestion(id) {
     if(!confirm("Delete this question?")) return;
-    const res = await selfApi('POST', {action: 'delete_question', id});
+    const res = await selfApi('POST', {action: 'delete_question', id}, `session_id=${sessionId}`);
     if(res.success) loadQuestions();
   }
 </script>

@@ -21,6 +21,7 @@ check_staff_auth();
       </div>
       <div class="topbar-right">
         <span id="staffNameTopbar" style="font-size:0.82rem;color:var(--text-medium);"></span>
+        <div class="topbar-avatar" style="background:#10B981;color:white;" id="staffAvatar"></div>
         <button class="btn btn-sm btn-outline" onclick="Auth.logoutStaff(); window.location='login.php';">Logout</button>
       </div>
     </div>
@@ -34,9 +35,18 @@ check_staff_auth();
       </div>
 
       <div class="card mb-4" style="padding: 1rem; display: flex; gap: 1rem; align-items:center;">
-        <select class="form-control" style="max-width:200px;"><option value="">All Classes</option></select>
-        <select class="form-control" style="max-width:200px;"><option value="">Term Selection</option></select>
-        <button class="btn btn-primary">Filter</button>
+        <select class="form-control" style="max-width:200px;" id="classFilter">
+          <option value="">All Classes</option>
+          <option value="Playgroup">Playgroup</option>
+          <option value="Nursery">Nursery</option>
+          <option value="Prep">Prep</option>
+          <option value="Grade One">Grade One</option>
+          <option value="Grade Two">Grade Two</option>
+          <option value="Grade Three">Grade Three</option>
+          <option value="Grade Four">Grade Four</option>
+          <option value="Grade Five">Grade Five</option>
+        </select>
+        <button class="btn btn-primary" onclick="loadExamReports()">Filter</button>
       </div>
 
       <div class="card">
@@ -58,7 +68,10 @@ check_staff_auth();
   buildSidebar('staff');
   document.addEventListener('DOMContentLoaded', () => {
     let staff = Auth.getStaff();
-    if(staff) document.getElementById('staffNameTopbar').textContent = staff.name;
+    if(staff) {
+        document.getElementById('staffNameTopbar').textContent = staff.name;
+        document.getElementById('staffAvatar').innerHTML = staff.profilePic ? `<img src="${staff.profilePic}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : staff.name.charAt(0).toUpperCase();
+    }
   });
 
   function exportPDF() {

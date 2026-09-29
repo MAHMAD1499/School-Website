@@ -40,23 +40,23 @@ function buildSidebar(role = 'portal') {
   ];
 
   const studentLinks = [
-    { href: 'profile.php', icon: 'user', label: 'My Profile' },
-    { href: 'dashboard.php', icon: 'home', label: 'My Dashboard' },
+    { href: 'dashboard.php', icon: 'home', label: 'Dashboard' },
     { href: 'homework.php', icon: 'clipboard', label: 'Homework (Diary)' },
-    { href: 'attendance.php', icon: 'check-square', label: 'My Attendance' },
+    { href: 'attendance.php', icon: 'check-square', label: 'Attendance' },
     {
       label: 'CBT',
       icon: 'book-open',
       subLinks: [
         { href: 'cbt_dashboard.php', icon: 'layout', label: 'CBT Dashboard' },
-        { href: 'cbt_test_reports.php', icon: 'file-text', label: 'CBT Test Reports' },
-        { href: 'cbt_exam_reports.php', icon: 'file-text', label: 'CBT Exam Reports' }
+        { href: 'cbt_test_reports.php', icon: 'file-text', label: 'Test Reports' },
+        { href: 'cbt_exam_reports.php', icon: 'file-text', label: 'Exam Reports' }
       ]
     },
     { href: 'news.php', icon: 'bell', label: 'Announcements' },
     { href: 'events.php', icon: 'calendar', label: 'Events' },
     { href: 'gallery.php', icon: 'image', label: 'School Gallery' },
-    { href: 'my_gallery.php', icon: 'image', label: 'My Personal Photos' }
+    { href: 'profile.php', icon: 'user', label: 'Profile & Settings' },
+    { href: 'my_gallery.php', icon: 'image', label: 'My Media / Personal Photos' }
   ];
 
   const staffLinks = [
@@ -107,6 +107,9 @@ function buildSidebar(role = 'portal') {
   let links = isAdmin ? adminLinks : isStudent ? studentLinks : isStaff ? staffLinks : portalLinks;
 
   let linksHTML = links.map(l => {
+    if (l.section) {
+      return `<div style="padding: 1.5rem 1.5rem 0.5rem; font-size: 0.75rem; font-weight: 700; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.05em;">${l.section}</div>`;
+    }
     if (l.subLinks) {
       let subLinksHTML = l.subLinks.map(sl =>
         `<a href="${sl.href}" class="sidebar-sublink">${makeIconSVG(sl.icon || 'book-open')}<span>${sl.label}</span></a>`

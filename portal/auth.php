@@ -2,7 +2,7 @@
 if (session_status() === PHP_SESSION_NONE) {
     ini_set('session.cookie_httponly', 1);
     ini_set('session.use_only_cookies', 1);
-    ini_set('session.cookie_samesite', 'Lax');
+    ini_set('session.cookie_samesite', 'Strict');
     if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
         ini_set('session.cookie_secure', 1);
     }
@@ -14,6 +14,9 @@ header('Expires: 0');
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: SAMEORIGIN');
 header('Referrer-Policy: strict-origin-when-cross-origin');
+header("Content-Security-Policy: default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:; img-src 'self' data: blob: http: https:;");
+header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
 
 function is_admin_logged_in() {
     return isset($_SESSION['ksm_admin_auth']) && $_SESSION['ksm_admin_auth'] === true;

@@ -30,7 +30,10 @@ if($isAjax){
       $subject = ksm_esc($body['subject']);
       $total_marks = (float)$body['total_marks'];
       $duration = (int)$body['duration'];
-      $res = $db->query("INSERT INTO cbt_sessions (title, type, subject_id, class_id, teacher_id, start_time, end_time, duration_minutes, total_marks, status) VALUES ('$title', '$type', '$subject', '$class', $teacher_id, NOW(), NOW(), $duration, $total_marks, 'published')");
+      $start_time = ksm_esc($body['start_time']);
+      $end_time = ksm_esc($body['end_time']);
+      
+      $res = $db->query("INSERT INTO cbt_sessions (title, type, subject_id, class_id, teacher_id, start_time, end_time, duration_minutes, total_marks, status) VALUES ('$title', '$type', '$subject', '$class', $teacher_id, '$start_time', '$end_time', $duration, $total_marks, 'published')");
       if($res) {
           ksm_json(null, "Session created successfully");
       } else {
@@ -68,6 +71,7 @@ if($isAjax){
       </div>
       <div class="topbar-right">
         <span id="staffNameTopbar" style="font-size:0.82rem;color:var(--text-medium);"></span>
+        <div class="topbar-avatar" style="background:#10B981;color:white;" id="staffAvatar"></div>
         <button class="btn btn-sm btn-outline" onclick="Auth.logoutStaff(); window.location='login.php';">Logout</button>
       </div>
     </div>
@@ -80,9 +84,9 @@ if($isAjax){
 
       <div class="card">
         <table class="table">
-          <thead><tr><th>Title</th><th>Type</th><th>Class (ID)</th><th>Subject (ID)</th><th>Duration</th><th>Total Marks</th><th>Status</th><th>Action</th></tr></thead>
+          <thead><tr><th>Title</th><th>Type</th><th>Class (ID)</th><th>Subject (ID)</th><th>Schedule</th><th>Duration</th><th>Total Marks</th><th>Status</th><th>Action</th></tr></thead>
           <tbody id="sessionsList">
-            <tr><td colspan="7" style="text-align:center;padding:1rem;">Loading...</td></tr>
+            <tr><td colspan="9" style="text-align:center;padding:1rem;">Loading...</td></tr>
           </tbody>
         </table>
       </div>
@@ -147,6 +151,17 @@ if($isAjax){
         </div>
       </div>
 
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;" class="mb-3">
+        <div class="form-group">
+          <label style="font-weight:600; margin-bottom:0.5rem; display:block;">Start Time</label>
+          <input type="datetime-local" class="form-control" name="start_time" required>
+        </div>
+        <div class="form-group">
+          <label style="font-weight:600; margin-bottom:0.5rem; display:block;">End Time</label>
+          <input type="datetime-local" class="form-control" name="end_time" required>
+        </div>
+      </div>
+
       <div class="form-group mb-4">
         <label style="font-weight:600; margin-bottom:0.5rem; display:block;">Total Marks</label>
         <input type="number" class="form-control" name="total_marks" required min="1" value="50">
@@ -167,7 +182,10 @@ if($isAjax){
   buildSidebar('staff');
   document.addEventListener('DOMContentLoaded', () => {
     let staff = Auth.getStaff();
-    if(staff) document.getElementById('staffNameTopbar').textContent = staff.name;
+    if(staff) {
+        document.getElementById('staffNameTopbar').textContent = staff.name;
+        document.getElementById('staffAvatar').innerHTML = staff.profilePic ? `<img src="${staff.profilePic}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : staff.name.charAt(0).toUpperCase();
+    }
     loadSessions();
   });
 
@@ -185,6 +203,10 @@ if($isAjax){
           <td style="text-transform:capitalize;">${s.type}</td>
           <td>${s.class_id}</td>
           <td>${s.subject_id}</td>
+          <td style="font-size:0.85rem;white-space:nowrap;">
+             <div><strong>Start:</strong> ${s.start_time ? new Date(s.start_time).toLocaleString() : 'N/A'}</div>
+             <div><strong>End:</strong> ${s.end_time ? new Date(s.end_time).toLocaleString() : 'N/A'}</div>
+          </td>
           <td>${s.duration_minutes} min</td>
           <td>${s.total_marks}</td>
           <td><span class="badge badge-${s.status==='published'?'green':'blue'}">${s.status}</span></td>
