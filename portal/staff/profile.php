@@ -11,8 +11,8 @@ if(($_SERVER['REQUEST_METHOD']??'')==='OPTIONS')exit;
 $isAjax=isset($_SERVER['HTTP_X_REQUESTED_WITH'])||strpos($_SERVER['CONTENT_TYPE']??'','application/json')!==false||isset($_GET['_api']);
 $method=$_SERVER['REQUEST_METHOD']??'GET';
 $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
-  if($method==='GET'||$method==='PUT'){
-    $id = $method==='GET' ? intval($_GET['id']??0) : intval($body['id']??0);
+  if($method==='GET'||$method==='PUT'||$method==='POST'){
+    $id = $method==='GET' ? intval($_GET['id']??($_SESSION['ksm_staff_auth']??0)) : intval($body['id']??($_SESSION['ksm_staff_auth']??0));
     if(!$id)ksm_err('Invalid ID.');
     if($id !== (int)$_SESSION['ksm_staff_auth']) ksm_err('Access denied.', 403);
     if($method==='GET'){
@@ -30,15 +30,15 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
       if(strlen($raw_sub)>100) ksm_err('Subject too long.');
       if(strlen($raw_bio)>1000) ksm_err('Bio too long.');
 
-      if($pic && preg_match('/^data:image\/(jpeg|png|gif|webp);base64,/', $pic, $matches)) {
+      if($pic && preg_match('/^data:image\/(jpeg|png|gif|webp);base64,/i', $pic, $matches)) {
           $data = explode(',', $pic)[1];
-          $data = base64_decode($data);
-          $ext = $matches[1] === 'jpeg' ? 'jpg' : $matches[1];
-          $filename = 'staff_' . $id . '_' . time() . '.' . $ext;
-          $uploadDir = __DIR__ . '/../../uploads/profiles/';
+          $data = base64_decode(str_replace(' ', '+', $data));
+          $ext = strtolower($matches[1]) === 'jpeg' ? 'jpg' : strtolower($matches[1]);
+          $filename = 'staff_' . $id . '_' . time() . '_' . rand(1000, 9999) . '.' . $ext;
+          $uploadDir = __DIR__ . '/../../assets/uploads/profile_pics/';
           if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
           file_put_contents($uploadDir . $filename, $data);
-          $pic = '../../uploads/profiles/' . $filename;
+          $pic = '../../assets/uploads/profile_pics/' . $filename;
       } else if($pic && (!preg_match('/^(https?:\/\/|\.\.\/|\/|assets\/)/i', $pic) || preg_match('/javascript:/i', $pic))) {
           $pic = '';
       }
@@ -63,7 +63,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   <meta name="description" content="Teacher Profile - KSM School Portal">
   <title>My Profile - KSM Teacher Portal</title>
   <link rel="stylesheet" href="../assets/portal.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+  <link rel="stylesheet" href="../assets/cropper.min.css">
 </head>
 <body>
 <div class="portal-wrapper">
@@ -150,26 +150,27 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
 </div>
 
 <!-- Cropper Modal -->
-<div id="cropperModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; flex-direction:column; align-items:center; justify-content:center; padding:1rem;">
-  <div style="background:white; border-radius:8px; padding:1.5rem; width:100%; max-width:600px; text-align:center;">
-    <h3 style="margin-bottom:1rem; font-weight:600; font-size:1.2rem;">Crop Profile Picture</h3>
-    <div style="width:100%; height:400px; background:#f0f0f0; margin-bottom:1rem; overflow:hidden;">
-      <img id="cropperImage" style="max-width:100%; display:block;">
+<div id="cropperModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; flex-direction:column; align-items:center; justify-content:center; padding:1rem; backdrop-filter:blur(3px);">
+  <div style="background:white; border-radius:12px; padding:1.5rem; width:100%; max-width:580px; text-align:center; box-shadow:0 15px 35px rgba(0,0,0,0.35);">
+    <h3 style="margin-top:0; margin-bottom:1rem; font-weight:700; font-size:1.2rem; color:var(--primary-deep);">Crop Profile Picture</h3>
+    <div id="cropperWrapper" style="width:100%; height:360px; max-height:55vh; background:#0f172a; margin-bottom:1.25rem; overflow:hidden; border-radius:8px; display:flex; align-items:center; justify-content:center;">
+      <img id="cropperImage" style="max-width:100%; max-height:100%; display:block;" alt="To Crop">
     </div>
-    <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;">
+    <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:0.5rem; align-items:center;">
       <div style="display:flex; gap:0.5rem;">
-        <button type="button" class="btn btn-sm btn-outline" onclick="if(cropper) cropper.zoom(0.1)">🔍 Zoom In</button>
-        <button type="button" class="btn btn-sm btn-outline" onclick="if(cropper) cropper.zoom(-0.1)">🔍 Zoom Out</button>
+        <button type="button" class="btn btn-sm btn-outline" onclick="if(cropper) cropper.zoom(0.1)" title="Zoom In">🔍 Zoom In</button>
+        <button type="button" class="btn btn-sm btn-outline" onclick="if(cropper) cropper.zoom(-0.1)" title="Zoom Out">🔍 Zoom Out</button>
+        <button type="button" class="btn btn-sm btn-outline" onclick="if(cropper) cropper.rotate(90)" title="Rotate">🔄 Rotate</button>
       </div>
       <div style="display:flex; gap:0.5rem;">
         <button type="button" class="btn btn-sm btn-outline" onclick="closeCropperModal()">Cancel</button>
-        <button type="button" class="btn btn-sm btn-primary" id="btnCropSave" onclick="saveCroppedImage()">Crop & Upload</button>
+        <button type="button" class="btn btn-sm btn-primary" id="btnCropSave" onclick="saveCroppedImage()">Crop & Save</button>
       </div>
     </div>
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+<script src="../assets/cropper.min.js"></script>
 <script src="../assets/portal.js"></script>
 <script src="../assets/api.js"></script>
 <script src="../assets/sidebar.js"></script>
@@ -230,8 +231,8 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     `).join('');
 
     // Fill edit form
-    document.getElementById('editName').value = currentStaff.name;
-    document.getElementById('editEmail').value = currentStaff.email;
+    document.getElementById('editName').value = currentStaff.name || '';
+    document.getElementById('editEmail').value = currentStaff.email || '';
     document.getElementById('editPhone').value = currentStaff.phone || '';
     document.getElementById('editSubject').value = currentStaff.subject || '';
     document.getElementById('editBio').value = currentStaff.bio || '';
@@ -244,12 +245,12 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   }
 
   async function saveProfile(e) {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     const name = document.getElementById('editName').value.trim();
     if (!name) { showToast('Name is required.', 'error'); return; }
 
     const updates = {
-      id: currentStaff.id,
+      id: (currentStaff && currentStaff.id) ? currentStaff.id : null,
       name,
       phone: document.getElementById('editPhone').value.trim(),
       subject: document.getElementById('editSubject').value.trim(),
@@ -258,12 +259,12 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     };
 
     const res = await API.updateStaff(updates);
-    if (res.success) {
+    if (res && res.success && res.data) {
       currentStaff = { ...currentStaff, ...res.data };
       sessionStorage.setItem('ksm_staff_auth', JSON.stringify(currentStaff));
       showToast('Profile updated successfully!', 'success');
     } else {
-      showToast(res.message || 'Error updating profile.', 'error');
+      showToast((res && res.message) ? res.message : 'Error updating profile.', 'error');
     }
     isEditing = false;
     document.getElementById('editModal').style.display = 'none';
@@ -280,63 +281,144 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   let currentImageType = 'image/jpeg';
   
   function handleFileSelect(event) {
-    const file = event.target.files[0];
+    const file = event.target.files && event.target.files[0];
     if (!file) return;
     if (!file.type.startsWith('image/')) {
       showToast('Please select a valid image file.', 'error');
       return;
     }
-    currentImageType = file.type === 'image/png' ? 'image/png' : (file.type === 'image/webp' ? 'image/webp' : 'image/jpeg');
+    currentImageType = (file.type === 'image/png') ? 'image/png' : ((file.type === 'image/webp') ? 'image/webp' : 'image/jpeg');
+
     const reader = new FileReader();
-    reader.onload = (e) => {
-      document.getElementById('cropperModal').style.display = 'flex';
-      const img = document.getElementById('cropperImage');
-      
-      // Reset image state
-      img.style.display = 'block';
+    reader.onload = function(e) {
+      if (cropper) {
+        try { cropper.destroy(); } catch(err) {}
+        cropper = null;
+      }
+
+      const modal = document.getElementById('cropperModal');
+      modal.style.display = 'flex';
+
+      const wrapper = document.getElementById('cropperWrapper');
+      wrapper.innerHTML = '';
+      const img = document.createElement('img');
+      img.id = 'cropperImage';
       img.style.maxWidth = '100%';
-      img.style.height = 'auto';
-      
-      img.onload = () => {
-        // Wait for next frame to ensure modal layout is fully rendered before Cropper initializes
-        setTimeout(() => {
-          if (cropper) { cropper.destroy(); }
+      img.style.maxHeight = '100%';
+      img.style.display = 'block';
+      wrapper.appendChild(img);
+
+      const initCropper = () => {
+        if (typeof Cropper === 'undefined') {
+          console.error('Cropper library not loaded');
+          showToast('Image cropper failed to load. Please refresh the page.', 'error');
+          return;
+        }
+        if (cropper) {
+          try { cropper.destroy(); } catch(err) {}
+          cropper = null;
+        }
+        try {
           cropper = new Cropper(img, {
             aspectRatio: 1,
             viewMode: 1,
-            background: false
+            dragMode: 'move',
+            autoCropArea: 0.85,
+            restore: false,
+            guides: true,
+            center: true,
+            highlight: false,
+            cropBoxMovable: true,
+            cropBoxResizable: true,
+            toggleDragModeOnDblclick: false,
+            background: false,
+            responsive: true,
+            checkOrientation: false
           });
-        }, 100);
+        } catch (err) {
+          console.error('Failed to initialize Cropper:', err);
+          showToast('Error initializing image cropper.', 'error');
+        }
+      };
+
+      img.onload = () => {
+        setTimeout(initCropper, 60);
       };
       img.src = e.target.result;
     };
     reader.readAsDataURL(file);
-    event.target.value = ''; // Reset input
+    event.target.value = '';
   }
 
   function closeCropperModal() {
     document.getElementById('cropperModal').style.display = 'none';
-    if (cropper) { cropper.destroy(); cropper = null; }
+    if (cropper) {
+      try { cropper.destroy(); } catch(err) {}
+      cropper = null;
+    }
+    const img = document.getElementById('cropperImage');
+    if (img) img.src = '';
   }
 
   async function saveCroppedImage() {
-    if (!cropper) return;
+    if (!cropper) {
+      showToast('Cropper is not ready yet. Please wait or re-select the image.', 'error');
+      return;
+    }
     const btn = document.getElementById('btnCropSave');
-    btn.textContent = 'Uploading...';
+    const originalText = btn.textContent;
+    btn.textContent = 'Saving...';
     btn.disabled = true;
     
-    // Get cropped canvas
-    const canvas = cropper.getCroppedCanvas({ width: 300, height: 300 });
-    const base64Image = canvas.toDataURL(currentImageType, 0.8);
-    
-    document.getElementById('editProfilePic').value = base64Image;
-    closeCropperModal();
-    
-    btn.textContent = 'Crop & Upload';
-    btn.disabled = false;
-    
-    // Auto-save
-    saveProfile({ preventDefault: () => {} });
+    try {
+      const canvas = cropper.getCroppedCanvas({
+        width: 300,
+        height: 300,
+        imageSmoothingEnabled: true,
+        imageSmoothingQuality: 'high'
+      });
+      
+      if (!canvas) {
+        showToast('Error cropping image.', 'error');
+        btn.textContent = originalText;
+        btn.disabled = false;
+        return;
+      }
+
+      const base64Image = canvas.toDataURL(currentImageType, 0.9);
+      
+      const editPicInput = document.getElementById('editProfilePic');
+      if (editPicInput) editPicInput.value = base64Image;
+
+      closeCropperModal();
+      showToast('Saving profile picture...', 'info');
+
+      const name = document.getElementById('editName').value.trim() || currentStaff.name;
+      const updates = {
+        id: (currentStaff && currentStaff.id) ? currentStaff.id : null,
+        name,
+        phone: document.getElementById('editPhone').value.trim(),
+        subject: document.getElementById('editSubject').value.trim(),
+        bio: document.getElementById('editBio').value.trim(),
+        profilePic: base64Image,
+      };
+
+      const res = await API.updateStaff(updates);
+      if (res && res.success && res.data) {
+        currentStaff = { ...currentStaff, ...res.data };
+        sessionStorage.setItem('ksm_staff_auth', JSON.stringify(currentStaff));
+        renderProfile();
+        showToast('Profile picture updated successfully!', 'success');
+      } else {
+        showToast((res && res.message) ? res.message : 'Error updating profile.', 'error');
+      }
+    } catch (err) {
+      console.error('Error in saveCroppedImage:', err);
+      showToast('An unexpected error occurred while saving.', 'error');
+    } finally {
+      btn.textContent = originalText;
+      btn.disabled = false;
+    }
   }
 </script>
 </body>

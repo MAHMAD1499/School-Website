@@ -42,6 +42,9 @@ if ($isAjax) {
   if ($_SESSION['student_login_lockout'] > time()) {
       $wait = ceil(($_SESSION['student_login_lockout'] - time()) / 60);
       ksm_err("Too many failed attempts. Please try again in {$wait} minute(s).", 429);
+  } elseif ($_SESSION['student_login_lockout'] > 0 && $_SESSION['student_login_lockout'] <= time()) {
+      $_SESSION['student_login_attempts'] = 0;
+      $_SESSION['student_login_lockout'] = 0;
   }
 
   $rollNo = trim($body['rollNo'] ?? '');
@@ -73,9 +76,9 @@ if ($isAjax) {
   }
 
   $_SESSION['student_login_attempts']++;
-  if ($_SESSION['student_login_attempts'] >= 3) {
-      $_SESSION['student_login_lockout'] = time() + 900;
-      ksm_err('Too many failed login attempts. Locked out for 15 minutes.', 429);
+  if ($_SESSION['student_login_attempts'] >= 5) {
+      $_SESSION['student_login_lockout'] = time() + 1800;
+      ksm_err('Too many failed login attempts. Locked out for 30 minutes.', 429);
   }
   ksm_err('Invalid roll number or password.', 401);
 }
@@ -171,12 +174,16 @@ if ($isAjax) {
           showToast('Welcome back, ' + res.data.name + '!', 'success');
           setTimeout(() => window.location.href = 'dashboard.php', 700);
         } else {
-          document.getElementById('loginError').classList.remove('hidden');
+          const errEl = document.getElementById('loginError');
+          errEl.textContent = res.message || 'Invalid roll number or password. Please try again.';
+          errEl.classList.remove('hidden');
           btn.disabled = false;
           btn.textContent = '🎓 Login to Portal';
         }
-      } catch {
-        document.getElementById('loginError').classList.remove('hidden');
+      } catch(e) {
+        const errEl = document.getElementById('loginError');
+        errEl.textContent = 'An error occurred. Please try again.';
+        errEl.classList.remove('hidden');
         btn.disabled = false;
         btn.textContent = '🎓 Login to Portal';
       }

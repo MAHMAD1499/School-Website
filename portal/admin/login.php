@@ -20,6 +20,9 @@ if($isAjax){
         if ($_SESSION['login_lockout'] > time()) {
             $wait = ceil(($_SESSION['login_lockout'] - time()) / 60);
             ksm_json(null, "Too many failed attempts. Please try again in {$wait} minute(s).", 429);
+        } elseif ($_SESSION['login_lockout'] > 0 && $_SESSION['login_lockout'] <= time()) {
+            $_SESSION['login_attempts'] = 0;
+            $_SESSION['login_lockout'] = 0;
         }
 
         $user=trim($body['username']??''); $pass=trim($body['password']??'');
@@ -43,9 +46,9 @@ if($isAjax){
         }
 
         $_SESSION['login_attempts']++;
-        if ($_SESSION['login_attempts'] >= 3) {
-            $_SESSION['login_lockout'] = time() + 900; // 15 mins
-            ksm_json(null, 'Too many failed login attempts. Locked out for 15 minutes.', 429);
+        if ($_SESSION['login_attempts'] >= 5) {
+            $_SESSION['login_lockout'] = time() + 1800; // 30 mins
+            ksm_json(null, 'Too many failed login attempts. Locked out for 30 minutes.', 429);
         }
         ksm_json(null,'Invalid credentials.',401);
     }
@@ -123,12 +126,16 @@ if($isAjax){
         showToast('Login successful! Redirecting...', 'success');
         setTimeout(() => window.location.href = 'dashboard.php', 800);
       } else {
-        document.getElementById('loginError').classList.remove('hidden');
+        const errEl = document.getElementById('loginError');
+        errEl.textContent = res.message || 'Invalid username or password. Please try again.';
+        errEl.classList.remove('hidden');
         btn.disabled = false;
         btn.textContent = '🔓 Login to Admin Panel';
       }
-    } catch {
-      document.getElementById('loginError').classList.remove('hidden');
+    } catch(e) {
+      const errEl = document.getElementById('loginError');
+      errEl.textContent = 'An error occurred. Please try again.';
+      errEl.classList.remove('hidden');
       btn.disabled = false;
       btn.textContent = '🔓 Login to Admin Panel';
     }

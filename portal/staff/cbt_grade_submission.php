@@ -69,15 +69,15 @@ if($isAjax){
   <title>Grade Submission — KSM Staff Portal</title>
   <link rel="stylesheet" href="../assets/portal.css">
   <style>
-    body { background-color: #f0f4f8; font-family: 'Inter', sans-serif; }
+    body { background-color: var(--bg-main, #F8FAFF); font-family: var(--font-body, 'Inter', sans-serif); }
     .portal-main { margin-left: 0 !important; width: 100% !important; border-radius:0 !important; }
-    .question-card { background: white; padding: 2rem; border-radius: var(--radius-md); box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 1.5rem; border-left: 4px solid var(--primary); }
-    .question-text { font-weight: 600; font-size: 1.1rem; margin-bottom: 1rem; color: #2c3e50; }
-    .correct { color: #16a34a; font-weight: bold; }
-    .incorrect { color: #dc2626; font-weight: bold; }
+    .question-card { background: white; padding: 2rem; border-radius: var(--radius-md); box-shadow: 0 4px 15px rgba(30, 58, 138, 0.04); margin-bottom: 1.5rem; border-left: 4px solid var(--primary-deep, #1E3A8A); border: 1px solid var(--border-color, #E5E7EB); }
+    .question-text { font-weight: 600; font-size: 1.1rem; margin-bottom: 1rem; color: #1E293B; }
+    .correct { color: #10B981; font-weight: bold; }
+    .incorrect { color: #EF4444; font-weight: bold; }
     .mark-input { width: 90px; text-align: center; font-size: 1.1rem; font-weight: 600; background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 8px; padding: 0.5rem; }
-    .mark-input:focus { border-color: var(--primary); outline: none; }
-    .header-card { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 2rem; border-radius: var(--radius-md); margin-bottom: 2rem; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    .mark-input:focus { border-color: var(--primary-light, #3B82F6); outline: none; }
+    .header-card { background: linear-gradient(135deg, var(--primary-deep, #1E3A8A) 0%, #112464 100%); color: white; padding: 2.25rem; border-radius: var(--radius-md); margin-bottom: 2rem; box-shadow: 0 8px 20px rgba(30, 58, 138, 0.15); }
   </style>
 </head>
 <body>

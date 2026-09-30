@@ -36,7 +36,8 @@ function apiPath(file) {
 // Helper to call the CURRENT page with _api param
 function selfApi(method, body, extra) {
   let url = window.location.pathname;
-  if (extra) url += '?' + extra;
+  url += (url.includes('?') ? '&' : '?') + '_api=1';
+  if (extra) url += '&' + extra;
   return apiCall(url, method, body);
 }
 

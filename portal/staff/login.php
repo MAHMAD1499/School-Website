@@ -15,6 +15,9 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   if ($_SESSION['staff_login_lockout'] > time()) {
       $wait = ceil(($_SESSION['staff_login_lockout'] - time()) / 60);
       ksm_err("Too many failed attempts. Please try again in {$wait} minute(s).", 429);
+  } elseif ($_SESSION['staff_login_lockout'] > 0 && $_SESSION['staff_login_lockout'] <= time()) {
+      $_SESSION['staff_login_attempts'] = 0;
+      $_SESSION['staff_login_lockout'] = 0;
   }
 
   $staffNumber = trim($body['staffNumber'] ?? '');
@@ -46,9 +49,9 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   }
 
   $_SESSION['staff_login_attempts']++;
-  if ($_SESSION['staff_login_attempts'] >= 3) {
-      $_SESSION['staff_login_lockout'] = time() + 900;
-      ksm_err('Too many failed login attempts. Locked out for 15 minutes.', 429);
+  if ($_SESSION['staff_login_attempts'] >= 5) {
+      $_SESSION['staff_login_lockout'] = time() + 1800;
+      ksm_err('Too many failed login attempts. Locked out for 30 minutes.', 429);
   }
   ksm_err('Invalid staff number or password.', 401);
 }
@@ -136,14 +139,18 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
         showToast('Welcome back, ' + res.data.name + '!', 'success');
         setTimeout(() => window.location.href = 'dashboard.php', 700);
       } else {
-        document.getElementById('loginError').classList.remove('hidden');
+        const errEl = document.getElementById('loginError');
+        errEl.textContent = res.message || 'Invalid staff number or password. Please try again.';
+        errEl.classList.remove('hidden');
         btn.disabled = false;
         btn.textContent = '👨‍🏫 Login to Teacher Portal';
       }
-    } catch {
-      document.getElementById('loginError').classList.remove('hidden');
+    } catch(e) {
+      const errEl = document.getElementById('loginError');
+      errEl.textContent = 'An error occurred. Please try again.';
+      errEl.classList.remove('hidden');
       btn.disabled = false;
-      btn.textContent = '👨‍🏫 Login to Staff Portal';
+      btn.textContent = '👨‍🏫 Login to Teacher Portal';
     }
   }
 
