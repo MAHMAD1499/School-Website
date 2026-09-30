@@ -2,6 +2,29 @@
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../auth.php';
 check_student_auth();
+
+function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error)die('DB Error');$c->set_charset('utf8mb4');return $c;}
+function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
+
+$isAjax=isset($_SERVER['HTTP_X_REQUESTED_WITH'])||strpos($_SERVER['CONTENT_TYPE']??'','application/json')!==false||isset($_GET['_api']);
+if($isAjax){
+  $method=$_SERVER['REQUEST_METHOD']??'GET';
+  $student_id = (int)$_SESSION['ksm_student_auth'];
+  $db = ksm_db();
+
+  if($method==='GET'){
+    $results = [];
+    $res = $db->query("SELECT sub.id, sess.title, sess.subject_id, sub.score, sub.completed_at 
+      FROM cbt_submissions sub 
+      JOIN cbt_sessions sess ON sub.session_id = sess.id 
+      WHERE sub.student_id=$student_id AND sub.status='graded' AND sess.type='exam' 
+      ORDER BY sub.completed_at DESC");
+    if($res) {
+        while($r = $res->fetch_assoc()) $results[] = $r;
+    }
+    ksm_json(['results'=>$results]);
+  }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -31,8 +54,8 @@ check_student_auth();
       <div class="card">
         <table class="table">
           <thead><tr><th>Exam Name</th><th>Subject</th><th>Score</th><th>Date</th><th>Action</th></tr></thead>
-          <tbody>
-            <tr><td colspan="5" style="text-align:center;padding:1rem;">No exam reports available.</td></tr>
+          <tbody id="resultsList">
+            <tr><td colspan="5" style="text-align:center;padding:1rem;">Loading...</td></tr>
           </tbody>
         </table>
       </div>
@@ -51,7 +74,28 @@ check_student_auth();
         document.getElementById('studentNameTopbar').textContent = student.name;
         document.getElementById('studentAvatar').innerHTML = student.profilePic ? `<img src="${student.profilePic}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : student.name.charAt(0).toUpperCase();
     }
+    loadResults();
   });
+
+  async function loadResults() {
+    const res = await selfApi('GET');
+    if(res.success) {
+      const tb = document.getElementById('resultsList');
+      if(res.data.results.length === 0) {
+        tb.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:1rem;">No graded exam reports available.</td></tr>';
+      } else {
+        tb.innerHTML = res.data.results.map(r => `
+          <tr>
+            <td>${r.title}</td>
+            <td>${r.subject_id}</td>
+            <td><strong>${r.score}</strong></td>
+            <td>${r.completed_at}</td>
+            <td><a href="cbt_view_result.php?id=${r.id}" class="btn btn-sm btn-primary">View Full Result</a></td>
+          </tr>
+        `).join('');
+      }
+    }
+  }
 </script>
 </body>
 </html>

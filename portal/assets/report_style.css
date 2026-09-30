@@ -1,0 +1,341 @@
+:root {
+    --primary-color: #16233b;
+    --accent-color: #D4AC0D;
+    --border-color: #bdc3c7;
+    --light-bg: #f9f9f9;
+}
+
+
+
+.page-container {
+    max-width: 850px;
+    background: #fff;
+    margin: 0 auto 30px auto;
+    padding: 25px 35px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+/* School Header & Logo */
+.school-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--primary-color);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 15px;
+    border-bottom: 2px solid var(--accent-color);
+    padding-bottom: 8px;
+}
+
+.school-logo {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+}
+
+/* Attendance Auto-Calculator Helper Box */
+.attendance-calc-box {
+    background: #fdfae6;
+    border: 1px solid #f1c40f;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.calc-title {
+    font-size: 12px;
+    font-weight: bold;
+    color: #9c7f00;
+}
+
+.calc-inputs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    font-size: 12px;
+    color: #16233b;
+}
+
+.calc-inputs input {
+    width: 50px;
+    padding: 2px 4px;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Header Styles */
+.report-header {
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 12px;
+    margin-bottom: 15px;
+}
+
+.report-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.page-container h1 {
+    color: var(--primary-color);
+    font-size: 22px;
+    margin: 0 0 8px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.meta-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 10px;
+    margin-top: 8px;
+    font-size: 13px;
+}
+
+.meta-field {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.meta-field label {
+    font-weight: bold;
+    color: var(--primary-color);
+    white-space: nowrap;
+}
+
+.meta-field input[type="text"] {
+    border: none;
+    border-bottom: 1px dotted #7f8c8d;
+    outline: none;
+    width: 100%;
+    font-family: inherit;
+    font-size: 13px;
+    padding: 2px 4px;
+    background: transparent;
+}
+
+.attendance-display {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.attendance-display input {
+    width: 30px !important;
+    border: none !important;
+    border-bottom: 1px dotted #7f8c8d !important;
+    text-align: center;
+    font-weight: bold;
+    background: transparent;
+    padding: 0;
+}
+
+/* Evaluation Key */
+.eval-key {
+    background: var(--light-bg);
+    border: 1px solid var(--border-color);
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.eval-key span strong {
+    color: var(--accent-color);
+}
+
+/* Section Styling */
+.page-container h2 {
+    font-size: 15px;
+    color: #fff !important;
+    background-color: var(--primary-color);
+    padding: 5px 8px;
+    margin: 15px 0 6px 0;
+    border-radius: 4px;
+}
+
+.section-desc {
+    font-size: 11px;
+    font-style: italic;
+    color: #666;
+    margin-bottom: 6px;
+}
+
+/* Tables */
+.page-container table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+    font-size: 12px;
+}
+
+.page-container th, .page-container td {
+    border: 1px solid var(--border-color);
+    padding: 6px 8px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.page-container th {
+    background-color: #f2f4f4 !important;
+    color: var(--primary-color) !important;
+    font-weight: 600;
+}
+
+.col-item {
+    width: 65%;
+}
+
+.col-rating {
+    width: 25% !important;
+    text-align: center;
+}
+
+/* Editable select for ratings */
+select.rating-select {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 4px;
+    font-size: 12px;
+    background: #fff;
+    outline: none;
+}
+
+/* Comments Area */
+.comments-box {
+    margin-top: 10px;
+}
+
+.comments-box label {
+    font-weight: bold;
+    display: block;
+    font-size: 12px;
+    color: var(--primary-color);
+    margin-bottom: 2px;
+}
+
+.comments-box textarea {
+    width: 100%;
+    height: 80px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 8px;
+    font-family: inherit;
+    font-size: 12px;
+    resize: vertical;
+    outline: none;
+    box-sizing: border-box;
+}
+
+/* Action Buttons Toolbar */
+.action-toolbar {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.btn {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.btn:hover {
+    background-color: #B08D0B;
+}
+
+/* MOBILE RESPONSIVENESS */
+@media screen and (max-width: 768px) {
+    
+    .page-container {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+    .meta-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    .school-header {
+        font-size: 14px;
+        text-align: center;
+    }
+    h1 {
+        font-size: 18px;
+    }
+    h2 {
+        font-size: 13px;
+    }
+    .calc-inputs {
+        flex-direction: column;
+        gap: 5px;
+    }
+}
+
+/* PRINT STYLES */
+@media print {
+    
+    
+    .page-container {
+        box-shadow: none;
+        padding: 0;
+        margin: 0;
+        max-width: 100%;
+        height: 100vh;
+        page-break-after: always;
+        break-after: page;
+    }
+
+    .page-break {
+        page-break-before: always;
+        break-before: page;
+    }
+
+    .attendance-calc-box {
+        display: none;
+    }
+
+    .action-toolbar {
+        display: none;
+    }
+    
+    select.rating-select {
+        border: none;
+        appearance: none;
+        -webkit-appearance: none;
+        background: transparent;
+        text-align: center;
+        font-weight: bold;
+    }
+    
+    textarea {
+        border: 1px solid #bdc3c7;
+        resize: none;
+    }
+}
+
+

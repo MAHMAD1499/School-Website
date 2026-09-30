@@ -36,11 +36,13 @@ function buildSidebar(role = 'portal') {
       ]
     },
     { href: 'admissions.php', icon: 'file-text', label: 'Admissions' },
-    { href: 'contacts.php', icon: 'mail', label: 'Contact Messages' }
+    { href: 'contacts.php', icon: 'mail', label: 'Contact Messages' },
+    { href: 'student_reports.php', icon: 'file-text', label: 'Student\'s Monthly Report' }
   ];
 
   const studentLinks = [
     { href: 'dashboard.php', icon: 'home', label: 'Dashboard' },
+    { href: 'profile.php', icon: 'user', label: 'Profile' },
     { href: 'homework.php', icon: 'clipboard', label: 'Homework (Diary)' },
     { href: 'attendance.php', icon: 'check-square', label: 'Attendance' },
     {
@@ -55,7 +57,7 @@ function buildSidebar(role = 'portal') {
     { href: 'news.php', icon: 'bell', label: 'Announcements' },
     { href: 'events.php', icon: 'calendar', label: 'Events' },
     { href: 'gallery.php', icon: 'image', label: 'School Gallery' },
-    { href: 'profile.php', icon: 'user', label: 'Profile & Settings' },
+    { href: 'my_reports.php', icon: 'file-text', label: 'Student\'s Monthly Report' },
     { href: 'my_gallery.php', icon: 'image', label: 'My Media / Personal Photos' }
   ];
 

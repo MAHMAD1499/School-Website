@@ -17,7 +17,7 @@ if($isAjax){
     $res = $db->query("SELECT sub.id, sess.title, sess.subject_id, sub.score, sub.completed_at 
       FROM cbt_submissions sub 
       JOIN cbt_sessions sess ON sub.session_id = sess.id 
-      WHERE sub.student_id=$student_id AND sub.status='graded' 
+      WHERE sub.student_id=$student_id AND sub.status='graded' AND sess.type='test' 
       ORDER BY sub.completed_at DESC");
     while($r = $res->fetch_assoc()) $results[] = $r;
 

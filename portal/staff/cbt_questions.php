@@ -34,8 +34,8 @@ if($isAjax){
       $ans = strtoupper(trim($body['correct_answer'] ?? ''));
       $marks = (float)($body['marks'] ?? 1);
       
-      if(!$text) ksm_err('Question text is required.');
-      if(strlen($text) > 2000) ksm_err('Question text is too long.');
+      if(!$text) ksm_err('MCQ text is required.');
+      if(strlen($text) > 2000) ksm_err('MCQ text is too long.');
       if(!in_array($ans, ['A', 'B', 'C', 'D'], true)) ksm_err('Correct answer must be A, B, C, or D.');
       if($marks <= 0 || $marks > 100) ksm_err('Marks must be between 1 and 100.');
       
@@ -55,12 +55,12 @@ if($isAjax){
       $text_safe = htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
       
       $db->query("INSERT INTO cbt_questions (session_id, question_text, question_type, options, correct_answer, marks) VALUES ($session_id, '$text_safe', 'multiple_choice', '$options', '$ans', $marks)");
-      ksm_json(null, "Question added");
+      ksm_json(null, "MCQ added");
     }
     if($action==='delete_question'){
       $id = (int)$body['id'];
       $db->query("DELETE FROM cbt_questions WHERE id=$id AND session_id=$session_id");
-      ksm_json(null, "Question deleted");
+      ksm_json(null, "MCQ deleted");
     }
   }
 }
@@ -70,12 +70,19 @@ if($isAjax){
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manage CBT Questions — KSM Staff Portal</title>
+  <title>Manage CBT MCQs â€” KSM Staff Portal</title>
   <link rel="stylesheet" href="../assets/portal.css">
   <style>
     .ksm-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999999; align-items:center; justify-content:center; }
     .ksm-modal.active { display:flex; }
     .ksm-modal-content { background:white; padding:2rem; border-radius:var(--radius-md); width:100%; max-width:600px; box-shadow:0 10px 25px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
+    <?php if(isset($_GET['popup'])): ?>
+    .portal-sidebar, .portal-topbar { display: none !important; }
+    .portal-main { margin-left: 0 !important; width: 100% !important; border-top-left-radius:0 !important; }
+    .portal-wrapper { padding: 0 !important; }
+    body { background: white !important; }
+    .portal-content { padding: 1rem !important; }
+    <?php endif; ?>
   </style>
 </head>
 <body>
@@ -84,7 +91,7 @@ if($isAjax){
     <div class="portal-topbar">
       <div class="topbar-left">
         <button class="menu-toggle" id="menuToggle"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-        <span class="topbar-title">Manage Questions</span>
+        <span class="topbar-title">Manage MCQs</span>
       </div>
       <div class="topbar-right">
         <span id="staffNameTopbar" style="font-size:0.82rem;color:var(--text-medium);"></span>
@@ -95,13 +102,18 @@ if($isAjax){
 
     <div class="portal-content fade-up">
       <div class="d-flex" style="justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-        <h1 class="page-title" style="margin-bottom:0;">Questions for Session #<?php echo $session_id; ?></h1>
-        <button class="btn btn-primary" onclick="document.getElementById('addQuestionModal').classList.add('active')">Add Question</button>
+        <h1 class="page-title" style="margin-bottom:0;">MCQs for Session #<?php echo $session_id; ?> <span id="mcqCountBadge" class="badge badge-blue" style="font-size:1rem; margin-left: 10px;">0 Saved</span></h1>
+        <div>
+          <?php if(isset($_GET['popup'])): ?>
+          <button class="btn btn-outline" onclick="window.parent.document.getElementById('manageMcqModal').classList.remove('active')" style="margin-right:0.5rem; border-color:var(--primary); color:var(--primary);">Done (Auto-Saved)</button>
+          <?php endif; ?>
+          <button class="btn btn-primary" onclick="document.getElementById('addQuestionModal').classList.add('active')">Add MCQ</button>
+        </div>
       </div>
 
       <div class="card">
         <table class="table">
-          <thead><tr><th>Question</th><th>Options</th><th>Correct Answer</th><th>Marks</th><th>Action</th></tr></thead>
+          <thead><tr><th>MCQ Text</th><th>Options</th><th>Correct Answer</th><th>Marks</th><th>Action</th></tr></thead>
           <tbody id="questionsList">
             <tr><td colspan="5" style="text-align:center;padding:1rem;">Loading...</td></tr>
           </tbody>
@@ -113,10 +125,10 @@ if($isAjax){
 
 <div class="ksm-modal" id="addQuestionModal">
   <div class="ksm-modal-content">
-    <h2 style="margin-bottom:1rem;">Add Multiple Choice Question</h2>
+    <h2 style="margin-bottom:1rem;">Add Multiple Choice Question (MCQ)</h2>
     <form id="addQuestionForm" onsubmit="addQuestion(event)">
       <div class="form-group mb-3">
-        <label>Question Text</label>
+        <label>MCQ Text</label>
         <textarea class="form-control" name="question_text" required rows="3"></textarea>
       </div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;" class="mb-3">
@@ -135,7 +147,7 @@ if($isAjax){
       </div>
       <div style="display:flex;gap:1rem;justify-content:flex-end;">
         <button type="button" class="btn btn-outline" onclick="document.getElementById('addQuestionModal').classList.remove('active')">Cancel</button>
-        <button type="submit" class="btn btn-primary">Save Question</button>
+        <button type="submit" class="btn btn-primary">Save MCQ</button>
       </div>
     </form>
   </div>
@@ -154,9 +166,12 @@ if($isAjax){
   async function loadQuestions() {
     const res = await selfApi('GET', null, `session_id=${sessionId}`);
     if(res.success) {
+      const badge = document.getElementById('mcqCountBadge');
+      if(badge) badge.innerText = res.data.questions.length + ' Saved';
+      
       const tbody = document.getElementById('questionsList');
       if(res.data.questions.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:1rem;">No questions added yet.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:1rem;">No MCQs added yet.</td></tr>';
         return;
       }
       tbody.innerHTML = res.data.questions.map(q => {
@@ -194,10 +209,11 @@ if($isAjax){
   }
 
   async function deleteQuestion(id) {
-    if(!confirm("Delete this question?")) return;
+    if(!confirm("Delete this MCQ?")) return;
     const res = await selfApi('POST', {action: 'delete_question', id}, `session_id=${sessionId}`);
     if(res.success) loadQuestions();
   }
 </script>
 </body>
 </html>
+

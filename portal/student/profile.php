@@ -33,7 +33,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
           $uploadDir = __DIR__ . '/../../uploads/profiles/';
           if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
           file_put_contents($uploadDir . $filename, $data);
-          $pic = '../uploads/profiles/' . $filename;
+          $pic = '../../uploads/profiles/' . $filename;
       } else if($pic && (!preg_match('/^(https?:\/\/|\.\.\/|\/|assets\/)/i', $pic) || preg_match('/javascript:/i', $pic))) {
           $pic = '';
       }
@@ -93,38 +93,59 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
         </div>
       </div>
 
-      <!-- Edit Form Card (hidden by default) -->
-      <div class="card mb-3 hidden" id="editCard">
-        <div class="card-header">
-          <h2 class="card-title">✏️ Edit Your Details</h2>
-        </div>
-        <form id="editForm" onsubmit="saveProfile(event)">
-          <div class="form-grid">
-            <div class="form-group">
-              <label class="form-label">Phone Number</label>
-              <input type="tel" id="editPhone" class="form-control" placeholder="+92 300 0000000">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Address</label>
-              <input type="text" id="editAddress" class="form-control" placeholder="123 Street">
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Profile Picture</label>
-            <div style="display:flex; gap:1rem; align-items:center;">
-              <input type="url" id="editProfilePic" class="form-control" style="flex:1;" placeholder="URL will appear here" readonly>
-              <button type="button" class="btn btn-outline" onclick="document.getElementById('profilePicFile').click()">📸 Upload Picture</button>
-              <input type="file" id="profilePicFile" accept="image/*" style="display:none;" onchange="handleFileSelect(event)">
-            </div>
-          </div>
-          <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:1rem;">
-            <button type="button" class="btn btn-outline" onclick="toggleEdit()">Cancel</button>
-            <button type="submit" class="btn btn-primary">💾 Save Changes</button>
-          </div>
-        </form>
-      </div>
     </div>
     <div class="portal-footer">© 2026 Kindergarten Saadia's Montessori School. All rights reserved.</div>
+  </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div id="editModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0, 15, 40, 0.6); z-index:9000; flex-direction:column; align-items:center; justify-content:center; padding:1rem; backdrop-filter: blur(4px);">
+  <div style="background:white; border-radius:12px; padding:2rem; width:100%; max-width:500px; box-shadow:0 10px 30px rgba(0,0,0,0.3);">
+    <h2 style="margin-top:0; margin-bottom:1.5rem; font-size:1.5rem; color:var(--primary-deep); font-weight:700;">✏️ Edit Your Details</h2>
+    <form id="editForm" onsubmit="saveProfile(event)">
+      <div class="form-grid">
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label class="form-label">Full Name</label>
+          <input type="text" id="editName" class="form-control" disabled style="opacity:0.6;cursor:not-allowed;">
+        </div>
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label class="form-label">Email</label>
+          <input type="email" id="editEmail" class="form-control" disabled style="opacity:0.6;cursor:not-allowed;">
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label class="form-label">Father's Name</label>
+          <input type="text" id="editFatherName" class="form-control" disabled style="opacity:0.6;cursor:not-allowed;">
+        </div>
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label class="form-label">Class</label>
+          <input type="text" id="editClass" class="form-control" disabled style="opacity:0.6;cursor:not-allowed;">
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label class="form-label">Phone Number</label>
+          <input type="tel" id="editPhone" class="form-control" placeholder="+92 300 0000000">
+        </div>
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label class="form-label">Address</label>
+          <input type="text" id="editAddress" class="form-control" placeholder="123 Street">
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:1.5rem;">
+        <label class="form-label">Profile Picture</label>
+        <div style="display:flex; gap:1rem; align-items:center;">
+          <input type="hidden" id="editProfilePic">
+          <button type="button" class="btn btn-outline" style="width:100%;" onclick="document.getElementById('profilePicFile').click()">📸 Upload New Picture</button>
+          <input type="file" id="profilePicFile" accept="image/*" style="display:none;" onchange="handleFileSelect(event)">
+        </div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:2rem;">
+        <button type="button" class="btn btn-outline" onclick="toggleEdit()">Cancel</button>
+        <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+      </div>
+    </form>
   </div>
 </div>
 
@@ -209,6 +230,10 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
     `).join('');
 
     // Fill edit form
+    document.getElementById('editName').value = currentStudent.name || '';
+    document.getElementById('editEmail').value = currentStudent.email || '';
+    document.getElementById('editFatherName').value = currentStudent.parentName || '';
+    document.getElementById('editClass').value = currentStudent.class || '';
     document.getElementById('editPhone').value = currentStudent.phone || '';
     document.getElementById('editAddress').value = currentStudent.address || '';
     document.getElementById('editProfilePic').value = currentStudent.profilePic || '';
@@ -216,8 +241,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
 
   function toggleEdit() {
     isEditing = !isEditing;
-    document.getElementById('editCard').classList.toggle('hidden', !isEditing);
-    document.getElementById('editToggle').textContent = isEditing ? '✕ Cancel Edit' : '✏️ Edit Profile';
+    document.getElementById('editModal').style.display = isEditing ? 'flex' : 'none';
   }
 
   async function saveProfile(e) {
@@ -237,8 +261,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
       showToast(res.message || 'Error updating profile.', 'error');
     }
     isEditing = false;
-    document.getElementById('editCard').classList.add('hidden');
-    document.getElementById('editToggle').textContent = '✏️ Edit Profile';
+    document.getElementById('editModal').style.display = 'none';
     renderProfile();
   }
 
@@ -249,6 +272,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
 
   // Cropper Logic
   let cropper = null;
+  let currentImageType = 'image/jpeg';
   
   function handleFileSelect(event) {
     const file = event.target.files[0];
@@ -257,16 +281,29 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
       showToast('Please select a valid image file.', 'error');
       return;
     }
+    currentImageType = file.type === 'image/png' ? 'image/png' : (file.type === 'image/webp' ? 'image/webp' : 'image/jpeg');
     const reader = new FileReader();
     reader.onload = (e) => {
-      document.getElementById('cropperImage').src = e.target.result;
       document.getElementById('cropperModal').style.display = 'flex';
-      if (cropper) { cropper.destroy(); }
-      cropper = new Cropper(document.getElementById('cropperImage'), {
-        aspectRatio: 1,
-        viewMode: 1,
-        background: false
-      });
+      const img = document.getElementById('cropperImage');
+      
+      // Reset image state
+      img.style.display = 'block';
+      img.style.maxWidth = '100%';
+      img.style.height = 'auto';
+      
+      img.onload = () => {
+        // Wait for next frame to ensure modal layout is fully rendered before Cropper initializes
+        setTimeout(() => {
+          if (cropper) { cropper.destroy(); }
+          cropper = new Cropper(img, {
+            aspectRatio: 1,
+            viewMode: 1,
+            background: false
+          });
+        }, 100);
+      };
+      img.src = e.target.result;
     };
     reader.readAsDataURL(file);
     event.target.value = ''; // Reset input
@@ -280,19 +317,21 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
   async function saveCroppedImage() {
     if (!cropper) return;
     const btn = document.getElementById('btnCropSave');
-    btn.textContent = 'Preparing...';
+    btn.textContent = 'Uploading...';
     btn.disabled = true;
     
     // Get cropped canvas
     const canvas = cropper.getCroppedCanvas({ width: 300, height: 300 });
-    const base64Image = canvas.toDataURL('image/jpeg', 0.8);
+    const base64Image = canvas.toDataURL(currentImageType, 0.8);
     
     document.getElementById('editProfilePic').value = base64Image;
-    showToast('Picture prepared successfully! Click Save Changes to upload.', 'success');
     closeCropperModal();
     
     btn.textContent = 'Crop & Upload';
     btn.disabled = false;
+    
+    // Auto-save
+    saveProfile({ preventDefault: () => {} });
   }
 </script>
 </body>

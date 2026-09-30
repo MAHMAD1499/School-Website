@@ -2,6 +2,37 @@
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../auth.php';
 check_staff_auth();
+
+function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error)die('DB Error');$c->set_charset('utf8mb4');return $c;}
+function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
+
+$isAjax=isset($_SERVER['HTTP_X_REQUESTED_WITH'])||strpos($_SERVER['CONTENT_TYPE']??'','application/json')!==false||isset($_GET['_api']);
+if($isAjax){
+  $method=$_SERVER['REQUEST_METHOD']??'GET';
+  $teacher_id = (int)$_SESSION['ksm_staff_auth'];
+  $db = ksm_db();
+
+  if($method==='GET'){
+    $submissions = [];
+    $classFilter = isset($_GET['class']) ? ksm_db()->real_escape_string($_GET['class']) : '';
+    
+    $where = "sess.teacher_id=$teacher_id AND sess.type='exam'";
+    if($classFilter) {
+       $where .= " AND st.class='$classFilter'";
+    }
+
+    $res = $db->query("SELECT sub.id, sub.status, sub.score, sub.completed_at, sess.title as session_title, sess.type, st.name as student_name, st.class 
+      FROM cbt_submissions sub 
+      JOIN cbt_sessions sess ON sub.session_id = sess.id 
+      JOIN users_students st ON sub.student_id = st.id 
+      WHERE $where 
+      ORDER BY sub.completed_at DESC");
+    if($res) {
+        while($r = $res->fetch_assoc()) $submissions[] = $r;
+    }
+    ksm_json(['submissions'=>$submissions]);
+  }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -51,9 +82,9 @@ check_staff_auth();
 
       <div class="card">
         <table class="table">
-          <thead><tr><th>Student Name</th><th>Class</th><th>Exam Average</th><th>Action</th></tr></thead>
-          <tbody>
-            <tr><td colspan="4" style="text-align:center;padding:1rem;">No exam records found.</td></tr>
+          <thead><tr><th>Student Name</th><th>Class</th><th>Exam Title</th><th>Status</th><th>Score</th><th>Action</th></tr></thead>
+          <tbody id="submissionsList">
+            <tr><td colspan="6" style="text-align:center;padding:1rem;">Loading...</td></tr>
           </tbody>
         </table>
       </div>
@@ -72,7 +103,32 @@ check_staff_auth();
         document.getElementById('staffNameTopbar').textContent = staff.name;
         document.getElementById('staffAvatar').innerHTML = staff.profilePic ? `<img src="${staff.profilePic}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : staff.name.charAt(0).toUpperCase();
     }
+    loadExamReports();
   });
+
+  async function loadExamReports() {
+    const classFilter = document.getElementById('classFilter').value;
+    const res = await selfApi('GET', null, classFilter ? `class=${classFilter}` : '');
+    if(res.success) {
+      const tb = document.getElementById('submissionsList');
+      if(res.data.submissions.length === 0) {
+        tb.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:1rem;">No submissions found for the selected filters.</td></tr>';
+        return;
+      }
+      tb.innerHTML = res.data.submissions.map(s => `
+        <tr>
+          <td>${s.student_name}</td>
+          <td>${s.class}</td>
+          <td>${s.session_title}</td>
+          <td><span class="badge badge-${s.status==='graded'?'green':'blue'}">${s.status}</span></td>
+          <td><strong style="color:var(--primary);">${s.score !== null ? s.score : '--'}</strong></td>
+          <td>
+            <a href="cbt_grade_submission.php?id=${s.id}" class="btn btn-sm btn-primary">${s.status==='graded'?'View / Edit Result':'Review & Grade'}</a>
+          </td>
+        </tr>
+      `).join('');
+    }
+  }
 
   function exportPDF() {
     window.print();

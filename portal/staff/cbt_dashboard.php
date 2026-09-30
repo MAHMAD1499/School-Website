@@ -32,8 +32,9 @@ if($isAjax){
       $duration = (int)$body['duration'];
       $start_time = ksm_esc($body['start_time']);
       $end_time = ksm_esc($body['end_time']);
+      $status = isset($body['status']) ? ksm_esc($body['status']) : 'draft';
       
-      $res = $db->query("INSERT INTO cbt_sessions (title, type, subject_id, class_id, teacher_id, start_time, end_time, duration_minutes, total_marks, status) VALUES ('$title', '$type', '$subject', '$class', $teacher_id, '$start_time', '$end_time', $duration, $total_marks, 'published')");
+      $res = $db->query("INSERT INTO cbt_sessions (title, type, subject_id, class_id, teacher_id, start_time, end_time, duration_minutes, total_marks, status) VALUES ('$title', '$type', '$subject', '$class', $teacher_id, '$start_time', '$end_time', $duration, $total_marks, '$status')");
       if($res) {
           ksm_json(null, "Session created successfully");
       } else {
@@ -45,6 +46,12 @@ if($isAjax){
       $db->query("DELETE FROM cbt_sessions WHERE id=$id AND teacher_id=$teacher_id");
       ksm_json(null, "Session deleted");
     }
+    if($action==='toggle_status'){
+      $id = (int)$body['id'];
+      $status = ksm_esc($body['status']);
+      $db->query("UPDATE cbt_sessions SET status='$status' WHERE id=$id AND teacher_id=$teacher_id");
+      ksm_json(null, "Status updated");
+    }
   }
 }
 ?>
@@ -53,7 +60,7 @@ if($isAjax){
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CBT Dashboard — KSM Staff Portal</title>
+  <title>CBT Dashboard â€” KSM Staff Portal</title>
   <link rel="stylesheet" href="../assets/portal.css">
   <style>
     .ksm-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999999; align-items:center; justify-content:center; }
@@ -91,7 +98,7 @@ if($isAjax){
         </table>
       </div>
     </div>
-    <div class="portal-footer">© 2026 KSM School Portal.</div>
+    <div class="portal-footer">Â© 2026 KSM School Portal.</div>
   </div>
 </div>
 
@@ -151,6 +158,14 @@ if($isAjax){
         </div>
       </div>
 
+      <div class="form-group mb-3">
+        <label style="font-weight:600; margin-bottom:0.5rem; display:block;">Initial Status</label>
+        <select class="form-control" name="status" required>
+          <option value="draft">Draft (Hidden from students)</option>
+          <option value="published">Published (Visible to students)</option>
+        </select>
+      </div>
+
       <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;" class="mb-3">
         <div class="form-group">
           <label style="font-weight:600; margin-bottom:0.5rem; display:block;">Start Time</label>
@@ -175,6 +190,16 @@ if($isAjax){
   </div>
 </div>
 
+
+<div class="ksm-modal" id="manageMcqModal">
+  <div class="ksm-modal-content" style="max-width: 900px; padding: 0; overflow: hidden; height: 85vh; display:flex; flex-direction:column;">
+     <div style="padding: 1rem 1.5rem; background: var(--primary); color: white; display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="margin:0; font-size:1.2rem;">Manage MCQs</h3>
+        <button onclick="document.getElementById('manageMcqModal').classList.remove('active')" style="background:none;border:none;color:white;cursor:pointer;font-size:1.5rem; line-height:1;">&times;</button>
+     </div>
+     <iframe id="mcqIframe" src="" style="width: 100%; flex: 1; border: none; background:#f4f7f6;"></iframe>
+  </div>
+</div>
 <script src="../assets/portal.js"></script>
 <script src="../assets/api.js"></script>
 <script src="../assets/sidebar.js"></script>
@@ -211,7 +236,8 @@ if($isAjax){
           <td>${s.total_marks}</td>
           <td><span class="badge badge-${s.status==='published'?'green':'blue'}">${s.status}</span></td>
           <td>
-            <a href="cbt_questions.php?session_id=${s.id}" class="btn btn-sm btn-primary">Manage Questions</a>
+            <button class="btn btn-sm btn-${s.status==='published'?'outline':'success'}" onclick="toggleStatus(${s.id}, '${s.status==='published'?'draft':'published'}')" style="margin-right:4px;">${s.status==='published'?'Unpublish':'Publish'}</button>
+            <button class="btn btn-sm btn-primary" onclick="openMcqModal(${s.id})">Manage MCQs</button>
             <button class="btn btn-sm btn-danger" onclick="deleteSession(${s.id})">Delete</button>
           </td>
         </tr>
@@ -237,6 +263,16 @@ if($isAjax){
     const res = await selfApi('POST', {action: 'delete_session', id});
     if(res.success) loadSessions();
   }
+
+  function openMcqModal(sessionId) {
+    document.getElementById('mcqIframe').src = 'cbt_questions.php?session_id=' + sessionId + '&popup=1';
+    document.getElementById('manageMcqModal').classList.add('active');
+  }
+  async function toggleStatus(id, newStatus) {
+    const res = await selfApi('POST', {action: 'toggle_status', id, status: newStatus});
+    if(res.success) loadSessions();
+  }
 </script>
 </body>
 </html>
+

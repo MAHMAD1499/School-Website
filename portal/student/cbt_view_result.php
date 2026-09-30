@@ -45,6 +45,7 @@ if($isAjax){
   <link rel="stylesheet" href="../assets/portal.css">
   <style>
     .question-card { background: white; padding: 1.5rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); margin-bottom: 1rem; }
+    .portal-main { margin-left: 0 !important; width: 100% !important; }
   </style>
 </head>
 <body>
@@ -86,7 +87,7 @@ if($isAjax){
   });
 
   async function loadResult() {
-    const res = await selfApi('GET');
+    const res = await selfApi('GET', null, `id=${subId}`);
     if(res.success) {
       document.getElementById('examTitle').textContent = res.data.submission.exam_title;
       document.getElementById('compDate').textContent = res.data.submission.completed_at;
