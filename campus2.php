@@ -8,7 +8,9 @@
     content="Explore Campus 2 of Kindergarten Saadia's Montessori School — a second home for learning, growth, and discovery.">
   <title>Campus 2 | Kindergarten Saadia's Montessori School</title>
   <link rel="stylesheet" href="assets/css/style.css">
-  <link rel="stylesheet" href="assets/css/pages.css"></head>
+  <link rel="stylesheet" href="assets/css/pages.css">
+  <script>window.addEventListener('pageshow',function(e){if(e.persisted){var p=document.getElementById('preloader');if(p){p.style.transition='none';p.style.opacity='0';p.style.visibility='hidden';}document.body.classList.remove('preloader-active');}});</script>
+</head>
 
 <body>
 

@@ -59,7 +59,7 @@ if($method==='POST'){
   $ph_url=ksm_esc(up_file('photos_upload'));
   $pass_url=ksm_esc(up_file('passport_photo'));
 
-  ksm_db()->query("INSERT INTO admissions(child_name,dob,blood_group,parent_name,phone,email,address,prior_school,class_applied,message,status,id_card_url,birth_cert_url,photos_url,passport_photo_url)VALUES('$cn','$dob','$bg','$pn','$ph','$em','$occ','$sig','$ca','$med','Pending','$id_url','$bc_url','$ph_url','$pass_url')");
+  ksm_db()->query("INSERT INTO admissions(child_name,dob,blood_group,parent_name,phone,email,occupation,digital_signature,class_applied,medical_history,status,id_card_url,birth_cert_url,photos_url,passport_photo_url)VALUES('$cn','$dob','$bg','$pn','$ph','$em','$occ','$sig','$ca','$med','Pending','$id_url','$bc_url','$ph_url','$pass_url')");
   $newId=ksm_db()->insert_id;
   ksm_json(['id'=>$newId,'refCode'=>'KSM-'.date('Ymd').'-'.$newId],'Application submitted.');
 }
@@ -77,6 +77,7 @@ if($method==='POST'){
     <!-- CSS Stylesheets -->
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/pages.css">
+    <script>window.addEventListener('pageshow',function(e){if(e.persisted){var p=document.getElementById('preloader');if(p){p.style.transition='none';p.style.opacity='0';p.style.visibility='hidden';}document.body.classList.remove('preloader-active');}});</script>
 </head>
 
 <body>

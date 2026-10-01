@@ -36,6 +36,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
   <title>Contact Us | Kindergarten Saadia's Montessori School</title>
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/css/pages.css">
+  <script>window.addEventListener('pageshow',function(e){if(e.persisted){var p=document.getElementById('preloader');if(p){p.style.transition='none';p.style.opacity='0';p.style.visibility='hidden';}document.body.classList.remove('preloader-active');}});</script>
 </head>
 
 <body>
@@ -183,7 +184,7 @@ $body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax && $meth
           </svg>
         </div>
         <h3>Phone Number</h3>
-        <p>Main Office:+92 995 627347 <br>Admissions: +92 331 5620055<br>
+        <p>Main Office: +92 995 627347<br>Admissions: +92 331 5620055</p>
         <a href="tel:+923489898618">Call Us →</a>
       </div>
 

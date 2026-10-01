@@ -9,7 +9,8 @@
   <meta name="description"
     content="Nurturing independent, confident, and lifelong learners using the authentic Montessori method. Explore our Playgroup, Nursery, Prep, Grade One, Grade Two, Grade Three, Grade Four, and Grade Five classes.">
   <title>Kindergarten Saadia's Montessori School</title>
-  <link rel="stylesheet" href="assets/css/style.css?v=2">
+  <link rel="stylesheet" href="assets/css/style.css?v=3">
+  <script>window.addEventListener('pageshow',function(e){if(e.persisted){var p=document.getElementById('preloader');if(p){p.style.transition='none';p.style.opacity='0';p.style.visibility='hidden';}document.body.classList.remove('preloader-active');}});</script>
 </head>
 
 <body>
@@ -195,14 +196,29 @@
   <!-- QUICK LINKS GRID -->
   <section class="quick-links-section">
     <div class="quick-links-grid">
-      <button type="button" class="quick-link-btn" onclick="document.getElementById('dressCodeModal').showModal()">
+      <!--
+        ========================================================
+        DOWNLOADABLE DOCUMENTS — Update paths here to swap PDFs
+        ========================================================
+        Dress Code        → assets/docs/dress-code.pdf
+        Lunch Schedule    → assets/docs/lunch-schedule.pdf
+        Supply List       → assets/docs/school-supply-list.pdf
+        Seasons of Fun    → assets/docs/seasons-of-fun.pdf
+        PTM Schedule      → assets/docs/ptm-schedule.pdf
+
+        To replace: drop the new PDF in assets/docs/ and update
+        the href below. The download="" attribute sets the filename
+        the user sees when saving.
+        ========================================================
+      -->
+      <a href="assets/docs/dress-code.pdf" download="KSM-Dress-Code.pdf" class="quick-link-btn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
           <polyline points="14 2 14 8 20 8" />
         </svg>
         Dress Code
-      </button>
-      <button type="button" class="quick-link-btn" onclick="document.getElementById('lunchModal').showModal()">
+      </a>
+      <a href="assets/docs/lunch-schedule.pdf" download="KSM-Lunch-Schedule.pdf" class="quick-link-btn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
           <line x1="16" y1="2" x2="16" y2="6" />
@@ -210,16 +226,16 @@
           <line x1="3" y1="10" x2="21" y2="10" />
         </svg>
         Lunch Schedule
-      </button>
-      <button type="button" class="quick-link-btn" onclick="document.getElementById('supplyModal').showModal()">
+      </a>
+      <a href="assets/docs/school-supply-list.pdf" download="KSM-School-Supply-List.pdf" class="quick-link-btn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
           <line x1="3" y1="6" x2="21" y2="6" />
           <path d="M16 10a4 4 0 0 1-8 0" />
         </svg>
         School Supply List
-      </button>
-      <button type="button" class="quick-link-btn" onclick="document.getElementById('seasonsModal').showModal()">
+      </a>
+      <a href="assets/docs/seasons-of-fun.pdf" download="KSM-Seasons-of-Fun.pdf" class="quick-link-btn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10" />
           <path d="M8 14s1.5 2 4 2 4-2 4-2" />
@@ -227,18 +243,20 @@
           <line x1="15" y1="9" x2="15.01" y2="9" />
         </svg>
         Seasons of Fun
-      </button>
-      <button type="button" class="quick-link-btn" onclick="document.getElementById('ptaModal').showModal()">
+      </a>
+      <a href="assets/docs/ptm-schedule.pdf" download="KSM-PTM-Schedule.pdf" class="quick-link-btn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
           <circle cx="9" cy="7" r="4" />
-          <path d="M23 21v-2a4 <4 0 0 0-3-3.87" />
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
           <path d="M16 3.13a4 4 0 0 1 0 7.75" />
         </svg>
         PTM
-      </button>
+      </a>
     </div>
-    <!-- About & Montessori Philosophy -->
+  </section>
+
+  <!-- About & Montessori Philosophy -->
     <section class="section container" id="about">
       <div class="about-grid">
         <div class="about-image-wrapper">

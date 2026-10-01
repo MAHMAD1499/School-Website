@@ -90,12 +90,24 @@ document.addEventListener('DOMContentLoaded', () => {
   const preloader = document.getElementById('preloader');
 
   if (preloader) {
+    // Hide on initial page load
     window.addEventListener('load', () => {
       setTimeout(() => {
         preloader.style.opacity = '0';
         preloader.style.visibility = 'hidden';
         document.body.classList.remove('preloader-active');
       }, 400);
+    });
+
+    // Fix: hide immediately when browser restores page from bfcache
+    // (triggered when user presses Back after visiting another page)
+    window.addEventListener('pageshow', (e) => {
+      if (e.persisted) {
+        preloader.style.transition = 'none';
+        preloader.style.opacity = '0';
+        preloader.style.visibility = 'hidden';
+        document.body.classList.remove('preloader-active');
+      }
     });
 
     const allLinks = document.querySelectorAll('a');
