@@ -9,7 +9,7 @@
   <meta name="description"
     content="Nurturing independent, confident, and lifelong learners using the authentic Montessori method. Explore our Playgroup, Nursery, Prep, Grade One, Grade Two, Grade Three, Grade Four, and Grade Five classes.">
   <title>Kindergarten Saadia's Montessori School</title>
-  <link rel="stylesheet" href="assets/css/style.css?v=2">
+  <link rel="stylesheet" href="assets/css/style.css?v=3">
   <script>window.addEventListener('pageshow',function(e){if(e.persisted){var p=document.getElementById('preloader');if(p){p.style.transition='none';p.style.opacity='0';p.style.visibility='hidden';}document.body.classList.remove('preloader-active');}});</script>
 </head>
 
@@ -196,7 +196,6 @@
   <!-- QUICK LINKS GRID -->
   <section class="quick-links-section">
     <div class="quick-links-grid">
-    <div class="quick-links-grid">
       <!--
         ========================================================
         DOWNLOADABLE DOCUMENTS — Update paths here to swap PDFs
@@ -255,7 +254,9 @@
         PTM
       </a>
     </div>
-    <!-- About & Montessori Philosophy -->
+  </section>
+
+  <!-- About & Montessori Philosophy -->
     <section class="section container" id="about">
       <div class="about-grid">
         <div class="about-image-wrapper">
