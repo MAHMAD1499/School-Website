@@ -1,0 +1,329 @@
+<?php
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../auth.php';
+check_staff_auth();
+
+function ksm_db(){global $_ksm;static $c=null;if($c)return $c;$c=new mysqli($_ksm['host'],$_ksm['user'],$_ksm['pass'],$_ksm['name']);if($c->connect_error){http_response_code(500);die(json_encode(['error'=>$c->connect_error]));}$c->set_charset('utf8mb4');return $c;}
+function ksm_json($d,$m='OK',$code=200){header('Content-Type: application/json');http_response_code($code);echo json_encode(['success'=>$code<400,'message'=>$m,'data'=>$d]);exit;}
+function ksm_err($m,$code=400){ksm_json(null,$m,$code);}
+function ksm_esc($v){return ksm_db()->real_escape_string(trim($v??''));}
+if(($_SERVER['REQUEST_METHOD']??'')==='OPTIONS')exit;
+$isAjax=isset($_SERVER['HTTP_X_REQUESTED_WITH'])||strpos($_SERVER['CONTENT_TYPE']??'','application/json')!==false||isset($_GET['_api']);
+$method=$_SERVER['REQUEST_METHOD']??'GET';
+$body=json_decode(file_get_contents('php://input'),true)??[];if($isAjax){
+  if($method==='GET' && !isset($_GET['students'])){$class=ksm_esc($_GET['class']??'');$where=$class?"WHERE us.class='$class'":'';$r=ksm_db()->query("SELECT a.*,us.name student_name,us.rollNo FROM attendance a JOIN users_students us ON a.student_id=us.id $where ORDER BY a.date DESC,us.name ASC");$rows=[];while($row=$r->fetch_assoc())$rows[]=$row;ksm_json($rows);}
+  if($method==='POST'){
+    $records=$body['records']??[];if(empty($records))ksm_err('No records.');$ins=0;
+    $allowed_status = ['present', 'absent', 'late', 'leave'];
+    foreach($records as $rec){
+      $sid=intval($rec['studentId']??0);
+      if(!$sid) $sid=intval($rec['student_id']??0);
+      $raw_date = $rec['date']??date('Y-m-d');
+      $date = ksm_esc(date('Y-m-d', strtotime($raw_date) ?: time()));
+      $raw_status = strtolower(trim($rec['status']??'present'));
+      $status = in_array($raw_status, $allowed_status, true) ? $raw_status : 'present';
+      $notes = htmlspecialchars(trim($rec['notes']??''), ENT_QUOTES, 'UTF-8');
+      $notes = ksm_esc(substr($notes, 0, 255));
+      if(!$sid)continue;
+      ksm_db()->query("INSERT INTO attendance(student_id,date,status,notes)VALUES($sid,'$date','$status','$notes')ON DUPLICATE KEY UPDATE status='$status',notes='$notes'");
+      $ins++;
+    }
+    ksm_json(['inserted'=>$ins],'Attendance saved.');
+  }
+  if($method==='GET'&&isset($_GET['students'])){$class=ksm_esc($_GET['class']??'');$r=ksm_db()->query("SELECT id,name,rollNo FROM users_students WHERE class='$class' ORDER BY name ASC");$rows=[];while($row=$r->fetch_assoc())$rows[]=$row;ksm_json($rows);}
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Mark Attendance - KSM Teacher Portal">
+  <title>Mark Attendance - KSM Teacher Portal</title>
+  <link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body>
+<div class="portal-wrapper">
+  <div class="portal-main">
+    <div class="portal-topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" id="menuToggle"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <span class="topbar-title">Mark Attendance</span>
+      </div>
+      <div class="topbar-right">
+        <span id="staffNameTopbar" style="font-size:0.82rem;color:var(--text-medium);"></span>
+        <div class="topbar-avatar" style="background:#10B981;color:white;" id="staffAvatar">S</div>
+        <button class="btn btn-sm btn-danger" onclick="doLogout()">Logout</button>
+      </div>
+    </div>
+
+    <div class="portal-content fade-up">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1 class="page-title">✅ Mark Attendance</h1>
+          <p class="page-subtitle">Record daily attendance for your class</p>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="card mb-3">
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-end;">
+          <div class="form-group" style="margin-bottom:0;flex:1;min-width:180px;">
+            <label class="form-label">Class</label>
+            <select id="attClass" class="form-control" onchange="loadStudents()">
+              <option value="">-- All Classes --</option>
+              <option>Playgroup</option>
+              <option>Nursery</option>
+              <option>Prep</option>
+              <option>Grade One</option>
+              <option>Grade Two</option>
+              <option>Grade Three</option>
+              <option>Grade Four</option>
+              <option>Grade Five</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:0;flex:1;min-width:180px;">
+            <label class="form-label">Date</label>
+            <input type="date" id="attDate" class="form-control" onchange="loadStudents()">
+          </div>
+          <button class="btn btn-primary" onclick="saveAttendance()" id="saveBtn" disabled>💾 Save Attendance</button>
+        </div>
+      </div>
+
+      <!-- Existing attendance check -->
+      <div id="existingNotice" class="hidden info-banner">
+        ⚠️ Attendance already recorded for this date and class. You can update it below.
+      </div>
+
+      <!-- Student attendance list -->
+      <div class="card" id="attendanceCard">
+        <div class="card-header">
+          <h2 class="card-title" id="attendanceTitle">Select a class and date to begin</h2>
+          <div id="attendanceSummary" style="font-size:0.85rem;color:var(--text-medium);"></div>
+        </div>
+        <div id="studentsList"></div>
+      </div>
+
+      <!-- Past Records -->
+      <div class="card mt-3">
+        <div class="card-header">
+          <h2 class="card-title">📊 Past Attendance Records</h2>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Class</th>
+                <th>Present</th>
+                <th>Absent</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody id="pastRecords"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="portal-footer">© 2026 Kindergarten Saadia's Montessori School. All rights reserved.</div>
+  </div>
+</div>
+
+<script src="../assets/portal.js"></script>
+<script src="../assets/api.js"></script>
+<script src="../assets/sidebar.js"></script>
+<script>
+  buildSidebar('staff');
+  let currentStaff = null;
+  let attendanceData = {};
+
+  document.addEventListener('DOMContentLoaded', () => {
+    currentStaff = Auth.getStaff();
+    if (!currentStaff) { window.location.href = 'login.php'; return; }
+
+    document.getElementById('staffNameTopbar').textContent = currentStaff.name;
+    document.getElementById('staffAvatar').innerHTML = currentStaff.profilePic ? `<img src="${currentStaff.profilePic}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : currentStaff.name.charAt(0).toUpperCase();
+
+    // Set default values
+    document.getElementById('attClass').value = currentStaff.class || '';
+    document.getElementById('attDate').value = new Date().toISOString().split('T')[0];
+
+    loadStudents();
+    renderPastRecords();
+  });
+
+  let currentStudents = [];
+
+  async function loadStudents() {
+    const cls = document.getElementById('attClass').value;
+    const date = document.getElementById('attDate').value;
+    const el = document.getElementById('studentsList');
+    const saveBtn = document.getElementById('saveBtn');
+    const notice = document.getElementById('existingNotice');
+
+    if (!cls || !date) {
+      el.innerHTML = '<div class="empty-state" style="padding:2rem;"><div class="empty-state-icon">📋</div><p>Select a class and date above.</p></div>';
+      saveBtn.disabled = true;
+      notice.classList.add('hidden');
+      return;
+    }
+
+    el.innerHTML = '<div style="padding:2rem;text-align:center;">Loading...</div>';
+
+    // Fetch students from API
+    const resStudents = await API.getAttendance({ students: 1, class: cls });
+    if (!resStudents.success || !resStudents.data || resStudents.data.length === 0) {
+      el.innerHTML = '<div class="empty-state" style="padding:2rem;"><div class="empty-state-icon">👤</div><p>No students found in this class.</p></div>';
+      saveBtn.disabled = true;
+      notice.classList.add('hidden');
+      return;
+    }
+    const students = resStudents.data;
+    currentStudents = students;
+
+    // Check for existing attendance record from API
+    const resAtt = await API.getAttendance({ class: cls });
+    let existing = null;
+    if (resAtt.success && resAtt.data) {
+      // resAtt.data contains all attendance records for this class
+      const recordsForDate = resAtt.data.filter(a => a.date === date);
+      if (recordsForDate.length > 0) {
+         existing = recordsForDate;
+      }
+    }
+
+    attendanceData = {};
+    if (existing && existing.length > 0) {
+      notice.classList.remove('hidden');
+      existing.forEach(r => { attendanceData[r.student_id] = r.status.toLowerCase(); });
+      // For any student without a record for this date, default to present
+      students.forEach(s => { if(!attendanceData[s.id]) attendanceData[s.id] = 'present'; });
+    } else {
+      notice.classList.add('hidden');
+      students.forEach(s => { attendanceData[s.id] = 'present'; });
+    }
+
+    document.getElementById('attendanceTitle').textContent = `${cls} — ${formatDate(date)}`;
+    saveBtn.disabled = false;
+
+    renderStudentList(students);
+    updateSummary(students);
+  }
+
+  function renderStudentList(students) {
+    const el = document.getElementById('studentsList');
+    el.innerHTML = students.map(s => {
+      const status = attendanceData[s.id] || 'present';
+      return `
+      <div class="attendance-student-row">
+        <div class="attendance-student-info">
+          <div class="attendance-student-avatar">${s.name.charAt(0)}</div>
+          <div>
+            <div class="attendance-student-name">${s.name}</div>
+            <div class="attendance-student-roll">${s.rollNo}</div>
+          </div>
+        </div>
+        <div class="attendance-toggle">
+          <button class="toggle-btn ${status === 'present' ? 'present' : ''}" onclick="setAttendance('${s.id}','present',this)" data-student="${s.id}">✅ Present</button>
+          <button class="toggle-btn ${status === 'absent' ? 'absent' : ''}" onclick="setAttendance('${s.id}','absent',this)" data-student="${s.id}">❌ Absent</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function setAttendance(studentId, status, btn) {
+    attendanceData[studentId] = status;
+
+    // Update button styles
+    const row = btn.closest('.attendance-student-row');
+    const buttons = row.querySelectorAll('.toggle-btn');
+    buttons.forEach(b => {
+      b.classList.remove('present', 'absent');
+    });
+
+    if (status === 'present') {
+      buttons[0].classList.add('present');
+    } else {
+      buttons[1].classList.add('absent');
+    }
+
+    updateSummary(currentStudents);
+  }
+
+  function updateSummary(students) {
+    const present = students.filter(s => attendanceData[s.id] === 'present').length;
+    const absent = students.length - present;
+    document.getElementById('attendanceSummary').innerHTML = `
+      <span style="color:#10B981;font-weight:600;">✅ ${present} Present</span> &nbsp;|&nbsp;
+      <span style="color:#EF4444;font-weight:600;">❌ ${absent} Absent</span> &nbsp;|&nbsp;
+      <span>Total: ${students.length}</span>
+    `;
+  }
+
+  async function saveAttendance() {
+    const cls = document.getElementById('attClass').value;
+    const date = document.getElementById('attDate').value;
+
+    if (!cls || !date) {
+      showToast('Please select class and date.', 'error');
+      return;
+    }
+
+    const students = currentStudents;
+    const records = students.map(s => ({
+      studentId: s.id,
+      date: date,
+      status: attendanceData[s.id] || 'present'
+    }));
+
+    const res = await API.saveAttendance(records);
+    if (res.success) {
+      showToast('Attendance saved successfully!', 'success');
+      document.getElementById('existingNotice').classList.remove('hidden');
+      renderPastRecords();
+    } else {
+      showToast(res.message || 'Error saving attendance.', 'error');
+    }
+  }
+
+  async function renderPastRecords() {
+    const tbody = document.getElementById('pastRecords');
+    const res = await API.getAttendance();
+    
+    if (!res.success || !res.data || res.data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-medium);padding:2rem;">No attendance records yet.</td></tr>';
+      return;
+    }
+
+    // Group records by date and class to calculate present/absent
+    const grouped = {};
+    res.data.forEach(r => {
+      const key = r.date + '_' + (r.class_name || document.getElementById('attClass').value || 'Class');
+      if(!grouped[key]) grouped[key] = { date: r.date, class: r.class_name || 'Class', present: 0, absent: 0, total: 0 };
+      grouped[key].total++;
+      if (r.status.toLowerCase() === 'present') grouped[key].present++;
+      else grouped[key].absent++;
+    });
+
+    const sorted = Object.values(grouped).sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    tbody.innerHTML = sorted.map(a => `
+      <tr>
+        <td><strong>${formatDate(a.date)}</strong></td>
+        <td><span class="badge badge-blue">Recorded</span></td>
+        <td><span style="color:#10B981;font-weight:600;">${a.present}</span></td>
+        <td><span style="color:#EF4444;font-weight:600;">${a.absent}</span></td>
+        <td>${a.total}</td>
+      </tr>
+    `).join('');
+  }
+
+  function doLogout() {
+    Auth.logoutStaff();
+    window.location.href = 'login.php';
+  }
+</script>
+</body>
+</html>
+
+

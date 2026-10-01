@@ -1,0 +1,41 @@
+# Kindergarten Saadia's Montessori School (KSM) Platform
+
+Welcome to the official web platform for **Kindergarten Saadia's Montessori School (KSM)**. This project serves as both a vibrant public-facing website and a comprehensive, multi-role school management portal designed to streamline communication and administration.
+
+## 🌟 Project Overview
+
+The KSM platform is divided into two primary experiences:
+
+### 1. The Public Website
+A modern, welcoming interface for prospective parents and the community to learn about the school.
+- **Home & About:** Explore the Montessori philosophy, core values, and age-group programs.
+- **Admissions:** An interactive, multi-step application form for prospective students.
+- **Contact:** Office hours, location maps, and a direct inquiry form.
+- **Gallery & Events:** Showcases the vibrant school community and upcoming calendar events.
+
+### 2. The KSM Portal
+A dedicated, secure backend portal for internal school management. The portal offers role-based access tailored to three distinct user groups:
+
+*   **Admin Panel:** 
+    - Full oversight of school operations.
+    - Manage teacher and student credentials.
+    - Review and process admission applications.
+    - Publish news announcements and calendar events.
+    - Update the school gallery and manage contact messages.
+*   **Staff/Teacher Portal:** 
+    - Dedicated dashboard for classroom management.
+    - Assign and track daily homework/diaries.
+    - Mark and manage student attendance.
+    - Manage personal profile information.
+*   **Student/Parent Portal:** 
+    - View daily homework assignments.
+    - Track personal attendance records.
+    - Stay updated with school news and events.
+    - Browse class information and the secure student gallery.
+
+## 🛠️ Technology Stack
+- **Frontend:** HTML5, CSS3, and Vanilla JavaScript for a fast, responsive and dynamic user interface.
+- **Backend:** Powered by PHP, ensuring seamless data handling, form submissions and API interactions across all pages.
+
+
+*Empowering children through the Montessori method — "Free the child's potential and you will transform him into the world."*

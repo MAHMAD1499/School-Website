@@ -1,0 +1,554 @@
+document.addEventListener('DOMContentLoaded', () => {
+
+  // Instant Navigation & Mobile Menu Close
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      const navMenu = document.getElementById('navMenu');
+      const navToggle = document.getElementById('navToggle');
+
+      // Instantly close mobile drawer if open
+      if (navMenu && navMenu.classList.contains('active')) {
+        navMenu.classList.remove('active');
+        if (navToggle) navToggle.classList.remove('active');
+      }
+    });
+  });
+
+  // Toggle Extra Gallery Items
+  const toggleGalleryBtn = document.getElementById('toggleGalleryBtn');
+  const hiddenGalleryItems = document.querySelectorAll('.gallery-item.gallery-hidden');
+
+  if (toggleGalleryBtn) {
+    let isExpanded = false;
+
+    toggleGalleryBtn.addEventListener('click', () => {
+      isExpanded = !isExpanded;
+
+      hiddenGalleryItems.forEach(item => {
+        if (isExpanded) {
+          item.classList.remove('gallery-hidden');
+          item.style.opacity = '0';
+          item.style.transform = 'scale(0.95)';
+          setTimeout(() => {
+            item.style.opacity = '1';
+            item.style.transform = 'scale(1)';
+          }, 50);
+        } else {
+          item.classList.add('gallery-hidden');
+        }
+      });
+
+      // Update button text and icon orientation
+      const btnText = toggleGalleryBtn.querySelector('span');
+      if (isExpanded) {
+        btnText.textContent = 'Show Less';
+        toggleGalleryBtn.classList.add('expanded');
+      } else {
+        btnText.textContent = 'View Full Gallery';
+        toggleGalleryBtn.classList.remove('expanded');
+      }
+    });
+  }
+
+  // Toggle Extra Program Cards
+  const toggleProgramBtn = document.getElementById('toggleProgramBtn');
+  const hiddenProgramItems = document.querySelectorAll('.program-card.program-hidden');
+
+  if (toggleProgramBtn) {
+    let isProgramExpanded = false;
+
+    toggleProgramBtn.addEventListener('click', () => {
+      isProgramExpanded = !isProgramExpanded;
+
+      hiddenProgramItems.forEach(item => {
+        if (isProgramExpanded) {
+          item.classList.remove('program-hidden');
+          item.style.opacity = '0';
+          item.style.transform = 'scale(0.95)';
+          setTimeout(() => {
+            item.style.opacity = '1';
+            item.style.transform = 'scale(1)';
+          }, 50);
+        } else {
+          item.classList.add('program-hidden');
+        }
+      });
+
+      // Update button text and icon orientation
+      const btnText = toggleProgramBtn.querySelector('span');
+      if (isProgramExpanded) {
+        btnText.textContent = 'Show Less';
+        toggleProgramBtn.classList.add('expanded');
+      } else {
+        btnText.textContent = 'View More';
+        toggleProgramBtn.classList.remove('expanded');
+      }
+    });
+  }
+
+  // 0. Targeted Preloader Logic
+  const preloader = document.getElementById('preloader');
+
+  if (preloader) {
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        preloader.style.opacity = '0';
+        preloader.style.visibility = 'hidden';
+        document.body.classList.remove('preloader-active');
+      }, 400);
+    });
+
+    const allLinks = document.querySelectorAll('a');
+    allLinks.forEach(link => {
+      link.addEventListener('click', function (e) {
+        const target = this.getAttribute('href');
+
+        // Only trigger preloader for full page navigations (About Us, Contact, Portal, Apply Now)
+        if (target && target !== '#' && !target.startsWith('#') && !target.includes('index.html#') && !target.startsWith('javascript')) {
+          if (this.target !== '_blank') {
+            e.preventDefault();
+            document.body.classList.add('preloader-active');
+            preloader.style.opacity = '1';
+            preloader.style.visibility = 'visible';
+
+            setTimeout(() => {
+              window.location.href = target;
+            }, 400);
+          }
+        } else {
+          // Instantly keep preloader hidden for same-page section jumps (#programs, #admissions, etc.)
+          preloader.style.opacity = '0';
+          preloader.style.visibility = 'hidden';
+        }
+      });
+    });
+  }
+
+  // 1. Inverted Scroll Hide/Show Header Logic
+  const header = document.getElementById('header');
+  let lastScrollY = window.scrollY;
+
+  if (header) {
+    window.addEventListener('scroll', () => {
+      const currentScrollY = window.scrollY;
+
+      // Reset to default at top of page
+      if (currentScrollY <= 50) {
+        header.classList.remove('header-hidden');
+        header.classList.remove('scrolled');
+        lastScrollY = currentScrollY;
+        return;
+      }
+
+      // Add drop shadow once scrolled past top bar
+      header.classList.add('scrolled');
+
+      // Check scroll direction (5px threshold prevents jittering)
+      if (Math.abs(currentScrollY - lastScrollY) > 5) {
+        if (currentScrollY > lastScrollY) {
+          // Scrolling DOWN -> Re-appear (Show Header)
+          header.classList.remove('header-hidden');
+        } else {
+          // Scrolling UP -> Hide Header
+          header.classList.add('header-hidden');
+        }
+        lastScrollY = currentScrollY;
+      }
+    });
+  }
+
+  // 2. Mobile Navigation Menu Toggle
+  const navToggle = document.getElementById('navToggle');
+  const navMenu = document.getElementById('navMenu');
+
+  if (navToggle && navMenu) {
+    navToggle.addEventListener('click', () => {
+      navMenu.classList.toggle('active');
+      navToggle.classList.toggle('active');
+
+      // Lock body scroll when menu is open
+      document.body.classList.toggle('nav-open', navToggle.classList.contains('active'));
+
+      const spans = navToggle.querySelectorAll('span');
+      if (navToggle.classList.contains('active')) {
+        spans[0].style.transform = 'rotate(45deg) translate(6px, 6px)';
+        spans[1].style.opacity = '0';
+        spans[2].style.transform = 'rotate(-45deg) translate(6px, -6px)';
+      } else {
+        spans[0].style.transform = 'none';
+        spans[1].style.opacity = '1';
+        spans[2].style.transform = 'none';
+      }
+    });
+
+    navMenu.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        navMenu.classList.remove('active');
+        navToggle.classList.remove('active');
+        document.body.classList.remove('nav-open');
+        const spans = navToggle.querySelectorAll('span');
+        spans[0].style.transform = 'none';
+        spans[1].style.opacity = '1';
+        spans[2].style.transform = 'none';
+      });
+    });
+  }
+
+  // 3. Fixed Active Link Highlighting on Scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-link');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop;
+      if (window.scrollY >= (sectionTop - 150)) {
+        current = section.getAttribute('id');
+      }
+    });
+
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      const href = link.getAttribute('href');
+      if (current && href && href.includes(`#${current}`)) {
+        link.classList.add('active');
+      }
+    });
+  });
+
+  // 4. Hero Slider / Slideshow
+  const slides = document.querySelectorAll('.hero-slide');
+  const dotsContainer = document.getElementById('sliderDots');
+  const prevBtn = document.getElementById('sliderPrev');
+  const nextBtn = document.getElementById('sliderNext');
+  let currentSlide = 0;
+  let slideInterval;
+
+  if (slides.length > 0 && dotsContainer) {
+    slides.forEach((_, idx) => {
+      const dot = document.createElement('div');
+      dot.classList.add('slider-dot');
+      if (idx === 0) dot.classList.add('active');
+      dot.addEventListener('click', () => goToSlide(idx));
+      dotsContainer.appendChild(dot);
+    });
+
+    const dots = document.querySelectorAll('.slider-dot');
+
+    function updateSlides() {
+      slides.forEach((slide, idx) => {
+        if (idx === currentSlide) {
+          slide.classList.add('active');
+          if (dots[idx]) dots[idx].classList.add('active');
+        } else {
+          slide.classList.remove('active');
+          if (dots[idx]) dots[idx].classList.remove('active');
+        }
+      });
+    }
+
+    function nextSlide() {
+      currentSlide = (currentSlide + 1) % slides.length;
+      updateSlides();
+    }
+
+    function prevSlide() {
+      currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+      updateSlides();
+    }
+
+    function goToSlide(idx) {
+      currentSlide = idx;
+      updateSlides();
+      resetInterval();
+    }
+
+    function startInterval() {
+      slideInterval = setInterval(nextSlide, 6000);
+    }
+
+    function resetInterval() {
+      clearInterval(slideInterval);
+      startInterval();
+    }
+
+    if (nextBtn) nextBtn.addEventListener('click', () => { nextSlide(); resetInterval(); });
+    if (prevBtn) prevBtn.addEventListener('click', () => { prevSlide(); resetInterval(); });
+
+    startInterval();
+  }
+
+  // 5. Stats Counter Animation
+  const statsCounters = document.querySelectorAll('.stat-counter');
+
+  if (statsCounters.length > 0) {
+    const startCounterAnimation = (element) => {
+      const target = +element.getAttribute('data-target');
+      const duration = 2000;
+      const increment = target / (duration / 16);
+      let count = 0;
+
+      const updateCount = () => {
+        count += increment;
+        if (count < target) {
+          element.innerText = Math.ceil(count) + (target > 50 ? '+' : '');
+          requestAnimationFrame(updateCount);
+        } else {
+          element.innerText = target + (target > 50 ? '+' : '');
+        }
+      };
+      updateCount();
+    };
+
+    const statsObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          startCounterAnimation(entry.target);
+        } else {
+          entry.target.innerText = '0';
+        }
+      });
+    }, { threshold: 0.5 });
+
+    statsCounters.forEach(counter => statsObserver.observe(counter));
+  }
+
+  // 6. News, Events & Gallery Filtering
+  const filterButtons = document.querySelectorAll('.filter-btn');
+  const galleryItems = document.querySelectorAll('.gallery-item');
+
+  if (filterButtons.length > 0 && galleryItems.length > 0) {
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const filter = btn.getAttribute('data-filter');
+
+        galleryItems.forEach(item => {
+          const category = item.getAttribute('data-category');
+          if (filter === 'all' || category === filter) {
+            item.style.display = 'block';
+            setTimeout(() => {
+              item.style.opacity = '1';
+              item.style.transform = 'scale(1)';
+            }, 50);
+          } else {
+            item.style.opacity = '0';
+            item.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+              item.style.display = 'none';
+            }, 300);
+          }
+        });
+      });
+    });
+  }
+
+  // 7. Newsletter Form Submit
+  const newsletterForm = document.getElementById('newsletterForm');
+  if (newsletterForm) {
+    newsletterForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const emailInput = newsletterForm.querySelector('input');
+      alert(`Thank you for subscribing with ${emailInput.value}!`);
+      emailInput.value = '';
+    });
+  }
+
+  // 8. Scroll Animations
+  const scrollElements = document.querySelectorAll('.section-title, .section-subtitle, .about-image-wrapper, .about-info, .program-card, .stat-item, .admissions-info, .inquiry-card, .gallery-item, .mission-card, .animate-on-scroll');
+
+  scrollElements.forEach((el) => {
+    if (!el.classList.contains('slide-in-left') && !el.classList.contains('slide-in-right')) {
+      el.classList.add('animate-on-scroll');
+    }
+  });
+
+  const slideElements = document.querySelectorAll('.slide-in-left, .slide-in-right');
+
+  const scrollObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('show-anim');
+      } else {
+        entry.target.classList.remove('show-anim');
+      }
+    });
+  }, { threshold: 0.12 });
+
+  scrollElements.forEach(el => scrollObserver.observe(el));
+  slideElements.forEach(el => scrollObserver.observe(el));
+
+  // 9. Single-Step Form Submission Logic
+  const admissionForm = document.getElementById('admissionForm');
+  if (admissionForm) {
+      admissionForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          
+          const btn = admissionForm.querySelector('button[type="submit"]');
+          btn.disabled = true;
+          btn.textContent = 'Submitting...';
+
+          const formData = new FormData(admissionForm);
+          const data = {
+              parent_name: formData.get('parent_name'),
+              email: formData.get('email'),
+              phone: formData.get('phone'),
+              child_name: formData.get('child_name'),
+              dob: formData.get('dob'),
+              address: formData.get('address'),
+              prior_school: formData.get('prior_school'),
+              program: formData.get('program'),
+              notes: formData.get('notes')
+          };
+
+          try {
+              const res = await fetch('admissions.php', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'X-Requested-With': 'XMLHttpRequest'
+                  },
+                  body: JSON.stringify(data)
+              });
+              const result = await res.json();
+              
+              if (result.success) {
+                  // Show success message
+                  admissionForm.style.display = 'none';
+                  document.getElementById('formSuccess').style.display = 'block';
+                  if (result.data && result.data.refCode) {
+                      document.getElementById('formSuccess').innerHTML += `<p style="margin-top:1rem;font-weight:bold;">Your Reference Code: ${result.data.refCode}</p>`;
+                  }
+              } else {
+                  alert(result.message || 'Failed to submit application.');
+                  btn.disabled = false;
+                  btn.textContent = 'Submit Application';
+              }
+          } catch (err) {
+              alert('Server error. Please try again.');
+              btn.disabled = false;
+              btn.textContent = 'Submit Application';
+          }
+      });
+  }
+});
+
+// 9. Lightbox Popup Logic for Event Photo Sets
+let currentEventMedia = [];
+let currentMediaIndex = 0;
+
+function openEventLightbox(element) {
+  const dataEl = element.querySelector('.event-photos-data');
+  if (!dataEl) return;
+
+  const mediaString = dataEl.getAttribute('data-photos');
+  if (!mediaString) return;
+
+  currentEventMedia = mediaString.split(',');
+  currentMediaIndex = 0;
+
+  const lightboxModal = document.getElementById('eventLightbox');
+  if (lightboxModal) {
+    lightboxModal.style.display = 'flex';
+    displayCurrentMedia();
+  }
+}
+
+function closeEventLightbox() {
+  const lightboxModal = document.getElementById('eventLightbox');
+  const videoPlayer = document.getElementById('lightboxVideo');
+
+  if (videoPlayer) {
+    videoPlayer.pause();
+    videoPlayer.src = '';
+  }
+
+  if (lightboxModal) {
+    lightboxModal.style.display = 'none';
+  }
+}
+
+function displayCurrentMedia() {
+  const imgPlayer = document.getElementById('lightboxImg');
+  const videoPlayer = document.getElementById('lightboxVideo');
+  const currentFile = currentEventMedia[currentMediaIndex].trim();
+
+  // Check if file extension is a video format
+  const isVideo = currentFile.endsWith('.mp4') || currentFile.endsWith('.webm') || currentFile.endsWith('.ogg');
+
+  if (isVideo) {
+    imgPlayer.style.display = 'none';
+    videoPlayer.style.display = 'block';
+    videoPlayer.src = currentFile;
+    videoPlayer.play();
+  } else {
+    videoPlayer.pause();
+    videoPlayer.style.display = 'none';
+    imgPlayer.style.display = 'block';
+    imgPlayer.src = currentFile;
+  }
+}
+
+function changeLightboxImg(direction) {
+  if (currentEventMedia.length <= 1) return;
+
+  currentMediaIndex += direction;
+  if (currentMediaIndex < 0) {
+    currentMediaIndex = currentEventMedia.length - 1;
+  }
+  if (currentMediaIndex >= currentEventMedia.length) {
+    currentMediaIndex = 0;
+  }
+
+  displayCurrentMedia();
+}
+
+async function loadPortalEventsToWebsite() {
+  const eventContainer = document.getElementById('websiteEventList');
+  if (!eventContainer) return;
+
+  try {
+    const response = await fetch('api_events.php');
+    const result = await response.json();
+    const events = result.data || [];
+
+    if (events.length === 0) {
+      eventContainer.innerHTML = `
+        <div style="text-align:center; padding:2rem; color:var(--text-medium);">
+          <p>No upcoming events scheduled at this time.</p>
+        </div>`;
+      return;
+    }
+
+    // Render on homepage
+    eventContainer.innerHTML = events.map(e => {
+      const d = new Date(e.date);
+      const month = d.toLocaleString('en-US', { month: 'short' }).toUpperCase();
+      const day = String(d.getDate()).padStart(2, '0');
+
+      return `
+        <div class="event-item">
+          <div class="event-date-badge">
+            <span class="event-month">${month}</span>
+            <span class="event-day">${day}</span>
+          </div>
+          <div class="event-info">
+            <h4>${e.title}</h4>
+            <p>${e.description || 'Join us at KSM for this upcoming event.'}</p>
+            <span class="event-tag">${e.category || 'Event'}</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+  } catch (error) {
+    console.error('Failed to load events:', error);
+    eventContainer.innerHTML = `
+      <div style="text-align:center; padding:2rem; color:var(--text-medium);">
+        <p>No upcoming events scheduled at this time.</p>
+      </div>`;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', loadPortalEventsToWebsite);
